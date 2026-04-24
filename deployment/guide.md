@@ -29,8 +29,7 @@ docker compose up -d
 docker compose exec api alembic upgrade head
 
 # Verify
-curl http://localhost:8100/health
-```
+curl http://localhost:8100/healthz```
 
 The API is available at `http://localhost:8100`. Postgres data persists in the `pgdata` volume.
 
@@ -176,4 +175,4 @@ See [`.env.example`](https://github.com/smaramwbc/statewave/blob/main/.env.examp
 - [ ] `STATEWAVE_RATE_LIMIT_RPM` set (e.g., 120)
 - [ ] Database backups configured
 - [ ] Migrations run before first request
-- [ ] Health endpoint monitored (`GET /health`)
+- [ ] Health endpoint monitored (`GET /healthz`)
