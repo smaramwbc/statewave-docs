@@ -2,7 +2,7 @@
 
 | Repo | Purpose | License |
 |------|---------|---------|
-| `statewave` | Core server, API, domain model, DB, services, deployment | BUSL-1.1 |
+| `statewave` | Core server, API, domain model, DB, services, deployment | AGPL-3.0 |
 | `statewave-py` | Official Python SDK | Apache-2.0 |
 | `statewave-ts` | Official TypeScript SDK | Apache-2.0 |
 | `statewave-examples` | Example apps and quickstarts | Apache-2.0 |
