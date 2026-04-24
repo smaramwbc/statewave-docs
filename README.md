@@ -21,6 +21,15 @@ Architecture docs, product specs, API contracts, and development coordination fo
 - [ADR-003: v0.2 production hardening decisions](adrs/003-v02-production-hardening.md)
 - [ADR-004: v0.3 advanced features decisions](adrs/004-v03-advanced-features.md)
 
+## Repositories
+
+| Repo | Description |
+|------|-------------|
+| [statewave](https://github.com/smaramwbc/statewave) | Server — API, domain model, DB, compilation, search |
+| [statewave-py](https://github.com/smaramwbc/statewave-py) | Python SDK (sync + async) |
+| [statewave-ts](https://github.com/smaramwbc/statewave-ts) | TypeScript SDK |
+| [statewave-examples](https://github.com/smaramwbc/statewave-examples) | Runnable examples and quickstarts |
+
 ## Current status
 
-**v0.4.x** — Operator & adoption readiness. Batch episode ingestion, OpenTelemetry tracing, subject listing, deployment guides, SDK publish readiness. See [roadmap](roadmap.md) and [CHANGELOG](CHANGELOG.md) for details.
+**v0.4.x** — Batch episode ingestion, OpenTelemetry tracing, subject listing, deployment guides, SDK publish readiness. See [roadmap](roadmap.md) and [CHANGELOG](CHANGELOG.md) for details.
