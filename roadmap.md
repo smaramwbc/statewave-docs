@@ -58,10 +58,24 @@
 - [x] Update architecture docs and write v0.3 ADR
 - [x] Update repo-map and conventions docs
 
-## v0.4 — Next
+## v0.4.0 — Operator & Adoption Readiness ✅
+- [x] Batch episode ingestion (`POST /v1/episodes/batch`, max 100)
+- [x] OpenTelemetry tracing (optional, spans on compile/search/context)
+- [x] Comprehensive `.env.example` with all config vars
+- [x] SDK publish readiness (PyPI/npm metadata, py.typed, changelogs, publish checklists)
+- [x] `create_episodes_batch()` / `createEpisodesBatch()` in both SDKs
+- [x] Deployment guide (Docker, bare metal, Fly.io, Railway)
+
+## v0.4.1 — External Adoption Validation ✅
+- [x] Batch endpoint integration tests (8 tests)
+- [x] SDK build/package validation (twine check, npm pack)
+- [x] Getting started guide (canonical onboarding path)
+- [x] Release-readiness checklist
+
+## v0.5 — Next
 - [ ] Dashboard UI
 - [ ] Memory expiry / TTL policies
-- [ ] Batch episode ingestion
 - [ ] SDK webhook listener helpers
-- [ ] OpenTelemetry tracing
-- [ ] Deployment guides (Docker, fly.io, Railway)
+- [ ] Reliable webhook delivery (retries, dead-letter)
+- [ ] Full multi-tenant data isolation
+- [ ] SDK retry/backoff

@@ -6,6 +6,7 @@ Architecture docs, product specs, API contracts, and development coordination fo
 
 ## Contents
 
+- **[Getting Started](getting-started.md)** ← start here
 - [Architecture Overview](architecture/overview.md)
 - [Repo Map](architecture/repo-map.md)
 - [API v1 Contract](api/v1-contract.md)
