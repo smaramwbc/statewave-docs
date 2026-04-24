@@ -7,6 +7,7 @@ Architecture docs, product specs, API contracts, and development coordination fo
 ## Contents
 
 - **[Getting Started](getting-started.md)** ← start here
+- [What is Statewave?](product.md)
 - [Architecture Overview](architecture/overview.md)
 - [Repo Map](architecture/repo-map.md)
 - [API v1 Contract](api/v1-contract.md)
@@ -22,4 +23,4 @@ Architecture docs, product specs, API contracts, and development coordination fo
 
 ## Current status
 
-**v0.3.5** — Stabilization complete. Server, both SDKs, and examples are at v0.3.5 with LLM compilation, semantic search, temporal reasoning, conflict resolution, webhooks, authentication, rate limiting, and experimental multi-tenant support. All repos are aligned on version numbers, auth support, and documentation. See [roadmap](roadmap.md) for details.
+**v0.4.x** — Operator & adoption readiness. Batch episode ingestion, OpenTelemetry tracing, subject listing, deployment guides, SDK publish readiness. See [roadmap](roadmap.md) and [CHANGELOG](CHANGELOG.md) for details.

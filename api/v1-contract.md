@@ -1,7 +1,7 @@
 # Statewave API v1 Contract
 
 Base URL: `http://localhost:8100`
-Version: **0.3.5**
+Version: **0.4.x**
 
 ---
 

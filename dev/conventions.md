@@ -1,6 +1,6 @@
 # Development Conventions
 
-Version: **0.3.5**
+Version: **0.4.x**
 
 ## Code style
 
@@ -48,8 +48,8 @@ All repos have GitHub Actions CI workflows:
 
 | SDK | Version | Key features |
 |-----|---------|-------------|
-| statewave-py | 0.3.5 | Sync + async clients, typed exceptions, auth (`api_key`), tenant (`tenant_id`), semantic search |
-| statewave-ts | 0.3.5 | Typed errors, auth (`apiKey`), tenant (`tenantId`), semantic search, full type exports, ESM |
+| statewave-py | 0.4.x | Sync + async clients, typed exceptions, auth, tenant, semantic search, batch ingestion, subject listing |
+| statewave-ts | 0.4.x | Typed errors, auth, tenant, semantic search, batch ingestion, subject listing, ESM |
 
 ## Configuration
 

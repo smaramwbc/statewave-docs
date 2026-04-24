@@ -1,6 +1,6 @@
 # Architecture Overview
 
-Version: **0.3.5**
+Version: **0.4.x**
 
 Statewave is a **Memory OS** — a trusted context runtime for AI agents and applications.
 

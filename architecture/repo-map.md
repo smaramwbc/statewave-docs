@@ -1,12 +1,12 @@
 # Repo Map
 
-Version: **0.3.5**
+Version: **0.4.x**
 
 | Repo | Purpose | Version | License |
-|------|---------|---------|---------|
-| `statewave` | Core server, API, domain model, DB, services, deployment | 0.3.5 | AGPL-3.0 |
-| `statewave-py` | Official Python SDK (sync + async, typed exceptions, auth) | 0.3.5 | Apache-2.0 |
-| `statewave-ts` | Official TypeScript SDK (typed errors, auth, ESM) | 0.3.5 | Apache-2.0 |
+|------|---------|---------|----------|
+| `statewave` | Core server, API, domain model, DB, services, deployment | 0.4.x | AGPL-3.0 |
+| `statewave-py` | Official Python SDK (sync + async, typed exceptions, auth, batch) | 0.4.x | Apache-2.0 |
+| `statewave-ts` | Official TypeScript SDK (typed errors, auth, batch, ESM) | 0.4.x | Apache-2.0 |
 | `statewave-examples` | Example apps and quickstarts | — | Apache-2.0 |
 | `statewave-docs` | Architecture, specs, ADRs, coordination (no runtime code) | — | Apache-2.0 |
 
@@ -39,11 +39,11 @@ statewave/
   tests/          # Unit + integration tests
 ```
 
-## Test counts (as of v0.3.5)
+## Test counts (as of v0.4.x)
 
 | Repo | Tests | Framework |
-|------|-------|-----------|
-| `statewave` | 97 (75 unit + 22 integration) | pytest + pytest-asyncio |
+|------|-------|----------|
+| `statewave` | ~102 (70 unit + 32 integration) | pytest + pytest-asyncio |
 | `statewave-py` | 14 | pytest |
 | `statewave-ts` | ~10 | vitest |
 
