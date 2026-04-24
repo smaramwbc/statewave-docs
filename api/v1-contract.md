@@ -2,6 +2,36 @@
 
 Base URL: `http://localhost:8100`
 
+## Common behavior
+
+### Request IDs
+
+Every response includes an `X-Request-ID` header. Clients may send their own `X-Request-ID`; if omitted the server generates one. Use this for log correlation and error reporting.
+
+### Error format
+
+All error responses use a structured shape:
+
+```json
+{
+  "error": {
+    "code": "not_found",
+    "message": "Subject sub-99 has no episodes",
+    "details": null,
+    "request_id": "abc-123"
+  }
+}
+```
+
+Standard error codes: `validation_error`, `not_found`, `conflict`, `internal_error`.
+
+### Health endpoints
+
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/healthz` | Liveness — always returns `{"status": "ok"}` |
+| GET | `/readyz` | Readiness — checks DB connectivity |
+
 ## Endpoints
 
 ### POST /v1/episodes
@@ -9,6 +39,7 @@ Base URL: `http://localhost:8100`
 Create an immutable episode.
 
 **Request:**
+
 ```json
 {
   "subject_id": "user-42",
@@ -26,9 +57,10 @@ Create an immutable episode.
 
 ### POST /v1/memories/compile
 
-Compile memories from a subject's episodes.
+Compile memories from a subject's episodes. **Idempotent** — recompiling the same subject produces no duplicate memories.
 
 **Request:**
+
 ```json
 { "subject_id": "user-42" }
 ```
@@ -49,14 +81,34 @@ Search memories for a subject.
 
 ### POST /v1/context
 
-Assemble a context bundle for downstream LLM use.
+Assemble a ranked, token-bounded context bundle for downstream LLM use.
 
 **Request:**
+
 ```json
-{ "subject_id": "user-42", "task": "Help the user", "max_tokens": 4000 }
+{
+  "subject_id": "user-42",
+  "task": "Help the user with their billing question",
+  "max_tokens": 4000
+}
 ```
 
-**Response:** `200` — ContextBundle with `facts`, `episodes`, `procedures`, `assembled_context`, `token_estimate`, `provenance`.
+`max_tokens` is optional (default: 4000). The assembler ranks memories by kind priority (facts > procedures > episodes), recency, and task-keyword relevance, then fills the bundle up to the token budget.
+
+**Response:** `200` — ContextBundle:
+
+```json
+{
+  "subject_id": "user-42",
+  "task": "Help the user...",
+  "facts": ["Name: Alice", "Company: Acme Corp"],
+  "episodes": [{ "summary": "...", "when": "..." }],
+  "procedures": ["Prefers email communication"],
+  "assembled_context": "## Known facts\n- Name: Alice\n...",
+  "token_estimate": 312,
+  "provenance": { "source_episode_ids": ["..."], "memory_ids": ["..."] }
+}
+```
 
 ---
 
@@ -72,6 +124,6 @@ Get full timeline for a subject.
 
 ### DELETE /v1/subjects/{subject_id}
 
-Delete all data for a subject.
+Delete all data for a subject (episodes + memories). Permanent.
 
 **Response:** `200` — `{ subject_id, episodes_deleted, memories_deleted }`
