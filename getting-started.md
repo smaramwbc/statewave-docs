@@ -66,13 +66,6 @@ pip install statewave-py
 npm install statewave-ts
 ```
 
-> Until published to PyPI/npm, install from the local repo:
-> ```bash
-> pip install /path/to/statewave-py
-> # or
-> npm install /path/to/statewave-ts
-> ```
-
 ---
 
 ## 4. Ingest episodes
