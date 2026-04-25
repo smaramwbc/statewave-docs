@@ -2,6 +2,17 @@
 
 All notable changes to the Statewave workspace.
 
+## v0.4.3 — Public Release Polish (2026-04-25)
+
+### Improved
+- README rewrite across all repos — accurate product framing, docs navigation, current limitations
+- Consistent tagline and cross-repo linking
+- SDK READMEs updated with batch and subject listing examples
+- CI workflows: added tests to TS CI, fixed lint errors
+- Release workflows: tag-push trigger, CI gate, no accidental releases
+- PUBLISHING.md rewritten for automated release process
+- Cleaned up all failed GitHub Actions runs
+
 ## v0.4.0 — Operator & Adoption Readiness (2026-04-24)
 
 ### Added (server)
