@@ -4,6 +4,12 @@ Architecture docs, product specs, API contracts, and development coordination fo
 
 > This repo contains no production runtime code.
 
+## 🎯 Live Demo
+
+> **[▶ Try the interactive demo →](https://statewave-demo.vercel.app)**
+>
+> See two identical AI agents answer side by side — one stateless, one with full customer history powered by Statewave. No setup required.
+
 ## Contents
 
 - **[Getting Started](getting-started.md)** ← start here
@@ -28,6 +34,7 @@ Architecture docs, product specs, API contracts, and development coordination fo
 | [statewave](https://github.com/smaramwbc/statewave) | Server — API, domain model, DB, compilation, search |
 | [statewave-py](https://github.com/smaramwbc/statewave-py) | Python SDK (sync + async) |
 | [statewave-ts](https://github.com/smaramwbc/statewave-ts) | TypeScript SDK |
+| [statewave-demo](https://github.com/smaramwbc/statewave-demo) | **[Live interactive demo](https://statewave-demo.vercel.app)** |
 | [statewave-examples](https://github.com/smaramwbc/statewave-examples) | Runnable examples and quickstarts |
 
 ## Current status
