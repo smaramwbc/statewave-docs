@@ -306,9 +306,9 @@ All settings use the `STATEWAVE_` env prefix. A `.env` file is supported.
 | `COMPILER_TYPE` | `heuristic` | `heuristic` or `llm` |
 | `EMBEDDING_PROVIDER` | `stub` | `stub`, `openai`, or `none` |
 | `EMBEDDING_DIMENSIONS` | `1536` | Vector dimensions |
-| `OPENAI_API_KEY` | — | Required for `llm` compiler and `openai` embeddings |
-| `OPENAI_EMBEDDING_MODEL` | `text-embedding-3-small` | Embedding model |
-| `LLM_COMPILER_MODEL` | `gpt-4o-mini` | Chat model for LLM compiler |
+| `OPENAI_API_KEY` | — | API key (also reads provider-specific env vars via LiteLLM) |
+| `OPENAI_EMBEDDING_MODEL` | `text-embedding-3-small` | Embedding model (any LiteLLM-supported model) |
+| `LLM_COMPILER_MODEL` | `gpt-4o-mini` | Any [LiteLLM model string](https://docs.litellm.ai/docs/providers) |
 | `DEFAULT_MAX_CONTEXT_TOKENS` | `4000` | Default context budget |
 | `API_KEY` | — | Auth key (empty = open access) |
 | `RATE_LIMIT_RPM` | `0` | Requests/min/IP (0 = disabled) |

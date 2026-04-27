@@ -32,7 +32,7 @@ RECORD → COMPILE → CONTEXT → GOVERN
 │       │              │              │              │          │
 │  ┌────┴──────────────┴──────────────┴──────────────┴───────┐ │
 │  │                   Service Layer                          │ │
-│  │  Compilers (heuristic | LLM)  · Embeddings (stub|OpenAI)│ │
+│  │  Compilers (heuristic | LLM)  · Embeddings (stub|LiteLLM)│ │
 │  │  ContextAssembler (ranked, semantic, temporal)           │ │
 │  │  ConflictResolver  ·  Webhooks                           │ │
 │  └────┬──────────────┬──────────────┬──────────────────────┘ │
@@ -79,8 +79,8 @@ Execution order (outermost to innermost):
 Uncompiled Episodes → Compiler → Raw Memories → Embedding → Conflict Resolution → Commit
 ```
 
-- **Compilers:** `HeuristicCompiler` (regex/pattern, no external deps) and `LLMCompiler` (OpenAI chat, runs in thread pool to avoid blocking)
-- **Embeddings:** `StubEmbeddingProvider` (deterministic hash vectors for dev/test) and `OpenAIEmbeddingProvider` (real semantic vectors)
+- **Compilers:** `HeuristicCompiler` (regex/pattern, no external deps) and `LLMCompiler` (any provider via LiteLLM, runs in thread pool to avoid blocking)
+- **Embeddings:** `StubEmbeddingProvider` (deterministic hash vectors for dev/test) and `OpenAIEmbeddingProvider` (real semantic vectors via LiteLLM — supports OpenAI, Azure, Cohere, Bedrock, etc.)
 - **Conflict resolution:** Jaccard similarity within same (subject, kind) groups; older memory superseded with `valid_to` set
 - All steps execute in a single database transaction
 
@@ -110,8 +110,8 @@ Uncompiled Episodes → Compiler → Raw Memories → Embedding → Conflict Res
 
 ## v0.3 additions
 
-- LLM-backed memory compiler (OpenAI chat completions, thread-pooled)
-- Embedding generation (OpenAI + stub providers)
+- LLM-backed memory compiler (any provider via LiteLLM, thread-pooled)
+- Embedding generation (LiteLLM + stub providers)
 - Semantic search via pgvector cosine similarity with fallback
 - Temporal reasoning in context assembly (valid_from/valid_to scoring)
 - Memory conflict resolution (Jaccard similarity, auto-supersede)

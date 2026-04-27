@@ -31,7 +31,7 @@ statewave/
     schemas/      # API request/response schemas
     services/     # Business logic
       compilers/  # BaseCompiler protocol, HeuristicCompiler, LLMCompiler
-      embeddings/ # BaseEmbeddingProvider, StubProvider, OpenAIProvider
+      embeddings/ # BaseEmbeddingProvider, StubProvider, LiteLLMProvider
       context.py  # Ranked, token-bounded, temporal context assembly
       conflicts.py # Memory conflict resolution
       webhooks.py # Event hook delivery

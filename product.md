@@ -44,7 +44,7 @@ Statewave is in active early development (v0.4.x). Current limitations include:
 
 - **Single-node only** — no clustering or horizontal scaling yet
 - **Postgres required** — no alternative storage backends
-- **Memory compilation** — heuristic compiler works well for structured data; LLM compiler requires an OpenAI API key
+- **Memory compilation** — heuristic compiler works with zero external dependencies; LLM compiler supports any provider via [LiteLLM](https://github.com/BerriAI/litellm) (OpenAI, Anthropic, Azure, Ollama, etc.)
 - **No built-in auth provider** — Statewave validates API keys you configure, but doesn't issue them
 - **No streaming** — context responses are returned as complete JSON
 - **No UI** — API-only; inspect via endpoints or direct DB access

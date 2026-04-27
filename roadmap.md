@@ -28,7 +28,7 @@
 - [x] TypeScript SDK v0.2.0 — typed errors, 10 tests
 - [x] Support-agent example (polished 2-session demo)
 - [x] LLM-backed memory compilation
-- [x] Embedding generation (OpenAI / local)
+- [x] Embedding generation (LiteLLM multi-provider)
 - [x] Semantic search via pgvector
 - [x] Authentication / API keys
 - [x] Rate limiting
