@@ -14,6 +14,7 @@ Architecture docs, product specs, API contracts, and development coordination fo
 
 - **[Getting Started](getting-started.md)** ← start here
 - [What is Statewave?](product.md)
+- [Why Statewave?](why-statewave.md) — technical comparison for support-agent workflows
 - [Architecture Overview](architecture/overview.md)
 - [Repo Map](architecture/repo-map.md)
 - [API v1 Contract](api/v1-contract.md)
