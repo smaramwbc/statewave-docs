@@ -40,14 +40,25 @@ Everything is organised around **subjects** — a user, account, workspace, repo
 
 ## Current limitations
 
-Statewave is in active early development (v0.4.x). Current limitations include:
+Statewave is in active early development (v0.4.x). We document these honestly:
 
-- **Single-node only** — no clustering or horizontal scaling yet
-- **Postgres required** — no alternative storage backends
-- **Memory compilation** — heuristic compiler works with zero external dependencies; LLM compiler supports any provider via [LiteLLM](https://github.com/BerriAI/litellm) (OpenAI, Anthropic, Azure, Ollama, etc.)
-- **No built-in auth provider** — Statewave validates API keys you configure, but doesn't issue them
-- **No streaming** — context responses are returned as complete JSON
-- **No UI** — API-only; inspect via endpoints or direct DB access
+| Limitation | Impact | Fix planned |
+|-----------|--------|-------------|
+| Webhooks are fire-and-forget | Events can be silently lost | v0.5 — persistent queue + retries |
+| SDKs have no retry logic | Transient failures crash callers | v0.5 — exponential backoff |
+| Compilation is synchronous | Large subjects may timeout | v0.5 — async job queue |
+| Multi-tenant is experimental | Header trust only, no RLS | v0.5 — row-level security |
+| Rate limiting is in-memory | Resets on restart | v0.5 — Postgres-backed |
+| Single-node only | No horizontal scaling | v0.7 |
+| PostgreSQL required | No alternative backends | No change planned |
+| No admin UI | API-only inspection | v0.7 |
+
+**What works well today:**
+- Episode ingestion (single + batch, append-only, durable)
+- Memory compilation (heuristic or LLM via [LiteLLM](https://github.com/BerriAI/litellm) — 100+ providers)
+- Context assembly (ranked, token-bounded, with provenance)
+- Subject lifecycle (timeline, search, deletion)
+- Self-hosted deployment (Docker, Fly.io, bare metal)
 
 ## API surface
 
