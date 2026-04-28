@@ -27,7 +27,7 @@ Statewave is purpose-built for **support-agent workflows** — the first use cas
 ## v0.3 — Advanced Features ✅
 
 - [x] Temporal reasoning, memory conflict resolution
-- [x] Webhooks (fire-and-forget), multi-tenant (experimental)
+- [x] Webhooks, multi-tenant (experimental)
 - [x] Middleware ordering, validation, LLM thread-pool fix
 
 ## v0.4 — Adoption Readiness ✅
@@ -44,18 +44,18 @@ Statewave is purpose-built for **support-agent workflows** — the first use cas
 
 **Goal:** Make Statewave trustworthy enough that an operator can run it for real support workloads without worrying about lost events, silent failures, or mystery state.
 
-| # | Feature | Why |
-|---|---------|-----|
-| 1 | **Reliable webhook delivery** — persistent queue, exponential backoff, dead-letter, delivery status | Current fire-and-forget drops events silently |
-| 2 | **SDK retry with backoff** — automatic retry on 429/5xx with jitter in both SDKs | Clients shouldn't crash on transient failures |
-| 3 | **Durable async compilation** — background job with status tracking | Large compiles can timeout or get lost |
-| 4 | **True multi-tenant isolation** — row-level security, not just header trust | Current tenant support is cosmetic |
-| 5 | **Distributed rate limiting** — Postgres-backed, survives restarts | In-memory limiter resets on deploy |
-| 6 | **Backup/restore tooling** — `statewave export` / `statewave import` for subject data | Operators need confidence before upgrades |
-| 7 | **Admin introspection** — `/admin/subjects`, `/admin/jobs`, `/admin/webhooks` with stats | Operators can't see what's happening |
-| 8 | **Compilation status API** — `GET /v1/memories/compile/{job_id}` | Callers need to know when compilation finishes |
-| 9 | **Deep health checks** — `/readyz` checks DB, queue, LLM reachability | Current readyz only checks process is up |
-| 10 | **Migration safety** — pre/post checks, rollback docs | Operators fear schema migrations |
+| # | Feature | Why | Status |
+|---|---------|-----|--------|
+| 1 | **Reliable webhook delivery** — persistent queue, exponential backoff, dead-letter, delivery status | Current fire-and-forget drops events silently | ✅ Done |
+| 2 | **SDK retry with backoff** — automatic retry on 429/5xx with jitter in both SDKs | Clients shouldn't crash on transient failures | ✅ Done |
+| 3 | **Durable async compilation** — Postgres-backed job queue with status polling | Large compiles can timeout or get lost | ✅ Done |
+| 4 | **True multi-tenant isolation** — row-level security, not just header trust | Current tenant support is cosmetic | Planned |
+| 5 | **Distributed rate limiting** — Postgres-backed, survives restarts | In-memory limiter resets on deploy | Planned |
+| 6 | **Backup/restore tooling** — `statewave export` / `statewave import` for subject data | Operators need confidence before upgrades | Planned |
+| 7 | **Admin introspection** — `/admin/subjects`, `/admin/jobs`, `/admin/webhooks` with stats | Operators can't see what's happening | ✅ Done (jobs + webhooks) |
+| 8 | **Compilation status API** — `GET /v1/memories/compile/{job_id}` | Callers need to know when compilation finishes | ✅ Done |
+| 9 | **Deep health checks** — `/readyz` checks DB, queue, LLM reachability | Current readyz only checks process is up | Planned |
+| 10 | **Migration safety** — pre/post checks, rollback docs | Operators fear schema migrations | Planned |
 
 ## v0.6 — Support-Agent Superiority
 

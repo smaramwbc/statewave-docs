@@ -75,7 +75,7 @@ Episodes (raw events) → Compilation → Memories (typed, scored) → Context a
 
 ## Provable today
 
-These claims are backed by the [support-agent context quality eval](https://github.com/smaramwbc/statewave-examples/tree/main/eval-support-agent), which runs 7 tests with 14 binary assertions against a live Statewave instance:
+These claims are backed by the [support-agent context quality eval](https://github.com/smaramwbc/statewave-examples/tree/main/eval-support-agent), which runs 7 tests with 14 binary assertions against a live Statewave instance, and the [support-agent benchmark](https://github.com/smaramwbc/statewave-examples/tree/main/benchmark-support-agent), which compares Statewave against history stuffing and simple RAG on recall, token usage, and provenance:
 
 | Claim | Evidence |
 |-------|----------|
@@ -132,11 +132,11 @@ bundle = client.get_context("customer-123", "Help with billing question")
 | Production scale (>10k subjects, high throughput) | Not load-tested. Single-node only. |
 | Multi-tenant isolation | Experimental — header-based extraction, not battle-tested. |
 | LLM compiler vs heuristic compiler quality | LLM compiler exists but no comparative eval published. |
-| Comparison against Mem0 or similar products | No head-to-head benchmark exists. |
+| Comparison against Mem0 or similar products | No head-to-head benchmark against external products. Internal [benchmark](https://github.com/smaramwbc/statewave-examples/tree/main/benchmark-support-agent) compares Statewave vs history stuffing vs naive RAG. |
 | Dashboard / UI for operators | API-only today. |
-| Reliable webhook delivery | Fire-and-forget, no retries. |
+| Reliable webhook delivery | ✅ Persistent queue with retries and dead-letter (v0.5). |
 | Memory TTL / expiry policies | Not implemented. |
-| SDK retry/backoff | Not implemented. |
+| SDK retry/backoff | ✅ Implemented — exponential backoff with jitter on 429/5xx (v0.5). |
 
 We are honest about these gaps. If any of these are blockers for your use case, Statewave may not be ready for you yet.
 

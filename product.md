@@ -33,20 +33,19 @@ Everything is organised around **subjects** — a user, account, workspace, repo
 
 ## Best current use cases
 
-- **Support agents** that remember customer history across sessions
+- **Support agents** that remember customer history across sessions ← primary focus
 - **Coding agents** that accumulate project knowledge over time
 - **Workflow automation** that needs to recall decisions and outcomes
 - **Any AI application** where "what happened before" matters for "what to do next"
 
+> **Current focus:** Statewave is purpose-built for support-agent workflows first. The [eval](https://github.com/smaramwbc/statewave-examples/tree/main/eval-support-agent) and [benchmark](https://github.com/smaramwbc/statewave-examples/tree/main/benchmark-support-agent) prove context quality for this use case.
+
 ## Current limitations
 
-Statewave is in active early development (v0.4.x). We document these honestly:
+Statewave is in active early development (v0.5.x). We document these honestly:
 
 | Limitation | Impact | Fix planned |
 |-----------|--------|-------------|
-| Webhooks are fire-and-forget | Events can be silently lost | v0.5 — persistent queue + retries |
-| SDKs have no retry logic | Transient failures crash callers | v0.5 — exponential backoff |
-| Compilation is synchronous | Large subjects may timeout | v0.5 — async job queue |
 | Multi-tenant is experimental | Header trust only, no RLS | v0.5 — row-level security |
 | Rate limiting is in-memory | Resets on restart | v0.5 — Postgres-backed |
 | Single-node only | No horizontal scaling | v0.7 |
