@@ -40,4 +40,4 @@ Architecture docs, product specs, API contracts, and development coordination fo
 
 ## Current status
 
-**v0.4.x** — Batch episode ingestion, OpenTelemetry tracing, subject listing, deployment guides, SDK publish readiness. See [roadmap](roadmap.md) and [CHANGELOG](CHANGELOG.md) for details.
+**v0.5.x** — Reliable webhooks, SDK retry, durable async compilation, admin introspection, subject snapshots. See [roadmap](roadmap.md) and [CHANGELOG](CHANGELOG.md) for details.

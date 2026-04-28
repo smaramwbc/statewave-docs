@@ -74,7 +74,7 @@ Standard error codes: `validation_error`, `not_found`, `conflict`, `internal_err
 
 ## Webhooks
 
-When `STATEWAVE_WEBHOOK_URL` is configured, the server fires async HTTP POST callbacks on key events. Delivery is fire-and-forget with configurable timeout.
+When `STATEWAVE_WEBHOOK_URL` is configured, the server fires async HTTP POST callbacks on key events. Delivery is persistent with exponential backoff, dead-letter queue, and configurable timeout.
 
 | Event | Trigger | Payload |
 |-------|---------|---------|
@@ -165,6 +165,8 @@ Pipeline:
 4. Auto-resolve memory conflicts (supersede older overlapping memories)
 5. Mark episodes compiled — all in a single transaction
 
+#### Synchronous mode (default)
+
 **Request:**
 
 ```json
@@ -177,28 +179,54 @@ Pipeline:
 {
   "subject_id": "user-42",
   "memories_created": 3,
-  "memories": [
-    {
-      "id": "...",
-      "subject_id": "user-42",
-      "kind": "profile_fact",
-      "content": "Name is Alice",
-      "summary": "Name is Alice",
-      "confidence": 0.8,
-      "valid_from": "2026-04-24T12:00:00Z",
-      "valid_to": null,
-      "source_episode_ids": ["..."],
-      "metadata": {},
-      "status": "active",
-      "created_at": "...",
-      "updated_at": "..."
-    }
-  ]
+  "memories": [ ...MemoryResponse ]
 }
 ```
 
-Memory kinds: `profile_fact`, `episode_summary`, `procedure`.
-Memory statuses: `active`, `superseded`, `deleted`.
+#### Async mode (recommended for large subjects)
+
+Pass `"async": true` to return immediately with a job ID. The compilation runs in the background and job state is persisted to Postgres (survives restarts).
+
+**Request:**
+
+```json
+{ "subject_id": "user-42", "async": true }
+```
+
+**Response:** `202`
+
+```json
+{
+  "job_id": "a1b2c3d4",
+  "status": "pending",
+  "subject_id": "user-42"
+}
+```
+
+Poll `GET /v1/memories/compile/{job_id}` for status.
+
+---
+
+### GET /v1/memories/compile/{job_id}
+
+Poll the status of an async compile job.
+
+**Response:** `200`
+
+```json
+{
+  "job_id": "a1b2c3d4",
+  "status": "completed",
+  "subject_id": "user-42",
+  "memories_created": 5
+}
+```
+
+Possible statuses: `pending`, `running`, `completed`, `failed`.
+
+On failure, includes `"error": "..."`.
+
+Job state is durable (Postgres-backed). Jobs are retained for 7 days by default (`STATEWAVE_COMPILE_JOB_RETENTION_HOURS`).
 
 **Webhook:** `memories.compiled`
 
@@ -314,6 +342,7 @@ All settings use the `STATEWAVE_` env prefix. A `.env` file is supported.
 | `RATE_LIMIT_RPM` | `0` | Requests/min/IP (0 = disabled) |
 | `WEBHOOK_URL` | — | Webhook callback URL (empty = disabled) |
 | `WEBHOOK_TIMEOUT` | `5.0` | Webhook timeout (seconds) |
+| `COMPILE_JOB_RETENTION_HOURS` | `168` | Hours to retain completed/failed compile jobs (0 = no cleanup) |
 | `CORS_ORIGINS` | `["*"]` | CORS allowed origins |
 | `REQUIRE_TENANT` | `false` | Require `X-Tenant-ID` (experimental) |
 | `TENANT_HEADER` | `X-Tenant-ID` | Tenant header name |
