@@ -44,35 +44,31 @@ Statewave is purpose-built for **support-agent workflows** — the first use cas
 
 **Goal:** Make Statewave trustworthy enough that an operator can run it for real support workloads without worrying about lost events, silent failures, or mystery state.
 
-| # | Feature | Status |
-|---|---------|--------|
-| 1 | Reliable webhook delivery — persistent queue, exponential backoff, dead-letter | ✅ Done |
-| 2 | SDK retry with backoff — automatic retry on 429/5xx with jitter | ✅ Done |
-| 3 | Durable async compilation — Postgres-backed job queue | ✅ Done |
-| 4 | True multi-tenant isolation — app-layer query scoping | ✅ Done |
-| 5 | Distributed rate limiting — Postgres-backed | ✅ Done |
-| 6 | Backup/restore tooling — subject-level export/import | ✅ Done |
-| 7 | Admin introspection — jobs + webhooks | ✅ Done |
-| 8 | Compilation status API | ✅ Done |
-| 9 | Deep health checks | Deferred to v0.7 |
-| 10 | Migration safety docs | Deferred to v0.7 |
+- [x] Reliable webhook delivery — persistent queue, exponential backoff, dead-letter
+- [x] SDK retry with backoff — automatic retry on 429/5xx with jitter
+- [x] Durable async compilation — Postgres-backed job queue
+- [x] True multi-tenant isolation — app-layer query scoping
+- [x] Distributed rate limiting — Postgres-backed
+- [x] Backup/restore tooling — subject-level export/import
+- [x] Admin introspection — jobs + webhooks
+- [x] Compilation status API
+- [ ] Deep health checks (deferred to v0.7)
+- [ ] Migration safety docs (deferred to v0.7)
 
 ## v0.6 — Support-Agent Superiority ✅ ← CURRENT (v0.6.1)
 
 **Goal:** Make Statewave the obvious best choice for teams building support agents.
 
-| # | Feature | Status |
-|---|---------|--------|
-| 1 | Session-aware context assembly | ✅ Done |
-| 2 | Resolution tracking (open/resolved/unresolved) | ✅ Done |
-| 3 | Handoff context packs (structured escalation briefs) | ✅ Done |
-| 4 | Repeat-issue detection (prior resolution surfacing) | ✅ Done |
-| 5 | Support-specific ranked retrieval | ✅ Done |
-| 6 | Customer health scoring (0–100, explainable factors) | ✅ Done |
-| 7 | Health-aware handoff (risk level + factors in briefs) | ✅ Done |
-| 8 | Proactive health alerts (webhooks on state transitions) | ✅ Done |
-| 9 | SLA tracking (response time, resolution time, breach flags) | ✅ Done |
-| 10 | SLA integration into health + handoff | ✅ Done |
+- [x] Session-aware context assembly
+- [x] Resolution tracking (open/resolved/unresolved)
+- [x] Handoff context packs (structured escalation briefs)
+- [x] Repeat-issue detection (prior resolution surfacing)
+- [x] Support-specific ranked retrieval
+- [x] Customer health scoring (0–100, explainable factors)
+- [x] Health-aware handoff (risk level + factors in briefs)
+- [x] Proactive health alerts (webhooks on state transitions)
+- [x] SLA tracking (response time, resolution time, breach flags)
+- [x] SLA integration into health + handoff
 
 Proven by: 232 unit tests, 3 eval suites (54 assertions), 2 benchmarks (Statewave 9/9 vs Naive 2/9).
 
