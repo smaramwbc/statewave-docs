@@ -75,7 +75,7 @@ Episodes (raw events) → Compilation → Memories (typed, scored) → Context a
 
 ## Provable today
 
-These claims are backed by the [support-agent context quality eval](https://github.com/smaramwbc/statewave-examples/tree/main/eval-support-agent), which runs 7 tests with 14 binary assertions against a live Statewave instance, and the [support-agent benchmark](https://github.com/smaramwbc/statewave-examples/tree/main/benchmark-support-agent), which compares Statewave against history stuffing and simple RAG on recall, token usage, and provenance:
+These claims are backed by the [support-agent context quality eval](https://github.com/smaramwbc/statewave-examples/tree/main/eval-support-agent), which runs 7 tests with 14 binary assertions against a live Statewave instance, the [handoff eval](https://github.com/smaramwbc/statewave-examples/blob/main/eval-support-agent/eval_handoff.py) (7 tests, 16 assertions), the [advanced eval](https://github.com/smaramwbc/statewave-examples/blob/main/eval-support-agent/eval_support_advanced.py) (7 tests, 24 assertions), and the [support-agent benchmark](https://github.com/smaramwbc/statewave-examples/tree/main/benchmark-support-agent):
 
 | Claim | Evidence |
 |-------|----------|
@@ -87,6 +87,18 @@ These claims are backed by the [support-agent context quality eval](https://gith
 | Provenance traces facts to source episodes | Eval test 5: bundle contains fact_ids, each fact has source_episode_ids |
 | Compilation is idempotent | Eval test 6: recompile produces 0 new memories |
 | Memory extraction is reasonable | Eval test 7: 8–30 memories from 8 episodes, ≥3 profile facts |
+| Session-aware ranking boosts active session | Advanced eval test 1: active session content outranks unrelated resolved sessions |
+| Repeat-issue detection surfaces prior resolutions | Advanced eval test 2: recurring problem triggers prior fix visibility |
+| Customer health scoring is explainable | Advanced eval test 3: at-risk state with named factors for open + recurring issues |
+| Health-aware handoff shows risk level | Advanced eval test 4: health state, score, and factors appear in handoff pack |
+| Resolution-aware ranking works | Advanced eval test 5: open issues prioritized, resolved deprioritized |
+| Handoff is compact and deterministic | Advanced eval test 6: token budget respected, identical requests produce identical output |
+| Proactive health alerts on degradation | Unit tests: webhook fired on healthy→watch, watch→at_risk, healthy→at_risk; no spam on unchanged |
+| Health recovery confirmation | Unit tests: `subject.health_improved` fired on at_risk→watch, watch→healthy, at_risk→healthy |
+| Support workflow superiority vs naive | Workflow benchmark: Statewave 9/9 vs Naive 2/9 on active-issue, repeat-detection, health, provenance, resolution-ranking |
+| SLA tracking with breach detection | Unit tests: first-response time, resolution time, breach flags, custom thresholds; integrated into health scoring and handoff |
+| SLA breaches degrade health score | Unit tests: sla_resolution_breaches and slow_first_response signals penalize health deterministically |
+| SLA context in handoff packs | Unit tests: breach flags and open-issue age appear in handoff when relevant, absent when clean |
 
 The eval exits non-zero on failure and is CI-friendly.
 
@@ -119,6 +131,7 @@ bundle = client.get_context("customer-123", "Help with billing question")
 - **Self-hosted** — Postgres-only, no external services required. Customer data never leaves your infrastructure.
 - **No vendor lock-in** — heuristic compiler works without any LLM API key. Embeddings and LLM compilation are optional enhancements.
 - **Operator-friendly** — Docker Compose, health endpoints, structured logging, OpenTelemetry tracing, configurable via environment variables.
+- **Reliable webhook delivery** — persistent queue with retries and dead-letter (v0.5). Proactive health alerts emit `subject.health_degraded` on state transitions.
 - **Clean API** — 8 endpoints, REST, OpenAPI docs, structured error responses with request-ID correlation.
 - **Typed SDKs** — Python (sync + async, Pydantic models) and TypeScript (full type definitions), both with proper error handling.
 - **Transparent scoring** — the ranking formula is documented, deterministic, and inspectable. No black-box relevance.
@@ -130,13 +143,13 @@ bundle = client.get_context("customer-123", "Help with billing question")
 | Area | Status |
 |------|--------|
 | Production scale (>10k subjects, high throughput) | Not load-tested. Single-node only. |
-| Multi-tenant isolation | Experimental — header-based extraction, not battle-tested. |
+| Multi-tenant isolation | App-layer query scoping (v0.5). Not battle-tested at scale. |
 | LLM compiler vs heuristic compiler quality | LLM compiler exists but no comparative eval published. |
 | Comparison against Mem0 or similar products | No head-to-head benchmark against external products. Internal [benchmark](https://github.com/smaramwbc/statewave-examples/tree/main/benchmark-support-agent) compares Statewave vs history stuffing vs naive RAG. |
 | Dashboard / UI for operators | API-only today. |
-| Reliable webhook delivery | ✅ Persistent queue with retries and dead-letter (v0.5). |
 | Memory TTL / expiry policies | Not implemented. |
-| SDK retry/backoff | ✅ Implemented — exponential backoff with jitter on 429/5xx (v0.5). |
+| Webhook filters (subscribe to specific event types) | Not yet — all events fire to one URL. |
+| 50-session production-scale benchmark | Not yet run. |
 
 We are honest about these gaps. If any of these are blockers for your use case, Statewave may not be ready for you yet.
 
@@ -149,7 +162,7 @@ We are honest about these gaps. If any of these are blockers for your use case, 
 - No built-in auth provider (validates keys you configure, doesn't issue them)
 - No streaming (context returned as complete JSON)
 - No UI (API-only)
-- Rate limiting is in-memory (single-worker, resets on restart)
+- Rate limiting is per-IP (distributed/Postgres-backed, but not per-tenant or per-API-key)
 
 ---
 

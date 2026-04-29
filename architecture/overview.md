@@ -71,7 +71,7 @@ Execution order (outermost to innermost):
 2. **RequestID** — generate/propagate `X-Request-ID`, bind to structlog
 3. **Auth** — validate `X-API-Key` (skipped when no key configured)
 4. **RateLimit** — per-IP sliding window (skipped when RPM = 0)
-5. **Tenant** — extract `X-Tenant-ID` (experimental — header only)
+5. **Tenant** — extract `X-Tenant-ID`, scope all queries to tenant (app-layer isolation)
 
 ## Compilation pipeline
 

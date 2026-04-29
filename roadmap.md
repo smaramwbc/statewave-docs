@@ -40,35 +40,41 @@ Statewave is purpose-built for **support-agent workflows** — the first use cas
 
 ---
 
-## v0.5 — Reliability & Trust ← CURRENT
+## v0.5 — Reliability & Trust ✅
 
 **Goal:** Make Statewave trustworthy enough that an operator can run it for real support workloads without worrying about lost events, silent failures, or mystery state.
 
-| # | Feature | Why | Status |
-|---|---------|-----|--------|
-| 1 | **Reliable webhook delivery** — persistent queue, exponential backoff, dead-letter, delivery status | Current fire-and-forget drops events silently | ✅ Done |
-| 2 | **SDK retry with backoff** — automatic retry on 429/5xx with jitter in both SDKs | Clients shouldn't crash on transient failures | ✅ Done |
-| 3 | **Durable async compilation** — Postgres-backed job queue with status polling | Large compiles can timeout or get lost | ✅ Done |
-| 4 | **True multi-tenant isolation** — row-level security, not just header trust | Current tenant support is cosmetic | Planned |
-| 5 | **Distributed rate limiting** — Postgres-backed, survives restarts | In-memory limiter resets on deploy | Planned |
-| 6 | **Backup/restore tooling** — `statewave export` / `statewave import` for subject data | Operators need confidence before upgrades | Planned |
-| 7 | **Admin introspection** — `/admin/subjects`, `/admin/jobs`, `/admin/webhooks` with stats | Operators can't see what's happening | ✅ Done (jobs + webhooks) |
-| 8 | **Compilation status API** — `GET /v1/memories/compile/{job_id}` | Callers need to know when compilation finishes | ✅ Done |
-| 9 | **Deep health checks** — `/readyz` checks DB, queue, LLM reachability | Current readyz only checks process is up | Planned |
-| 10 | **Migration safety** — pre/post checks, rollback docs | Operators fear schema migrations | Planned |
+| # | Feature | Status |
+|---|---------|--------|
+| 1 | Reliable webhook delivery — persistent queue, exponential backoff, dead-letter | ✅ Done |
+| 2 | SDK retry with backoff — automatic retry on 429/5xx with jitter | ✅ Done |
+| 3 | Durable async compilation — Postgres-backed job queue | ✅ Done |
+| 4 | True multi-tenant isolation — app-layer query scoping | ✅ Done |
+| 5 | Distributed rate limiting — Postgres-backed | ✅ Done |
+| 6 | Backup/restore tooling — subject-level export/import | ✅ Done |
+| 7 | Admin introspection — jobs + webhooks | ✅ Done |
+| 8 | Compilation status API | ✅ Done |
+| 9 | Deep health checks | Deferred to v0.7 |
+| 10 | Migration safety docs | Deferred to v0.7 |
 
-## v0.6 — Support-Agent Superiority
+## v0.6 — Support-Agent Superiority ✅ ← CURRENT (v0.6.1)
 
 **Goal:** Make Statewave the obvious best choice for teams building support agents.
 
-- [ ] Session-aware context assembly (group by session, surface arcs)
-- [ ] Resolution tracking (mark issues resolved, surface only open by default)
-- [ ] Customer health scoring (derive satisfaction signals)
-- [ ] Handoff context packs (structured bundle for agent-to-agent/human)
-- [ ] Memory templates for support patterns (identity, preferences, issues, resolutions)
-- [ ] Webhook filters (subscribe to specific event types)
-- [ ] SDK convenience: `sw.support_context(subject, task)` with opinionated defaults
-- [ ] Benchmark: 50-session customer at production scale
+| # | Feature | Status |
+|---|---------|--------|
+| 1 | Session-aware context assembly | ✅ Done |
+| 2 | Resolution tracking (open/resolved/unresolved) | ✅ Done |
+| 3 | Handoff context packs (structured escalation briefs) | ✅ Done |
+| 4 | Repeat-issue detection (prior resolution surfacing) | ✅ Done |
+| 5 | Support-specific ranked retrieval | ✅ Done |
+| 6 | Customer health scoring (0–100, explainable factors) | ✅ Done |
+| 7 | Health-aware handoff (risk level + factors in briefs) | ✅ Done |
+| 8 | Proactive health alerts (webhooks on state transitions) | ✅ Done |
+| 9 | SLA tracking (response time, resolution time, breach flags) | ✅ Done |
+| 10 | SLA integration into health + handoff | ✅ Done |
+
+Proven by: 232 unit tests, 3 eval suites (54 assertions), 2 benchmarks (Statewave 9/9 vs Naive 2/9).
 
 ## v0.7 — Operator & Cloud Experience
 

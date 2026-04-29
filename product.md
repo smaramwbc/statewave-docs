@@ -46,8 +46,8 @@ Statewave is in active early development (v0.5.x). We document these honestly:
 
 | Limitation | Impact | Fix planned |
 |-----------|--------|-------------|
-| Multi-tenant is experimental | Header trust only, no RLS | v0.5 — row-level security |
-| Rate limiting is in-memory | Resets on restart | v0.5 — Postgres-backed |
+| Multi-tenant is app-layer only | Real query-level isolation, no Postgres RLS yet | v0.6 — row-level security |
+| Rate limiting is per-IP only | No per-tenant or per-API-key limits | v0.6 — per-tenant limits |
 | Single-node only | No horizontal scaling | v0.7 |
 | PostgreSQL required | No alternative backends | No change planned |
 | No admin UI | API-only inspection | v0.7 |
@@ -68,6 +68,11 @@ Statewave is in active early development (v0.5.x). We document these honestly:
 | `POST /v1/memories/compile` | Compile memories from episodes |
 | `GET /v1/memories/search` | Search memories by query |
 | `POST /v1/context` | Assemble a context bundle |
+| `POST /v1/handoff` | Generate a handoff context pack (health-aware) |
+| `GET /v1/subjects/{id}/health` | Customer health score + explainable factors |
+| `GET /v1/subjects/{id}/sla` | SLA metrics — response time, resolution time, breach flags |
+| `webhook: subject.health_degraded` | Fires when health state worsens (healthy→watch, watch→at_risk) |
+| `webhook: subject.health_improved` | Fires when health state recovers (at_risk→watch, watch→healthy) |
 | `GET /v1/timeline` | View subject timeline |
 | `GET /v1/subjects` | List subjects with counts |
 | `DELETE /v1/subjects/{id}` | Delete all data for a subject |

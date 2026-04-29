@@ -40,4 +40,4 @@ Architecture docs, product specs, API contracts, and development coordination fo
 
 ## Current status
 
-**v0.5.x** — Reliable webhooks, SDK retry, durable async compilation, admin introspection, subject snapshots. See [roadmap](roadmap.md) and [CHANGELOG](CHANGELOG.md) for details.
+**v0.6.1** — Full support-agent intelligence stack: session-aware context, resolution tracking, handoff packs, health scoring, SLA tracking, proactive alerts. Proven by 232 unit tests, 3 eval suites, 2 benchmarks. See [roadmap](roadmap.md) and [CHANGELOG](CHANGELOG.md).

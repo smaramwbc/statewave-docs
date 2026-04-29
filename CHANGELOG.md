@@ -2,6 +2,49 @@
 
 All notable changes to the Statewave workspace.
 
+## v0.6.1 — Support-Agent Superiority (2026-04-29)
+
+### Added
+- **Session-aware context assembly** — active session boosted, resolved sessions deprioritized
+- **Resolution tracking** — `POST /v1/resolutions`, `GET /v1/resolutions` for open/resolved/unresolved state per session
+- **Handoff context packs** — `POST /v1/handoff` generates compact escalation briefs with customer summary, active issue, attempted steps, resolution history, health, and SLA context
+- **Customer health scoring** — `GET /v1/subjects/{id}/health` returns deterministic 0–100 score with explainable factors (unresolved issues, repeats, escalations, idle open issues, SLA breaches, slow response)
+- **Repeat-issue detection** — surfaces prior resolutions when episode patterns recur
+- **Support-specific ranked retrieval** — session awareness, resolution status, and health signals feed into context ranking
+- **Health-aware handoff** — risk level, score, and top factors appear in handoff briefs
+- **Proactive health alerts** — `subject.health_degraded` and `subject.health_improved` webhooks on state transitions
+- **SLA tracking** — `GET /v1/subjects/{id}/sla` computes first-response time, resolution time, and breach flags per session with configurable thresholds
+- **SLA integration** — breach signals feed into health scoring; SLA summary appears in handoff packs when relevant
+
+### Proof layer
+- 3 eval suites: context quality (7 tests, 14 assertions), handoff (7 tests, 16 assertions), advanced (7 tests, 24 assertions)
+- 2 benchmarks: context recall + workflow comparison (Statewave 9/9 vs Naive 2/9)
+- 232 unit tests passing
+
+### Changed
+- Health scoring now includes SLA breach penalty and slow first-response penalty
+- Handoff packs now include conditional SLA section (absent when clean)
+- Context ranking formula updated with session and resolution awareness
+
+## v0.5.0 — Reliability & Trust (2026-04-29)
+
+### Added
+- **True multi-tenant isolation** — tenant_id persisted on all tables, all queries scoped by tenant
+- **Distributed rate limiting** — Postgres-backed fixed-window, survives restarts, multi-worker
+- **Backup/restore tooling** — subject-level export/import via admin API with SHA-256 checksum
+- **Tenant audit endpoint** — `GET /admin/tenant-audit` for NULL-tenant row discovery
+- **Admin export/import** — `GET /admin/export/{subject_id}`, `POST /admin/import`
+- Operator upgrade guidance for pre-tenant data backfill
+
+### Changed
+- Rate limiting now defaults to `distributed` strategy (Postgres-backed)
+- Tenant middleware no longer experimental — real data isolation enforced
+- Background cleanup loop now also handles rate limit window pruning
+
+### Migrations
+- `0008_add_tenant_id_columns` — tenant_id + indexes on episodes, memories, webhook_events, subject_snapshots
+- `0009_add_rate_limit_table` — rate_limit_hits table for distributed rate limiting
+
 ## v0.4.3 — Public Release Polish (2026-04-25)
 
 ### Improved
