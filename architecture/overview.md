@@ -1,6 +1,6 @@
 # Architecture Overview
 
-Version: **0.4.x**
+Version: **0.6.x**
 
 Statewave is a **Memory OS** — a trusted context runtime for AI agents and applications.
 
@@ -101,30 +101,43 @@ Uncompiled Episodes → Compiler → Raw Memories → Embedding → Conflict Res
 | **Memory** | Derived typed memory | id, subject_id, kind, content, summary, confidence, valid_from, valid_to, source_episode_ids, status, embedding |
 | **ContextBundle** | Runtime output | subject_id, task, facts, episodes, procedures, provenance, assembled_context, token_estimate |
 
-## v0.2 additions
+## Version history
 
-- Pluggable `BaseCompiler` protocol
-- Ranked retrieval with composite scoring
-- Request ID middleware, structured errors, health endpoints
-- SDKs with typed exceptions (Python + TypeScript)
+### v0.5 — Reliability & Trust
+- True multi-tenant isolation (tenant_id on all tables, query-scoped)
+- Distributed rate limiting (Postgres-backed)
+- Backup/restore tooling (subject-level export/import)
+- Durable async compilation (Postgres-backed job queue)
+- Admin introspection endpoints (jobs, webhooks, tenant audit)
 
-## v0.3 additions
+### v0.6 — Support-Agent Superiority
+- Session-aware context assembly (active session boosted, resolved deprioritized)
+- Resolution tracking (open/resolved/unresolved per session)
+- Handoff context packs (structured escalation briefs with health + SLA)
+- Customer health scoring (0–100, explainable factors)
+- Repeat-issue detection (prior resolution surfacing)
+- Proactive health alerts (webhooks on state transitions)
+- SLA tracking (response time, resolution time, breach flags)
 
-- LLM-backed memory compiler (any provider via LiteLLM, thread-pooled)
-- Embedding generation (LiteLLM + stub providers)
-- Semantic search via pgvector cosine similarity with fallback
-- Temporal reasoning in context assembly (valid_from/valid_to scoring)
-- Memory conflict resolution (Jaccard similarity, auto-supersede)
-- Webhook event hooks (episode.created, memories.compiled, subject.deleted)
-- API key authentication middleware
-- Rate limiting middleware (per-IP sliding window)
-- Multi-tenant header extraction (experimental — not data-isolated)
-
-## v0.3.5 stabilization
-
+### v0.3.5 stabilization
 - Fixed middleware execution order (auth before rate limit)
 - Compile + conflict resolution in single transaction
 - Request validation (string lengths, bounded limits)
 - LLM compiler runs in ThreadPoolExecutor (non-blocking)
 - SDKs support auth, tenant headers, and semantic search
-- All examples support auth via environment variables
+
+### v0.3 additions
+- LLM-backed memory compiler (any provider via LiteLLM, thread-pooled)
+- Embedding generation (LiteLLM + stub providers)
+- Semantic search via pgvector cosine similarity with fallback
+- Temporal reasoning in context assembly
+- Memory conflict resolution (Jaccard similarity, auto-supersede)
+- Webhooks (episode.created, memories.compiled, subject.deleted)
+- API key authentication, rate limiting (per-IP)
+- Multi-tenant header extraction
+
+### v0.2 additions
+- Pluggable `BaseCompiler` protocol
+- Ranked retrieval with composite scoring
+- Request ID middleware, structured errors, health endpoints
+- SDKs with typed exceptions (Python + TypeScript)

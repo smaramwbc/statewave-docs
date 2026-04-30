@@ -38,11 +38,7 @@ Statewave is purpose-built for **support-agent workflows** — the first use cas
 - [x] SDK publish readiness, getting started guide
 - [x] Support-agent benchmark & "Why Statewave" comparison doc
 
----
-
 ## v0.5 — Reliability & Trust ✅
-
-**Goal:** Make Statewave trustworthy enough that an operator can run it for real support workloads without worrying about lost events, silent failures, or mystery state.
 
 - [x] Reliable webhook delivery — persistent queue, exponential backoff, dead-letter
 - [x] SDK retry with backoff — automatic retry on 429/5xx with jitter
@@ -52,12 +48,8 @@ Statewave is purpose-built for **support-agent workflows** — the first use cas
 - [x] Backup/restore tooling — subject-level export/import
 - [x] Admin introspection — jobs + webhooks
 - [x] Compilation status API
-- [ ] Deep health checks (deferred to v0.7)
-- [ ] Migration safety docs (deferred to v0.7)
 
-## v0.6 — Support-Agent Superiority ✅ ← CURRENT (v0.6.1)
-
-**Goal:** Make Statewave the obvious best choice for teams building support agents.
+## v0.6 — Support-Agent Superiority ✅
 
 - [x] Session-aware context assembly
 - [x] Resolution tracking (open/resolved/unresolved)
@@ -69,19 +61,35 @@ Statewave is purpose-built for **support-agent workflows** — the first use cas
 - [x] Proactive health alerts (webhooks on state transitions)
 - [x] SLA tracking (response time, resolution time, breach flags)
 - [x] SLA integration into health + handoff
+- [x] Product website (statewave.dev)
+- [x] Proof layer: 3 eval suites (54 assertions), 2 benchmarks (9/9 vs 2/9)
 
-Proven by: 232 unit tests, 3 eval suites (54 assertions), 2 benchmarks (Statewave 9/9 vs Naive 2/9).
+---
 
-## v0.7 — Operator & Cloud Experience
+## v0.7 — Operator & Cloud Experience ← CURRENT
 
-**Goal:** Make Statewave easy to operate at scale for teams shipping support products.
+**Goal:** Make Statewave trustworthy to operate at scale. An operator should be able to deploy, monitor, upgrade, and scale Statewave without surprises.
 
-- [ ] Admin dashboard (read-only: subjects, jobs, webhooks, health)
-- [ ] Horizontal scaling (read replicas, connection pooling, tested patterns)
-- [ ] Memory TTL / expiry policies
-- [ ] Usage metering (episodes/month, compiles/month per tenant)
-- [ ] Helm chart + Kubernetes guide
-- [ ] Compliance readiness documentation
+- [ ] Deep health checks — `/readyz` verifies DB connectivity, queue health, LLM reachability
+- [x] Migration safety — preflight script, startup schema guard, `/ops/migrations` endpoint, runbook
+- [x] Admin dashboard (read-only) — system health, jobs, webhooks, counts, health distribution
+- [x] Usage metering — episodes/month, compiles/month, per-tenant usage
+- [ ] Memory TTL / expiry policies — automatic cleanup of stale memories
+- [ ] Horizontal scaling guide — read replicas, connection pooling, tested patterns
+- [ ] Helm chart + Kubernetes deployment guide
+
+---
+
+## v0.8 — Adoption & Ecosystem (planned)
+
+**Goal:** Make it trivial for teams to adopt Statewave and integrate it into existing stacks.
+
+- [ ] SDK convenience methods for support endpoints (health, SLA, handoff, resolutions)
+- [ ] Framework integrations (LangChain, CrewAI, AutoGen)
+- [ ] Webhook event filters (subscribe to specific event types)
+- [ ] Memory templates for common patterns
+- [ ] Design partner onboarding package
+- [ ] Head-to-head benchmark against Mem0 / Zep
 
 ---
 

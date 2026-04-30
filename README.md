@@ -18,6 +18,7 @@ Architecture docs, product specs, API contracts, and development coordination fo
 - [Architecture Overview](architecture/overview.md)
 - [Repo Map](architecture/repo-map.md)
 - [API v1 Contract](api/v1-contract.md)
+- [Deployment Guide](deployment/guide.md)
 - [Roadmap](roadmap.md)
 - [Development Conventions](dev/conventions.md)
 
@@ -28,15 +29,18 @@ Architecture docs, product specs, API contracts, and development coordination fo
 - [ADR-003: v0.2 production hardening decisions](adrs/003-v02-production-hardening.md)
 - [ADR-004: v0.3 advanced features decisions](adrs/004-v03-advanced-features.md)
 
-## Repositories
+## Ecosystem
 
 | Repo | Description |
 |------|-------------|
-| [statewave](https://github.com/smaramwbc/statewave) | Server — API, domain model, DB, compilation, search |
+| [statewave](https://github.com/smaramwbc/statewave) | Core server — API, domain model, DB, compilation, search |
 | [statewave-py](https://github.com/smaramwbc/statewave-py) | Python SDK (sync + async) |
 | [statewave-ts](https://github.com/smaramwbc/statewave-ts) | TypeScript SDK |
-| [statewave-demo](https://github.com/smaramwbc/statewave-demo) | **[Live interactive demo](https://statewave-demo.vercel.app)** |
-| [statewave-examples](https://github.com/smaramwbc/statewave-examples) | Runnable examples and quickstarts |
+| [statewave-docs](https://github.com/smaramwbc/statewave-docs) | This repo — architecture, specs, ADRs (no runtime code) |
+| [statewave-examples](https://github.com/smaramwbc/statewave-examples) | Runnable examples, evals, benchmarks |
+| [statewave-demo](https://github.com/smaramwbc/statewave-demo) | **[Live interactive demo](https://statewave-demo.vercel.app)** — side-by-side stateless vs memory comparison |
+| [statewave-web](https://github.com/smaramwbc/statewave-web) | Marketing website ([statewave.ai](https://statewave.ai)) |
+| [statewave-admin](https://github.com/smaramwbc/statewave-admin) | Operator console — system health, jobs, usage (early, read-only) |
 
 ## Current status
 

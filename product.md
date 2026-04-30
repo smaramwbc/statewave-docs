@@ -42,15 +42,15 @@ Everything is organised around **subjects** — a user, account, workspace, repo
 
 ## Current limitations
 
-Statewave is in active early development (v0.5.x). We document these honestly:
+Statewave is in active early development (v0.6.x). We document these honestly:
 
-| Limitation | Impact | Fix planned |
-|-----------|--------|-------------|
-| Multi-tenant is app-layer only | Real query-level isolation, no Postgres RLS yet | v0.6 — row-level security |
-| Rate limiting is per-IP only | No per-tenant or per-API-key limits | v0.6 — per-tenant limits |
-| Single-node only | No horizontal scaling | v0.7 |
+| Limitation | Impact | Status |
+|-----------|--------|--------|
+| Multi-tenant is app-layer only | Real query-level isolation, no Postgres RLS yet | Future: row-level security |
+| Rate limiting is per-IP only | No per-tenant or per-API-key limits yet | Future: per-tenant limits |
+| Single-node only | No horizontal scaling | Future: scaling guide |
 | PostgreSQL required | No alternative backends | No change planned |
-| No admin UI | API-only inspection | v0.7 |
+| Admin console is early | Read-only dashboard; no memory editing or advanced ops | Active development |
 
 **What works well today:**
 - Episode ingestion (single + batch, append-only, durable)

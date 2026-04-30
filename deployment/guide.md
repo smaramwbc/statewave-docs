@@ -176,3 +176,20 @@ See [`.env.example`](https://github.com/smaramwbc/statewave/blob/main/.env.examp
 - [ ] Database backups configured
 - [ ] Migrations run before first request
 - [ ] Health endpoint monitored (`GET /healthz`)
+
+---
+
+## Admin Console (optional)
+
+For operator visibility into your running Statewave instance, you can deploy the admin console.
+
+See [statewave-admin](https://github.com/smaramwbc/statewave-admin) for setup instructions.
+
+The admin console provides:
+- System readiness and database health status
+- Compile job monitoring
+- Webhook delivery status
+- Usage metering (episodes, memories, compiles)
+- Subject health distribution
+
+**Important:** The admin console is an internal tool. Deploy it behind an access gateway (Cloudflare Access, OAuth2 Proxy, etc.) — do not expose publicly.
