@@ -61,7 +61,7 @@ Statewave is purpose-built for **support-agent workflows** — the first use cas
 - [x] Proactive health alerts (webhooks on state transitions)
 - [x] SLA tracking (response time, resolution time, breach flags)
 - [x] SLA integration into health + handoff
-- [x] Product website (statewave.dev)
+- [x] Product website (statewave.ai)
 - [x] Proof layer: 3 eval suites (54 assertions), 2 benchmarks (9/9 vs 2/9)
 
 ---

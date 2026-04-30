@@ -193,6 +193,6 @@ We are honest about these gaps. If any of these are blockers for your use case, 
 | API contract | [api/v1-contract.md](api/v1-contract.md) |
 | Support agent example | [statewave-examples/support-agent-python](https://github.com/smaramwbc/statewave-examples/tree/main/support-agent-python) |
 | Context quality eval | [statewave-examples/eval-support-agent](https://github.com/smaramwbc/statewave-examples/tree/main/eval-support-agent) |
-| Live demo | [statewave-demo.vercel.app](https://statewave-demo.vercel.app) |
+| Live demo | [demo.statewave.ai](https://demo.statewave.ai) |
 | Python SDK | [statewave-py](https://github.com/smaramwbc/statewave-py) |
 | TypeScript SDK | [statewave-ts](https://github.com/smaramwbc/statewave-ts) |

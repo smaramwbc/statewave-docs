@@ -6,7 +6,7 @@ Architecture docs, product specs, API contracts, and development coordination fo
 
 ## 🎯 Live Demo
 
-> **[▶ Try the interactive demo →](https://statewave-demo.vercel.app)**
+> **[▶ Try the interactive demo →](https://demo.statewave.ai)**
 >
 > See two identical AI agents answer side by side — one stateless, one with full customer history powered by Statewave. No setup required.
 
@@ -38,7 +38,7 @@ Architecture docs, product specs, API contracts, and development coordination fo
 | [statewave-ts](https://github.com/smaramwbc/statewave-ts) | TypeScript SDK |
 | [statewave-docs](https://github.com/smaramwbc/statewave-docs) | This repo — architecture, specs, ADRs (no runtime code) |
 | [statewave-examples](https://github.com/smaramwbc/statewave-examples) | Runnable examples, evals, benchmarks |
-| [statewave-demo](https://github.com/smaramwbc/statewave-demo) | **[Live interactive demo](https://statewave-demo.vercel.app)** — side-by-side stateless vs memory comparison |
+| [statewave-demo](https://github.com/smaramwbc/statewave-demo) | **[Live interactive demo](https://demo.statewave.ai)** — side-by-side stateless vs memory comparison |
 | [statewave-web](https://github.com/smaramwbc/statewave-web) | Marketing website ([statewave.ai](https://statewave.ai)) |
 | [statewave-admin](https://github.com/smaramwbc/statewave-admin) | Operator console — system health, jobs, usage (early, read-only) |
 
