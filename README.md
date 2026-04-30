@@ -3,6 +3,8 @@
 Architecture docs, product specs, API contracts, and development coordination for the Statewave workspace.
 
 > This repo contains no production runtime code.
+>
+> 📋 **Issues & feature requests:** [statewave/issues](https://github.com/smaramwbc/statewave/issues) (centralized tracker)
 
 ## 🎯 Live Demo
 
