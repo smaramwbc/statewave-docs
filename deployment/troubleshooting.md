@@ -100,7 +100,7 @@ asyncio.run(main())
 
 - Browser console shows `Access to fetch blocked by CORS policy`
 - `access-control-allow-origin` header missing from responses
-- Admin/demo sites can't reach the API
+- Website or admin console can't reach the API
 
 **Root cause:**
 
@@ -111,7 +111,7 @@ asyncio.run(main())
 Update the origins list (JSON array):
 
 ```bash
-fly secrets set 'STATEWAVE_CORS_ORIGINS=["https://admin.statewave.ai","https://demo.statewave.ai","https://www.statewave.ai","http://localhost:5173"]'
+fly secrets set 'STATEWAVE_CORS_ORIGINS=["https://admin.statewave.ai","https://www.statewave.ai","https://statewave.ai","http://localhost:5173"]'
 ```
 
 **Verify:**

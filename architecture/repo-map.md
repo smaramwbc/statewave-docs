@@ -11,27 +11,24 @@ Version: **0.6.x**
 | `statewave-ts` | Official TypeScript SDK (typed errors, auth, batch, ESM) | 0.4.x | Apache-2.0 |
 | `statewave-examples` | Runnable demos, evals, benchmarks | — | Apache-2.0 |
 | `statewave-docs` | Architecture, specs, ADRs, coordination (no runtime code) | — | Apache-2.0 |
-| `statewave-demo` | Interactive public demo (side-by-side stateless vs memory) | — | Apache-2.0 |
-| `statewave-web` | Marketing website (statewave.ai) | — | Apache-2.0 |
-| `statewave-admin` | Operator console — system health, jobs, usage (early, read-only) | — | Apache-2.0 |
+| `statewave-web` | Marketing website + embedded comparison demo (statewave.ai) | — | Apache-2.0 |
+| `statewave-admin` | Operator console — system health, jobs, usage (read-only) | — | Apache-2.0 |
 
 ## Dependency direction
 
 ```
 statewave-examples → statewave-py / statewave-ts → statewave (API)
-statewave-demo → statewave-ts → statewave (API)
 statewave-admin → statewave (API)
-statewave-web (static, no server dependency)
+statewave-web → statewave (API, via /api proxy for the embedded demo)
 ```
 
-SDKs depend on the API contract. Examples and demo depend on SDKs. Admin calls the API directly. Docs depend on nothing. Web is a static marketing site.
+SDKs depend on the API contract. Examples depend on SDKs. Admin calls the API directly. Docs depend on nothing. Web is a static marketing site whose embedded chat-widget demo proxies to the live Statewave backend.
 
 ## Frontend repos explained
 
 | Repo | Purpose | Audience |
 |------|---------|----------|
-| `statewave-web` | Public marketing site — what is Statewave, why it matters, how to start | Everyone |
-| `statewave-demo` | Interactive demo — see AI with vs without memory, no setup required | Evaluators, developers |
+| `statewave-web` | Public marketing site + embedded chat-widget comparison demo | Everyone (visitors and evaluators) |
 | `statewave-admin` | Operator console — system health, job status, usage metering, internal | Operators running Statewave |
 
 ## Server structure
