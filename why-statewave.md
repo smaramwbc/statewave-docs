@@ -128,8 +128,8 @@ bundle = client.get_context("customer-123", "Help with billing question")
 
 ## Current strengths
 
-- **Self-hosted** — Postgres-only, no external services required. Customer data never leaves your infrastructure.
-- **No vendor lock-in** — heuristic compiler works without any LLM API key. Embeddings and LLM compilation are optional enhancements.
+- **Self-hosted storage** — Postgres-only, no external services required. Episodes and compiled memories stay in your infrastructure. Whether content leaves the network during compilation or embedding depends on the provider you configure — see [Privacy & Data Flow](architecture/privacy-and-data-flow.md).
+- **No vendor lock-in** — heuristic compiler works without any LLM API key (and is the default). Embeddings and LLM compilation are optional enhancements; the heuristic path runs fully local with zero data egress.
 - **Operator-friendly** — Docker Compose, health endpoints, structured logging, OpenTelemetry tracing, configurable via environment variables.
 - **Reliable webhook delivery** — persistent queue with retries and dead-letter (v0.5). Proactive health alerts emit `subject.health_degraded` on state transitions.
 - **Clean API** — 8 endpoints, REST, OpenAPI docs, structured error responses with request-ID correlation.
@@ -171,7 +171,7 @@ We are honest about these gaps. If any of these are blockers for your use case, 
 - **Teams building AI support agents** that interact with returning customers across sessions
 - **Engineering leads** who want structured, measurable context quality instead of "we hope RAG works"
 - **Teams that need provenance** — "why did the agent say X?" must be answerable
-- **Self-hosted requirements** — customer data cannot leave your infrastructure
+- **Self-hosted storage requirements** — episodes and memories must stay in your infrastructure (heuristic compiler keeps the entire pipeline local; LLM/embedding choices determine whether content leaves)
 - **Small, capable teams** using AI coding tools who want a focused product, not an enterprise platform
 
 ## Who this is NOT for

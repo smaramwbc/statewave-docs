@@ -2,6 +2,8 @@
 
 This guide covers running Statewave in different environments.
 
+> **Hardware:** Statewave's API process is CPU-only — no GPU is required, and none of the deployment recipes below assume one. GPUs only enter the picture if you choose to self-host an LLM compiler or embedding model. See [Hardware & Scaling](hardware-and-scaling.md).
+
 ---
 
 ## 1. Local Development (Docker Compose)
