@@ -93,6 +93,8 @@ Uncompiled Episodes → Compiler → Raw Memories → Embedding → Conflict Res
 | Task relevance | 0–5 (text) or 0–8 (semantic) | Word overlap or cosine similarity |
 | Temporal validity | -4 to +3 | Currently valid = +3, expired = -4 |
 
+In addition to the core signals above, support-agent workloads apply session, urgency, and repeat-issue adjustments. Scoring is deterministic and **not user-configurable today** — see [Ranking & Retrieval](ranking.md) for the full signal list and rationale.
+
 ## Data model
 
 | Entity | Description | Key fields |
