@@ -197,7 +197,7 @@ print(f"Deleted {result.episodes_deleted} episodes, {result.memories_deleted} me
 - **API reference:** Interactive docs at `http://localhost:8100/docs`
 - **Configuration:** See [.env.example](https://github.com/smaramwbc/statewave/blob/main/.env.example) for all options
 - **Architecture:** [Architecture Overview](architecture/overview.md) · [Compiler Modes](architecture/compiler-modes.md) · [Privacy & Data Flow](architecture/privacy-and-data-flow.md)
-- **Operators:** [Hardware & Scaling](deployment/hardware-and-scaling.md) — GPU is never required by Statewave itself
+- **Operators:** [Hardware & Scaling](deployment/hardware-and-scaling.md) — GPU is never required by Statewave itself · [Deployment Sizing Guide](deployment/sizing.md) — what size box to run from local to enterprise
 
 ---
 

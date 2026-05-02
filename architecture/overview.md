@@ -105,12 +105,17 @@ In addition to the core signals above, support-agent workloads apply session, ur
 
 ## Version history
 
-### v0.5 — Reliability & Trust
-- True multi-tenant isolation (tenant_id on all tables, query-scoped)
-- Distributed rate limiting (Postgres-backed)
-- Backup/restore tooling (subject-level export/import)
-- Durable async compilation (Postgres-backed job queue)
-- Admin introspection endpoints (jobs, webhooks, tenant audit)
+Ordered newest first. See [roadmap.md](../roadmap.md) for the canonical list of shipped items per release.
+
+### v0.7 — Operator & Cloud Experience
+- **Single LiteLLM adapter** — `server/services/llm.py` is the only module that imports LiteLLM; compilers, embeddings, and the readiness check route through it. Provider swaps are config-only via `STATEWAVE_LITELLM_*`. AST-based isolation test enforces the boundary.
+- **Native pgvector retrieval** — `memories.embedding` migrated to `vector(1536)` with an HNSW index; `search_memories_by_embedding` uses the `<=>` cosine-distance operator. Eliminates the in-Python cosine compute that floored `/v1/context` at ~1.5s.
+- **`/v1/context` candidate-pool union** — semantic-search rows enter the per-kind candidate pool alongside recency rows, so semantically-relevant memories outside the recency window can rank.
+- **Two-layer query embedding cache** — in-process LRU+TTL (L1) + Postgres-backed `query_embedding_cache` (L2), shared across all backend instances. Repeat queries hit sub-second regardless of which instance handles them.
+- **Deep readiness checks** — `/readyz` verifies DB, job queue, and LLM provider reachability with typed errors and per-check latency.
+- **Migration safety** — preflight script, startup schema guard, `/ops/migrations` endpoint, runbook.
+- **Admin dashboard (read-only)** — system health, jobs, webhooks, counts, health distribution.
+- **Usage metering** — episodes/month, compiles/month, per-tenant.
 
 ### v0.6 — Support-Agent Superiority
 - Session-aware context assembly (active session boosted, resolved deprioritized)
@@ -120,6 +125,24 @@ In addition to the core signals above, support-agent workloads apply session, ur
 - Repeat-issue detection (prior resolution surfacing)
 - Proactive health alerts (webhooks on state transitions)
 - SLA tracking (response time, resolution time, breach flags)
+- Proof layer: 3 eval suites (54 assertions), 2 benchmarks (9/9 vs 2/9 stateless)
+
+### v0.5 — Reliability & Trust
+- True multi-tenant isolation (tenant_id on all tables, query-scoped)
+- Distributed rate limiting (Postgres-backed)
+- Backup/restore tooling (subject-level export/import)
+- Durable async compilation (Postgres-backed job queue)
+- Reliable webhook delivery — persistent queue, exponential backoff, dead-letter
+- SDK retry with backoff — automatic 429/5xx retry with jitter
+- Admin introspection endpoints (jobs, webhooks, tenant audit)
+- Compilation status API
+
+### v0.4 — Adoption Readiness
+- Batch episode ingestion (up to 100 per request)
+- OpenTelemetry tracing (optional)
+- Deployment guide (Docker, Fly.io, Railway)
+- SDK publish readiness, getting-started guide
+- Support-agent benchmark and "Why Statewave" comparison doc
 
 ### v0.3.5 stabilization
 - Fixed middleware execution order (auth before rate limit)
