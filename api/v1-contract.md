@@ -492,6 +492,49 @@ The `handoff_notes` field is a pre-rendered markdown brief optimized for both hu
 
 ---
 
+### POST /v1/llm/complete
+
+Internal chat-completion pass-through used by Statewave's own demo / website flows. Accepts a list of chat messages and runs a single completion via the configured LiteLLM provider (`STATEWAVE_LITELLM_MODEL`, etc.).
+
+This endpoint is intentionally narrow:
+- The caller **cannot** specify a model — provider/model selection lives entirely in server config.
+- No streaming, no function-calling, no tool use, no usage/token metadata in the response.
+- Authentication uses the same `X-API-Key` as every other `/v1/*` endpoint.
+
+**Request:**
+
+```json
+{
+  "messages": [
+    { "role": "system", "content": "You are a helpful assistant." },
+    { "role": "user", "content": "Hello" }
+  ],
+  "max_tokens": 200,
+  "temperature": 0.7
+}
+```
+
+| Field | Required | Constraints |
+|-------|----------|-------------|
+| `messages` | yes | 1–50 entries, each `{role, content}`; role ∈ `{system, user, assistant, tool}`; content ≤ 16000 chars |
+| `max_tokens` | no | 1–4096 |
+| `temperature` | no | 0.0–2.0 |
+
+**Response:** `200`
+
+```json
+{ "reply": "Hi! How can I help?" }
+```
+
+**Errors:**
+- `503 llm_not_configured` — `STATEWAVE_LITELLM_MODEL` is unset.
+- `502 upstream_llm_error` — provider call failed (auth, rate limit, network, malformed response).
+- `504 upstream_llm_timeout` — provider call exceeded `STATEWAVE_LITELLM_TIMEOUT_SECONDS`.
+
+> **Why is this not a generic public LLM API?** Because that's a much bigger product surface — streaming, tool calls, structured output, prompt caching, model picking, abuse rate limits — and we don't want to commit to that contract today. If you find yourself reaching for this endpoint as a generic LLM proxy, run LiteLLM's own proxy server instead.
+
+---
+
 ## Admin endpoints (operator)
 
 | Method | Path | Description |
