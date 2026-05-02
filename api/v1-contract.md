@@ -278,11 +278,11 @@ Search memories for a subject.
 |-------|----------|---------|-------------|
 | `subject_id` | yes | — | Subject to search |
 | `kind` | no | — | Filter by memory kind |
-| `q` | no | — | Text search (ILIKE) or semantic query text |
-| `semantic` | no | `false` | `true` to use vector cosine similarity via pgvector |
+| `q` | no | — | Query text — semantic when `semantic=true`, exact-match text fallback otherwise |
+| `semantic` | no | `false` | `true` to use vector cosine similarity via pgvector (the primary retrieval path on `/v1/context`) |
 | `limit` | no | 20 | Max results (1–100) |
 
-When `semantic=true` and `q` is provided, the server generates a query embedding and searches by cosine distance. Falls back to text search on failure or when embeddings are unavailable.
+When `semantic=true` and `q` is provided, the server generates a query embedding and searches via the native pgvector `<=>` cosine-distance operator (HNSW-indexed; see roadmap v0.7). It falls back to a text-match scan only when embeddings are unavailable (e.g. stub provider, embedding generation failure). `/v1/context` always uses the semantic path with the candidate-pool union — see the v0.7 roadmap entries for details.
 
 **Response:** `200` — `{ "memories": [ ...MemoryResponse ] }`
 
@@ -518,11 +518,12 @@ All settings use the `STATEWAVE_` env prefix. A `.env` file is supported.
 | `PORT` | `8100` | Bind port |
 | `DEBUG` | `false` | Debug logging (console renderer) |
 | `COMPILER_TYPE` | `heuristic` | `heuristic` or `llm` |
-| `EMBEDDING_PROVIDER` | `stub` | `stub`, `openai`, or `none` |
+| `EMBEDDING_PROVIDER` | `stub` | `stub`, `litellm`, or `none` |
 | `EMBEDDING_DIMENSIONS` | `1536` | Vector dimensions |
-| `OPENAI_API_KEY` | — | API key (also reads provider-specific env vars via LiteLLM) |
-| `OPENAI_EMBEDDING_MODEL` | `text-embedding-3-small` | Embedding model (any LiteLLM-supported model) |
-| `LLM_COMPILER_MODEL` | `gpt-4o-mini` | Any [LiteLLM model string](https://docs.litellm.ai/docs/providers) |
+| `LITELLM_API_KEY` | — | Provider-neutral API key — passed through to whichever provider `LITELLM_MODEL` selects |
+| `LITELLM_MODEL` | `gpt-4o-mini` | Chat-completion model — any [LiteLLM identifier](https://docs.litellm.ai/docs/providers) |
+| `LITELLM_EMBEDDING_MODEL` | `text-embedding-3-small` | Embedding model — any LiteLLM-supported |
+| `LITELLM_API_BASE` | — | Custom base URL (Ollama, self-hosted gateway, …) |
 | `DEFAULT_MAX_CONTEXT_TOKENS` | `4000` | Default context budget |
 | `API_KEY` | — | Auth key (empty = open access) |
 | `RATE_LIMIT_RPM` | `0` | Requests/min/IP (0 = disabled) |

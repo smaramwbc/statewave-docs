@@ -12,7 +12,7 @@ Statewave is honest about what stays local and what leaves your network. Privacy
 | **Retrieval / ranking** | Your infrastructure (Statewave server) | Nothing. Ranking is local, deterministic, and inspectable. |
 | **Compilation — heuristic** | Your infrastructure | Nothing. Default mode. |
 | **Compilation — LLM** | Configured provider via LiteLLM | Episode batches (up to ~6000 chars) sent to the provider you choose. Self-hosted models (Ollama, vLLM, …) keep this local. |
-| **Embeddings** | Configured provider | Episode/memory text sent for vectorization. The default `OpenAIEmbeddingProvider` calls OpenAI; switch to a self-hosted embedding endpoint via LiteLLM, or disable embeddings to use text-only retrieval. |
+| **Embeddings** | Configured provider | Episode/memory text sent for vectorization. `LiteLLMEmbeddingProvider` dispatches to whichever provider you configure via `STATEWAVE_LITELLM_EMBEDDING_MODEL` (OpenAI, Cohere, Voyage, Bedrock, self-hosted via Ollama, …); or disable embeddings to use text-only retrieval. |
 | **Your agent's LLM** | Wherever you host it | Statewave returns the assembled context bundle to your agent. What your agent sends to its model is governed by your agent — not by Statewave. |
 
 ---
@@ -22,9 +22,9 @@ Statewave is honest about what stays local and what leaves your network. Privacy
 | Goal | Compiler | Embeddings | What leaves the network |
 |------|----------|------------|-------------------------|
 | **Fully local** | `heuristic` | self-hosted (Ollama/vLLM) or `stub` (text-only) | Nothing driven by Statewave |
-| **Local extraction, hosted vectors** | `heuristic` | OpenAI / Cohere / etc. | Episode/memory text → embedding provider |
+| **Local extraction, hosted vectors** | `heuristic` | hosted via LiteLLM (OpenAI / Cohere / Voyage / …) | Episode/memory text → embedding provider |
 | **Hosted extraction, local vectors** | `llm` (self-hosted model) | self-hosted | Nothing leaves (if both LLMs are in your VPC) |
-| **Default cloud setup** | `llm` (OpenAI etc.) | OpenAI | Episode batches + embedding text → providers |
+| **Default cloud setup** | `llm` (any LiteLLM-supported hosted model) | hosted via LiteLLM | Episode batches + embedding text → providers |
 
 Your agent's LLM choice is independent of all of the above.
 

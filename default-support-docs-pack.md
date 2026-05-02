@@ -93,9 +93,9 @@ The bootstrap script doesn't pick a compiler — the Statewave server does, via 
 | Compiler | When it runs | What it produces |
 |---|---|---|
 | `heuristic` (default) | Whenever `STATEWAVE_COMPILER_TYPE` is unset | Regex-driven extraction of profile-fact / episode-summary / procedure memories. Fast, free, no LLM dependency. Good for support-chat shapes; tends to under-extract from long technical prose. |
-| `llm` | Set `STATEWAVE_COMPILER_TYPE=llm` (+ ensure `OPENAI_API_KEY` is set) | LLM-driven semantic extraction, ~2× memory density, captures content that doesn't match heuristic patterns. Recommended for the docs pack — it surfaces facts from `architecture/`, `deployment/`, `dev/` that the heuristic misses. |
+| `llm` | Set `STATEWAVE_COMPILER_TYPE=llm` (+ `STATEWAVE_LITELLM_API_KEY` for the provider chosen by `STATEWAVE_LITELLM_MODEL`) | LLM-driven semantic extraction, ~2× memory density, captures content that doesn't match heuristic patterns. Recommended for the docs pack — it surfaces facts from `architecture/`, `deployment/`, `dev/` that the heuristic misses. |
 
-Production (`statewave-api.fly.dev`) runs the LLM compiler with model `gpt-4o-mini` (the default for `STATEWAVE_LLM_COMPILER_MODEL`). After flipping `STATEWAVE_COMPILER_TYPE`, re-run the refresh workflow once to recompile against the new compiler.
+Production (`statewave-api.fly.dev`) runs the LLM compiler with model `gpt-4o-mini` (the default for `STATEWAVE_LITELLM_MODEL`). After flipping `STATEWAVE_COMPILER_TYPE`, re-run the refresh workflow once to recompile against the new compiler.
 
 Each section becomes one immutable episode. The compiler runs once, producing summaries the support agent can retrieve via `POST /v1/context`. Provenance is preserved end-to-end: a retrieved memory points at its source episode, which carries `provenance.doc_path` and `payload.breadcrumb` (e.g. *"Architecture Overview › Compilation pipeline"*) — that's your citation.
 

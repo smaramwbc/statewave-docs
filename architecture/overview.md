@@ -80,7 +80,7 @@ Uncompiled Episodes → Compiler → Raw Memories → Embedding → Conflict Res
 ```
 
 - **Compilers:** `HeuristicCompiler` (regex/pattern, no external deps) and `LLMCompiler` (any provider via LiteLLM, runs in thread pool to avoid blocking)
-- **Embeddings:** `StubEmbeddingProvider` (deterministic hash vectors for dev/test) and `OpenAIEmbeddingProvider` (real semantic vectors via LiteLLM — supports OpenAI, Azure, Cohere, Bedrock, etc.)
+- **Embeddings:** `StubEmbeddingProvider` (deterministic hash vectors for dev/test) and `LiteLLMEmbeddingProvider` (real semantic vectors via [LiteLLM](https://github.com/BerriAI/litellm) — supports OpenAI, Azure, Cohere, Voyage, Bedrock, Ollama, and any other LiteLLM-compatible embedding model)
 - **Conflict resolution:** Jaccard similarity within same (subject, kind) groups; older memory superseded with `valid_to` set
 - All steps execute in a single database transaction
 
