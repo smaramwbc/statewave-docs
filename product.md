@@ -40,6 +40,8 @@ Everything is organised around **subjects** — a user, account, workspace, repo
 
 > **Current focus:** Statewave is purpose-built for support-agent workflows first. The [eval](https://github.com/smaramwbc/statewave-examples/tree/main/eval-support-agent) and [benchmark](https://github.com/smaramwbc/statewave-examples/tree/main/benchmark-support-agent) prove context quality for this use case.
 
+> **Looking for ideas?** The [Use Cases map at statewave.ai/use-cases](https://statewave.ai/use-cases) is the broader inventory — categorized workflows, connector/import patterns (existing data → episodes → compiled memory → context), and frontier directions. The list above is what's strongest *today*; the map is what the platform makes possible.
+
 ## Current limitations
 
 Statewave is in active early development (v0.6.x). We document these honestly:
