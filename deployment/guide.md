@@ -3,6 +3,10 @@
 This guide covers running Statewave in different environments.
 
 > **Hardware:** Statewave's API process is CPU-only — no GPU is required, and none of the deployment recipes below assume one. GPUs only enter the picture if you choose to self-host an LLM compiler or embedding model. See [Hardware & Scaling](hardware-and-scaling.md).
+>
+> **Sizing:** for tier-by-tier hardware profiles (local / small production / growing / enterprise) and topology patterns, see the [Deployment Sizing Guide](sizing.md).
+>
+> **Already running, things are slow?** See the [Capacity Planning & Tuning Checklist](capacity-planning.md) — diagnostic flow, tuning order, and when to move up a tier.
 
 ---
 

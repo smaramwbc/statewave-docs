@@ -2,6 +2,8 @@
 
 This page answers two questions operators ask most: **do I need a GPU?** and **how does Statewave scale?**
 
+> **Looking for "what size box should I run?"** See the [Deployment Sizing Guide](sizing.md) for tier-by-tier hardware profiles (local / small production / growing / enterprise) and topology patterns.
+
 ---
 
 ## GPU requirements
@@ -63,6 +65,8 @@ Pick the compiler that matches your scale and privacy needs first. Don't conflat
 
 ## See also
 
+- [Deployment Sizing Guide](sizing.md) — tier-by-tier hardware profiles and topology patterns
+- [Capacity Planning & Tuning Checklist](capacity-planning.md) — what to check and tune when load grows
 - [Compiler Modes](../architecture/compiler-modes.md)
 - [Privacy & Data Flow](../architecture/privacy-and-data-flow.md)
 - [Deployment Guide](guide.md)

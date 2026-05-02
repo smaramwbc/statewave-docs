@@ -9,6 +9,8 @@ Architecture docs, product specs, API contracts, and development coordination fo
 ## 🎯 Try it
 
 > The interactive comparison demo is embedded directly in the website at **[statewave.ai](https://statewave.ai)** — open the chat widget to see two identical AI agents answer side by side, one stateless and one backed by Statewave.
+>
+> **Got a question about Statewave?** **[Ask Statewave Support →](https://statewave.ai/?ask=support)** — a docs-grounded agent that answers from this very docs corpus and cites the pages it used (read-only; built on the [docs memory pack](default-support-docs-pack.md)).
 
 ## Contents
 
@@ -20,6 +22,8 @@ Architecture docs, product specs, API contracts, and development coordination fo
 - [Repo Map](architecture/repo-map.md)
 - [API v1 Contract](api/v1-contract.md)
 - [Deployment Guide](deployment/guide.md)
+- [Deployment Sizing Guide](deployment/sizing.md) — hardware profiles by tier, topology patterns, bottleneck guidance
+- [Capacity Planning & Tuning Checklist](deployment/capacity-planning.md) — diagnostic flow when load grows, tuning order, when to move up a tier
 - [Default support docs memory pack](default-support-docs-pack.md) — the docs-only knowledge base shipped for out-of-the-box support agents
 - [Roadmap](roadmap.md)
 - [Development Conventions](dev/conventions.md)
