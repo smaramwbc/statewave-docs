@@ -1,0 +1,126 @@
+name: Refresh support-docs memory pack
+
+# Rebuilds the `statewave-support-docs` Statewave subject from this repository
+# whenever published docs change on main. The Statewave Support persona in
+# the marketing widget reads from that subject — without this workflow, the
+# pack only refreshes on a manual operator run.
+#
+# Implementation notes:
+#   * Full purge-rebuild via scripts/bootstrap_docs_pack.py --purge. The pack
+#     is small (~178 sections, ~80 KiB body) so incremental refresh isn't
+#     worth the complexity yet. The script's content_hash provenance is
+#     already in place if we ever need to upgrade.
+#   * Two repos checked out: this one for the markdown corpus, plus
+#     smaramwbc/statewave for the bootstrap script.
+#   * Concurrency is serialized (cancel-in-progress: false) so a queued push
+#     never cancels a running purge mid-stream.
+#   * A post-run sanity check confirms the subject has episodes after the
+#     bootstrap "succeeds" — guards against silent partial-failure modes
+#     (e.g. ingest 200s but compile silently no-ops on a regression).
+#
+# Required repository secrets (Settings → Secrets and variables → Actions):
+#   STATEWAVE_URL       e.g. https://statewave-api.fly.dev
+#   STATEWAVE_API_KEY   API key with write access to the subject
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '**/*.md'
+      - 'scripts/docs_loader.py'
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: 'Why are you refreshing manually? (logged for auditability)'
+        required: false
+        default: 'manual refresh'
+
+concurrency:
+  group: refresh-support-docs
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    name: Rebuild statewave-support-docs
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out statewave-docs
+        uses: actions/checkout@v6
+        with:
+          path: statewave-docs
+
+      - name: Check out statewave (for bootstrap script)
+        uses: actions/checkout@v6
+        with:
+          repository: smaramwbc/statewave
+          path: statewave
+          # Public repo — GITHUB_TOKEN is sufficient. If statewave is ever
+          # made private, swap this for a fine-grained PAT in repo secrets.
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: Install httpx
+        # The bootstrap script's only runtime dep is httpx. We deliberately
+        # do NOT pip install -r requirements.txt from statewave/ — that
+        # pulls server deps we don't need for an HTTP-client refresh.
+        run: pip install --quiet 'httpx>=0.24,<1.0'
+
+      - name: Verify required secrets are set
+        # Fail early with a clear message rather than letting the script
+        # blunder into a 401 against production.
+        env:
+          STATEWAVE_URL: ${{ secrets.STATEWAVE_URL }}
+          STATEWAVE_API_KEY: ${{ secrets.STATEWAVE_API_KEY }}
+        run: |
+          if [ -z "$STATEWAVE_URL" ]; then
+            echo "::error::STATEWAVE_URL secret is not set in this repository."
+            exit 1
+          fi
+          if [ -z "$STATEWAVE_API_KEY" ]; then
+            echo "::error::STATEWAVE_API_KEY secret is not set in this repository."
+            exit 1
+          fi
+          echo "Refresh target: $STATEWAVE_URL"
+
+      - name: Refresh statewave-support-docs (purge + rebuild)
+        working-directory: statewave
+        env:
+          STATEWAVE_URL: ${{ secrets.STATEWAVE_URL }}
+          STATEWAVE_API_KEY: ${{ secrets.STATEWAVE_API_KEY }}
+        run: |
+          python -m scripts.bootstrap_docs_pack \
+            --docs-path ../statewave-docs \
+            --purge
+
+      - name: Verify subject has episodes after refresh
+        # Belt-and-suspenders: catches the failure mode where the script
+        # exits 0 but the subject is empty (e.g. a future regression where
+        # batch ingest silently drops payloads). This is exactly the
+        # failure shape that hallucinated answers in the widget.
+        env:
+          STATEWAVE_URL: ${{ secrets.STATEWAVE_URL }}
+          STATEWAVE_API_KEY: ${{ secrets.STATEWAVE_API_KEY }}
+        run: |
+          set -euo pipefail
+          response=$(curl -sf \
+            -H "X-API-Key: $STATEWAVE_API_KEY" \
+            "$STATEWAVE_URL/v1/timeline?subject_id=statewave-support-docs&limit=1")
+          episode_count=$(echo "$response" | python -c "import json,sys; print(len(json.load(sys.stdin).get('episodes', [])))")
+          memory_count=$(echo "$response" | python -c "import json,sys; print(len(json.load(sys.stdin).get('memories', [])))")
+          echo "After refresh: episodes=$episode_count memories=$memory_count"
+          if [ "$episode_count" -lt 1 ]; then
+            echo "::error::statewave-support-docs has 0 episodes after refresh — bootstrap silently failed."
+            exit 1
+          fi
+          echo "### Refresh OK" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Subject: \`statewave-support-docs\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Episodes: visible (the verify probe pages 1; full count is on the timeline endpoint)" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Memories visible on first page: $memory_count" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Trigger: ${{ github.event_name }}${{ github.event.inputs.reason && format(' ({0})', github.event.inputs.reason) || '' }}" >> "$GITHUB_STEP_SUMMARY"

@@ -15,10 +15,12 @@ Architecture docs, product specs, API contracts, and development coordination fo
 - **[Getting Started](getting-started.md)** ← start here
 - [What is Statewave?](product.md)
 - [Why Statewave?](why-statewave.md) — technical comparison for support-agent workflows
+- [Use Cases map](https://statewave.ai/use-cases) — categorized inventory of what you can build (support, coding, workspace, account, voice, agent infrastructure, connectors, frontier ideas)
 - [Architecture Overview](architecture/overview.md)
 - [Repo Map](architecture/repo-map.md)
 - [API v1 Contract](api/v1-contract.md)
 - [Deployment Guide](deployment/guide.md)
+- [Default support docs memory pack](default-support-docs-pack.md) — the docs-only knowledge base shipped for out-of-the-box support agents
 - [Roadmap](roadmap.md)
 - [Development Conventions](dev/conventions.md)
 
