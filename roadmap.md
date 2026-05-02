@@ -77,6 +77,9 @@ Statewave is purpose-built for **support-agent workflows** — the first use cas
 - [ ] Memory TTL / expiry policies — automatic cleanup of stale memories
 - [ ] Horizontal scaling guide — read replicas, connection pooling, tested patterns
 - [ ] Helm chart + Kubernetes deployment guide
+- [x] In-process query embedding cache (LRU + TTL) — eliminates repeat OpenAI calls on identical task text in `/v1/context`
+- [ ] **Native pgvector similarity path** — push the cosine compute into Postgres via the `<=>` operator instead of fetching all candidate embeddings as TEXT and computing similarity in Python. Removes the ~1.5s per-`/v1/context` floor that the in-process query cache cannot help with (cache only saves the OpenAI round-trip; the in-Python cosine over ~200 vectors is the remaining bulk). Requires migrating the `memories.embedding` column from TEXT to a `vector` type and rewriting `repositories.search_memories_by_embedding` to use a `vector <=> :query_embedding` ORDER BY. Bigger than the cache fix; deferred to here so we don't lose track.
+- [ ] Cross-machine query embedding cache — current cache is per-Fly-machine, so worst-case (cold cache + slow OpenAI) is unchanged when a request lands on a machine the LB hasn't warmed yet. A small Postgres-backed `query_embedding_cache` table (keyed by `text`, with TTL) would close that gap without needing Redis.
 
 ---
 
