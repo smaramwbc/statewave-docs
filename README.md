@@ -28,6 +28,15 @@ Architecture docs, product specs, API contracts, and development coordination fo
 - [Roadmap](roadmap.md)
 - [Development Conventions](dev/conventions.md)
 
+## Community
+
+- **[Community guide](community/discussions.md)** — where to post what, how to write good questions and RFCs, tone and moderation
+- [Discussion templates](community/discussion-templates.md) — Q&A, feature request, RFC, show-and-tell, integration, research
+- [Pinned discussion drafts](community/pinned-discussions/) — ready-to-copy posts (welcome, what-are-you-building, roadmap priorities, RFCs)
+- [Operator setup checklist](community/discussions-setup.md) — for maintainers configuring categories, pins, and recurring review
+
+GitHub Discussions live on the core repo: **[statewave/discussions](https://github.com/smaramwbc/statewave/discussions)**.
+
 ## ADRs
 
 - [ADR-001: PostgreSQL + pgvector as sole data store](adrs/001-postgres-pgvector.md)
