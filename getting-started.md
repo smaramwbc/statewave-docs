@@ -237,7 +237,7 @@ npm run dev
 
 Both admin and web are Vite SPAs and run via `npm run dev`. There's no Docker path for them today — they're development surfaces against your already-running Statewave server.
 
-> **Why `ADMIN_AUTH_DISABLED=true`?** The admin console ships with a built-in password gate that's required in production. For local-only dev, this flag short-circuits the gate. See [statewave-admin SECURITY.md](https://github.com/smaramwbc/statewave-admin/blob/main/SECURITY.md) before exposing the console anywhere beyond your laptop.
+> **Why `ADMIN_AUTH_DISABLED=true`?** The admin console ships with a built-in password gate that's required in production. For local-only dev, this flag short-circuits the gate. See [statewave-admin SECURITY.md](https://github.com/smaramwbc/statewave-admin/blob/master/SECURITY.md) before exposing the console anywhere beyond your laptop.
 
 Total time from `git clone` to all three running: typically **5–8 minutes** on a machine with Docker and Node already installed.
 

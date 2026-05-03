@@ -20,5 +20,8 @@ jobs:
       - name: Check internal links
         uses: lycheeverse/lychee-action@v2
         with:
-          args: --no-progress --exclude 'localhost' --exclude '127.0.0.1' --exclude 'statewave.ai' '**/*.md'
+          # `platform.openai.com` is excluded because their bot detection
+          # rejects any link checker with a 403 — the URL is fine in a
+          # browser, just unverifiable from CI.
+          args: --no-progress --exclude 'localhost' --exclude '127.0.0.1' --exclude 'statewave.ai' --exclude 'platform.openai.com' '**/*.md'
           fail: true
