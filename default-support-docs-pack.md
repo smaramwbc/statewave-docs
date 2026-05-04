@@ -12,7 +12,7 @@ it: it's a regular Statewave subject populated by a bootstrap script.
 | | |
 |---|---|
 | **Subject ID** | `statewave-support-docs` |
-| **Source** | The 17 curated docs in this repo (see [Curated source set](#curated-source-set)) |
+| **Source** | The 18 curated docs in this repo (see [Curated source set](#curated-source-set)) |
 | **Episode source** | `statewave-docs` |
 | **Episode type** | `doc_section` |
 | **Pipeline** | Markdown chunked at H1/H2/H3 → ingested as episodes → compiled with the standard heuristic compiler |
@@ -66,9 +66,19 @@ The full allowlist lives in `MANIFEST` at the top of `scripts/docs_loader.py`. E
 
 ## How it's built
 
+The pack is built **once at release time** and shipped inside the Statewave server image. A self-hosted operator never has to run a bootstrap step against their own infrastructure to get docs-grounded answers — pulling a new image is enough.
+
 ```
 statewave-docs/*.md
         │
+        ▼
+[build] scripts/build_support_pack.py    chunks docs, ingests + compiles
+        │                                against a temporary build-time
+        │                                subject, then serializes everything
+        │                                back out as JSONL with each episode
+        │                                keyed by content_hash so memory
+        │                                provenance can be remapped on every
+        │                                fresh import.
         ▼
 [1] docs_loader.chunk_markdown          split each file at H1/H2/H3
         │                               (skipping fenced code blocks)
@@ -82,87 +92,132 @@ statewave-docs/*.md
         │                               provenance carries content_hash
         ▼
 [4] POST /v1/memories/compile           extracts memories using whichever
-                                        compiler the server is configured
-                                        for (see "Compiler choice" below)
+        │                               compiler the build-time server is
+        │                               configured for (see "Compiler
+        │                               choice" below). Memories carry
+        │                               source_episode_ids that point back
+        │                               at the section content_hash.
+        ▼
+[5] serialise to JSONL                  server/starter_packs/
+                                        statewave-support-agent/
+                                        {episodes,memories,manifest}.jsonl
+                                        — the bundled image artifact.
 ```
+
+The runtime side is then symmetrical: importing the pack writes the same episodes + memories into the live `statewave-support-docs` subject, with `source_episode_ids` remapped from each episode's `content_hash` to its freshly-minted UUID. Memories arrive already compiled — there is no per-install LLM call.
 
 ### Compiler choice
 
-The bootstrap script doesn't pick a compiler — the Statewave server does, via the `STATEWAVE_COMPILER_TYPE` env var on whichever instance the script targets. Either compiler works; the trade-off is extraction quality vs operational cost.
+The build script doesn't pick a compiler — the Statewave server it points at does, via the `STATEWAVE_COMPILER_TYPE` env var on whichever instance the build runs against. Either compiler works; the trade-off is extraction quality vs operational cost.
 
 | Compiler | When it runs | What it produces |
 |---|---|---|
 | `heuristic` (default) | Whenever `STATEWAVE_COMPILER_TYPE` is unset | Regex-driven extraction of profile-fact / episode-summary / procedure memories. Fast, free, no LLM dependency. Good for support-chat shapes; tends to under-extract from long technical prose. |
 | `llm` | Set `STATEWAVE_COMPILER_TYPE=llm` (+ `STATEWAVE_LITELLM_API_KEY` for the provider chosen by `STATEWAVE_LITELLM_MODEL`) | LLM-driven semantic extraction, ~2× memory density, captures content that doesn't match heuristic patterns. Recommended for the docs pack — it surfaces facts from `architecture/`, `deployment/`, `dev/` that the heuristic misses. |
 
-Production (`statewave-api.fly.dev`) runs the LLM compiler with model `gpt-4o-mini` (the default for `STATEWAVE_LITELLM_MODEL`). After flipping `STATEWAVE_COMPILER_TYPE`, re-run the refresh workflow once to recompile against the new compiler.
+Production (`statewave-api.fly.dev`) builds with the LLM compiler against `gpt-4o-mini` (the default for `STATEWAVE_LITELLM_MODEL`). The bundled JSONL is therefore LLM-quality memory at runtime cost zero — the LLM bill is paid once per release, not once per install.
 
-Each section becomes one immutable episode. The compiler runs once, producing summaries the support agent can retrieve via `POST /v1/context`. Provenance is preserved end-to-end: a retrieved memory points at its source episode, which carries `provenance.doc_path` and `payload.breadcrumb` (e.g. *"Architecture Overview › Compilation pipeline"*) — that's your citation.
+Each section becomes one immutable episode. The compiler runs once at build time, producing summaries the support agent can retrieve via `POST /v1/context`. Provenance is preserved end-to-end: a retrieved memory points at its source episode, which carries `provenance.doc_path` and `payload.breadcrumb` (e.g. *"Architecture Overview › Compilation pipeline"*) — that's your citation.
 
-## Bootstrapping the pack
+## Auto-update on container restart
 
-From the `statewave/` repo, with the server running:
+Every restart of `statewave-api` calls the version-aware reseed endpoint, which compares the bundled pack's manifest version against the version stamped on the live subject's metadata:
 
-```bash
-python -m scripts.bootstrap_docs_pack
-```
-
-By default the script reads docs from a sibling `../statewave-docs/` directory. Override with:
-
-```bash
-python -m scripts.bootstrap_docs_pack --docs-path /path/to/statewave-docs
-# or
-STATEWAVE_DOCS_PATH=/path/to/docs python -m scripts.bootstrap_docs_pack
-```
-
-Useful flags:
-
-| Flag | Purpose |
+| State | Action |
 |---|---|
-| `--dry-run` | Parse and chunk only — no HTTP calls. Prints a section preview. |
-| `--purge` | Delete existing episodes for the subject and rebuild from scratch. |
-| `--docs-path PATH` | Point at a non-default `statewave-docs` checkout. |
+| Subject empty | Seed: import every episode + memory from the bundled pack. |
+| Subject populated, **versions match** | No-op. The endpoint returns `updated=false`; no rows are touched. |
+| Subject populated, **versions differ** | Selective purge of pack-owned rows + reimport at the new version. Operator-added rows on the same subject (rows whose metadata doesn't carry `starter_pack_id`) are preserved. |
 
-The script will refuse to run if the subject already has episodes, unless you pass `--purge`. Each episode carries a `content_hash` in `provenance` so future incremental-refresh tooling can diff section-by-section without re-ingesting unchanged content.
+This means an operator pulling a newer image picks up docs updates automatically — no manual click, no GitHub Actions step, no `bootstrap_docs_pack` invocation. The image *is* the source of truth.
+
+| Env var | Default | Effect |
+|---|---|---|
+| `STATEWAVE_AUTO_UPDATE_SUPPORT_PACK` | `true` | Set to `false` to disable auto-update. The drawer's manual Restore still works. |
+| `STATEWAVE_BOOTSTRAP_DOCS_PACK` | (legacy) | When `true` AND `STATEWAVE_DOCS_PATH` points at a mounted docs corpus, runs `bootstrap_docs_pack.py` against `/docs` instead — useful for dev environments that want to refresh from a host-mounted docs checkout without rebuilding the image. Skipped when no mount is present. |
+
+## Inspecting state
+
+```
+GET /admin/memory/support/state
+```
+
+Returns the bundled pack version, the version currently installed in the live subject, episode + memory counts split by ownership, and the last reseed's reason and timestamp. The admin drawer uses this to render the *installed → available* badge and the "last refreshed" line; an operator can hit it directly to confirm what's running.
+
+```
+POST /admin/memory/support/reseed
+{
+  "reason": "quarterly refresh",
+  "force": false
+}
+```
+
+Without `force`, the reseed is version-aware and no-ops when the live subject is already current. With `force=true`, it reimports unconditionally — that's what the drawer's Restore button passes when an operator manually triggers the action. Either way, the reseed is **selective**: only rows tagged with `metadata.starter_pack_id == "statewave-support-agent"` (or the legacy `metadata.pack == "statewave-support-docs"` for pre-versioning installs) are deleted before reimport. Operator-added rows on the same subject survive.
+
+The `reason` is recorded on every imported row's metadata and surfaced as the *last refreshed* line in the admin drawer. Provide a short human-readable string when refreshing, especially in shared environments — it's the only audit breadcrumb left on the subject.
 
 ## Refreshing when docs change
 
-### Automated (production)
+### Release flow (the path that ships content to operators)
 
-A GitHub Actions workflow at [`.github/workflows/refresh-support-docs.yml`](https://github.com/smaramwbc/statewave-docs/blob/main/.github/workflows/refresh-support-docs.yml) (in this repo) rebuilds the production pack on every push to `main` that touches a markdown file or the chunker. It also exposes a manual `workflow_dispatch` trigger for ad-hoc refreshes.
+The bundled JSONL is regenerated from the current docs corpus by:
+
+```bash
+cd /path/to/statewave
+python -m scripts.build_support_pack
+```
+
+The script chunks the docs, runs ingest + compile against a temporary build-time subject, fetches everything back, remaps episode IDs to stable content hashes, and writes:
+
+- `server/starter_packs/statewave-support-agent/episodes.jsonl`
+- `server/starter_packs/statewave-support-agent/memories.jsonl`
+- `server/starter_packs/statewave-support-agent/manifest.json` (with a date-stamped version)
+
+Commit the diff, push, build a new `statewave-api` image. From there, every operator pulling the new image gets the updated content on next restart via the auto-update path above.
+
+| Flag | Purpose |
+|---|---|
+| `--docs-path PATH` | Point at a non-default `statewave-docs` checkout. |
+| `--keep-temp` | Leave the temp build subject around for inspection (otherwise it's deleted on success). |
+
+`STATEWAVE_URL` defaults to `http://localhost:8100`; `STATEWAVE_API_KEY` is read from the environment when the build-time server requires auth. `SUPPORT_PACK_VERSION` overrides the auto-derived version string when you want a deterministic value.
+
+### Hot-refresh against a running production instance (legacy)
+
+The pre-bundled-pack workflow at [`.github/workflows/refresh-support-docs.yml`](https://github.com/smaramwbc/statewave-docs/blob/main/.github/workflows/refresh-support-docs.yml) still exists. It runs `bootstrap_docs_pack.py --purge` directly against a target Statewave instance, so a docs-only push to `main` rebuilds the live subject without waiting for an image rebuild.
 
 | | |
 |---|---|
 | **Lives in** | `statewave-docs/.github/workflows/refresh-support-docs.yml` |
 | **Triggers** | `push` to `main` (filtered to `**/*.md` + `scripts/docs_loader.py`); `workflow_dispatch` for manual runs |
 | **Mode** | Full purge-rebuild via `bootstrap_docs_pack.py --purge` |
-| **Required secrets** | `STATEWAVE_URL`, `STATEWAVE_API_KEY` — set in this repo's *Settings → Secrets and variables → Actions* |
-| **Concurrency** | Serialized (`cancel-in-progress: false`) — a queued push waits for the running purge instead of cancelling it mid-stream |
-| **Verification** | Post-run sanity check hits `GET /v1/timeline?subject_id=statewave-support-docs` and fails the workflow if the subject ends up with 0 episodes. Belt-and-suspenders against a "bootstrap exits 0 but pack is empty" regression — the failure mode that previously produced hallucinated answers in the marketing widget. |
-| **On failure** | Workflow shows a red ❌ on the commit; production pack is left in whatever state it was in before the run started (purge runs *first*, so a failure during ingest leaves an empty subject — that surfaces immediately on the support widget). Re-run via the Actions tab once the underlying issue is fixed. |
+| **Required secrets** | `STATEWAVE_URL`, `STATEWAVE_API_KEY` |
+| **Concurrency** | Serialized (`cancel-in-progress: false`) |
+| **Verification** | Post-run sanity check hits `GET /v1/timeline?subject_id=statewave-support-docs` and fails if the subject ends up empty |
+| **On failure** | Production pack is left in whatever state it was in before the run started (purge runs first; a failure during ingest leaves an empty subject — that surfaces immediately on the support widget). Re-run via the Actions tab. |
 
-Set up:
+Use this workflow when you want a docs change to land on production *between* image rebuilds. Otherwise, the release flow is enough — the next image pull carries the new content.
 
-1. In this repo's *Settings → Secrets and variables → Actions*, add `STATEWAVE_URL` (e.g. `https://statewave-api.fly.dev`) and `STATEWAVE_API_KEY` (a key with write access to the subject).
-2. Push any docs change to `main`, or click *Run workflow* on the *Refresh support-docs memory pack* action. Watch the run in the Actions tab.
-3. The first run also serves as the initial bootstrap if production never had the pack.
+### Local dev refresh
 
-### Manual
-
-The same script runs locally for development or one-off refreshes:
+If you're iterating on docs locally and want to see the change in your dev Statewave instance immediately, two options:
 
 ```bash
-cd /path/to/statewave
-STATEWAVE_URL=https://statewave-api.fly.dev \
-STATEWAVE_API_KEY=... \
-python -m scripts.bootstrap_docs_pack --docs-path /path/to/statewave-docs --purge
+# Option A — refresh from a host-mounted /docs (uses the dev-only env vars)
+docker exec statewave-api python -m scripts.bootstrap_docs_pack --purge
+
+# Option B — regenerate the bundled JSONL on your host, then restart the container
+python -m scripts.build_support_pack
+docker compose restart api    # auto-update fires, picks up the new pack
 ```
 
-Useful for testing chunker changes against the full corpus before pushing.
+Option A is faster for one-off iteration; option B exercises the same code path operators see when they upgrade an image.
 
-### Why full rebuild and not incremental
+### Why selective purge instead of full wipe
 
-The pack is small (~180 sections, ~80 KiB of body text); a full rebuild takes seconds. The complexity cost of incremental refresh — diffing per-section `content_hash`, superseding only changed memories, handling deleted sections — is not worth paying for a corpus this size. The `content_hash` field is already in episode `provenance` so the upgrade path is open whenever the corpus is large enough to justify it.
+Operators sometimes append their own episodes to `statewave-support-docs` — internal runbooks, customer-specific FAQs, redacted incident playbooks. The auto-update path must not destroy that content. Selective purge drops only the rows whose metadata identifies them as belonging to this pack (`starter_pack_id == "statewave-support-agent"` or the legacy `pack == "statewave-support-docs"`); everything else stays put. The admin drawer's Restore action uses the same selective filter, so manual restore is non-destructive too.
+
+The `content_hash` field is preserved on every episode for future incremental-refresh tooling — diffing per-section to update only changed sections — but the corpus is currently small enough (~210 sections, ~110 KiB of body text) that a full pack-owned purge runs in well under a second.
 
 ## Using the pack from a support agent
 
