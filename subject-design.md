@@ -4,7 +4,7 @@
 
 This is the most-asked architectural question we get. There's no one right answer — the right shape depends on what your agent needs to remember together — but there are a handful of patterns that work and a few that consistently bite. This doc collects both.
 
-If you're new to Statewave, read [What is Statewave?](product.md) first. If you've already shipped a prototype and you're reconsidering your subject scheme, jump to [Re-modelling existing subjects](#re-modelling-existing-subjects).
+If you're new to Statewave, read [What is Statewave?](product.md) first. If you've already shipped a prototype and you're reconsidering your subject scheme, jump to [Re-modelling existing subjects](#10-re-modelling-existing-subjects).
 
 ---
 
