@@ -46,7 +46,7 @@ When the support agent encounters a question outside this scope, the expected be
 
 | Tier | Files |
 |---|---|
-| Essentials | `getting-started.md`, `product.md`, `api/v1-contract.md`, `architecture/overview.md`, `why-statewave.md` |
+| Essentials | `getting-started.md`, `product.md`, `subject-design.md`, `api/v1-contract.md`, `architecture/overview.md`, `why-statewave.md` |
 | Operations | `deployment/guide.md`, `deployment/troubleshooting.md`, `deployment/hardware-and-scaling.md`, `architecture/privacy-and-data-flow.md`, `SECURITY.md` |
 | Advanced features | `architecture/compiler-modes.md`, `architecture/ranking.md`, `deployment/migrations.md`, `dev/backup-restore.md`, `architecture/repo-map.md` |
 | Routing | `README.md`, `SUPPORT.md` |
