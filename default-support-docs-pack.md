@@ -12,7 +12,7 @@ it: it's a regular Statewave subject populated by a bootstrap script.
 | | |
 |---|---|
 | **Subject ID** | `statewave-support-docs` |
-| **Source** | The 18 curated docs in this repo (see [Curated source set](#curated-source-set)) |
+| **Source** | The 23 curated docs in this repo (see [Curated source set](#curated-source-set)) |
 | **Episode source** | `statewave-docs` |
 | **Episode type** | `doc_section` |
 | **Pipeline** | Markdown chunked at H1/H2/H3 → ingested as episodes → compiled with the standard heuristic compiler |
@@ -49,6 +49,7 @@ When the support agent encounters a question outside this scope, the expected be
 | Essentials | `getting-started.md`, `product.md`, `subject-design.md`, `api/v1-contract.md`, `architecture/overview.md`, `why-statewave.md` |
 | Operations | `deployment/guide.md`, `deployment/troubleshooting.md`, `deployment/hardware-and-scaling.md`, `architecture/privacy-and-data-flow.md`, `SECURITY.md` |
 | Advanced features | `architecture/compiler-modes.md`, `architecture/ranking.md`, `deployment/migrations.md`, `dev/backup-restore.md`, `architecture/repo-map.md` |
+| Comparisons | `comparisons/mem0.md`, `comparisons/letta.md`, `comparisons/zep.md`, `comparisons/langchain-memory.md`, `comparisons/openai-assistants.md` |
 | Routing | `README.md`, `SUPPORT.md` |
 
 **Excluded** (with reason):
