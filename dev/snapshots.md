@@ -112,14 +112,25 @@ Snapshot source subjects (`_snapshot/*`) are explicitly excluded from cleanup re
 
 ## Deployment
 
-On Fly.io:
+Snapshots are gated by the `STATEWAVE_ENABLE_SNAPSHOTS` feature flag.
+Set it to `true` on the API process and restart. Examples:
+
 ```bash
+# Docker Compose
+echo 'STATEWAVE_ENABLE_SNAPSHOTS=true' >> .env
+docker compose up -d --force-recreate api
+
+# Fly.io
 fly secrets set STATEWAVE_ENABLE_SNAPSHOTS=true
+
+# systemd / bare metal — set in your service's Environment= or .env, then restart
 ```
 
-Bootstrap snapshots after deploy:
+Then bootstrap snapshots against the running API (works the same
+regardless of where the API is running):
+
 ```bash
-STATEWAVE_URL=https://statewave-api.fly.dev \
+STATEWAVE_URL=https://your-statewave-api.example.com \
 STATEWAVE_API_KEY=<key> \
 python scripts/bootstrap_snapshots.py
 ```
