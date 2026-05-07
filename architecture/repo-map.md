@@ -1,14 +1,14 @@
 # Repo Map
 
-Version: **0.6.x**
+Version: **0.7.1**
 
 ## Ecosystem
 
 | Repo | Purpose | Version | License |
 |------|---------|---------|----------|
-| `statewave` | Core server — API, domain model, DB, services, deployment | 0.6.x | AGPL-3.0 |
-| `statewave-py` | Official Python SDK (sync + async, typed exceptions, auth, batch) | 0.4.x | Apache-2.0 |
-| `statewave-ts` | Official TypeScript SDK (typed errors, auth, batch, ESM) | 0.4.x | Apache-2.0 |
+| `statewave` | Core server — API, domain model, DB, services, deployment | 0.7.1 | AGPL-3.0 |
+| `statewave-py` | Official Python SDK (sync + async, typed exceptions, auth, batch) | 0.6.2 | Apache-2.0 |
+| `statewave-ts` | Official TypeScript SDK (typed errors, auth, batch, ESM) | 0.6.3 | Apache-2.0 |
 | `statewave-examples` | Runnable demos, evals, benchmarks | — | Apache-2.0 |
 | `statewave-docs` | Architecture, specs, ADRs, coordination (no runtime code) | — | Apache-2.0 |
 | `statewave-web` | Marketing website + embedded comparison demo (statewave.ai) | — | Apache-2.0 |
@@ -52,7 +52,7 @@ statewave/
   tests/          # Unit + integration tests
 ```
 
-## Test counts (as of v0.6.1)
+## Test counts (as of v0.7.1)
 
 | Repo | Tests | Framework |
 |------|-------|----------|
