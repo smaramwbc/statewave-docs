@@ -2,6 +2,13 @@
 
 Common production issues and how to resolve them.
 
+The fixes below are written in terms of the underlying `STATEWAVE_*`
+environment variables, which is what actually changes the API's
+behaviour regardless of where you run it. Below each generic recipe is
+a short row of platform-specific commands (Docker, Fly.io, Vercel,
+Railway, raw shell) so you can run whichever fits your deploy without
+translating from another platform's syntax.
+
 ---
 
 ## STATEWAVE-TS-001: Database Connection Timeout (Rate Limiter)
@@ -26,11 +33,17 @@ The distributed rate limiter (`STATEWAVE_RATE_LIMIT_STRATEGY=distributed`) opens
 
 **Fix:**
 
-Switch to in-memory rate limiting if running a single instance:
+Switch to in-memory rate limiting if running a single instance — set
+`STATEWAVE_RATE_LIMIT_STRATEGY=memory` on the API process and restart.
+On the platform you run on, that's:
 
-```bash
-fly secrets set STATEWAVE_RATE_LIMIT_STRATEGY=memory
-```
+| Platform | Command |
+|---|---|
+| Docker Compose | edit `.env` → `STATEWAVE_RATE_LIMIT_STRATEGY=memory`, then `docker compose up -d --force-recreate api` |
+| `docker run` | add `-e STATEWAVE_RATE_LIMIT_STRATEGY=memory` and re-run the container |
+| Fly.io | `fly secrets set STATEWAVE_RATE_LIMIT_STRATEGY=memory` |
+| Railway | set `STATEWAVE_RATE_LIMIT_STRATEGY=memory` in the project's variables UI |
+| systemd / bare metal | export the variable in your service's `Environment=` (or `.env` file) and restart |
 
 **When to use distributed:**
 
@@ -42,8 +55,8 @@ Only use `distributed` when:
 **When to use memory:**
 
 Use `memory` (recommended for single-instance deployments) when:
-- Running 1 machine on Fly.io
-- Using shared/limited Postgres
+- Running a single API process / one machine
+- Using shared or connection-limited Postgres
 - Rate limit accuracy across restarts isn't critical
 
 **Prevention:**
@@ -68,28 +81,25 @@ A migration added a column that wasn't applied to the production database, or th
 
 **Fix:**
 
-Run migrations:
+Run `alembic upgrade head` against the same `STATEWAVE_DATABASE_URL`
+the API process is using. From the easiest path to the most explicit:
+
+| Platform | Command |
+|---|---|
+| Docker Compose | `docker compose exec api alembic upgrade head` |
+| `docker run` | `docker run --rm -e STATEWAVE_DATABASE_URL=… statewave alembic upgrade head` |
+| Fly.io | `fly ssh console -C "alembic upgrade head" -a statewave-api` |
+| Railway | run `alembic upgrade head` from the Railway shell on the API service |
+| systemd / bare metal | `STATEWAVE_DATABASE_URL=… alembic upgrade head` from the project root |
+
+If for some reason migrations can't be run (e.g. Alembic state is out
+of sync) and you need to backfill a single column directly, run a
+one-shot SQL against the DB. From a Docker host pointing at the same
+DB the API is using:
 
 ```bash
-fly ssh console -C "alembic upgrade head"
-```
-
-Or manually add the column:
-
-```bash
-fly ssh console -C "python -c \"
-import asyncio, os
-from sqlalchemy.ext.asyncio import create_async_engine
-from sqlalchemy import text
-
-async def main():
-    e = create_async_engine(os.environ['DATABASE_URL'])
-    async with e.begin() as conn:
-        await conn.execute(text('ALTER TABLE <table> ADD COLUMN IF NOT EXISTS <column> <type>'))
-    await e.dispose()
-
-asyncio.run(main())
-\""
+docker compose exec db psql -U statewave -d statewave \
+  -c 'ALTER TABLE <table> ADD COLUMN IF NOT EXISTS <column> <type>;'
 ```
 
 ---
@@ -108,54 +118,107 @@ asyncio.run(main())
 
 **Fix:**
 
-Update the origins list (JSON array):
+Update `STATEWAVE_CORS_ORIGINS` to a JSON array of every origin the
+API should respond to (including `http://localhost:5173` while you're
+running the website locally). The value below is just an example —
+substitute your own host names:
 
-```bash
-fly secrets set 'STATEWAVE_CORS_ORIGINS=["https://admin.statewave.ai","https://www.statewave.ai","https://statewave.ai","http://localhost:5173"]'
+```
+STATEWAVE_CORS_ORIGINS=["https://admin.example.com","https://www.example.com","http://localhost:5173"]
 ```
 
-**Verify:**
+How to set it on each platform:
+
+| Platform | Command |
+|---|---|
+| Docker Compose | edit `.env`, then `docker compose up -d --force-recreate api` |
+| `docker run` | pass `-e STATEWAVE_CORS_ORIGINS='[…]'` and re-run |
+| Fly.io | `fly secrets set 'STATEWAVE_CORS_ORIGINS=[…]'` |
+| Railway | edit the variable in the project's variables UI |
+| systemd / bare metal | export the variable and restart the service |
+
+**Verify** (substitute your own API host + an origin you just added):
 
 ```bash
-curl -I -X OPTIONS "https://statewave-api.fly.dev/healthz" \
-  -H "Origin: https://admin.statewave.ai" \
+curl -I -X OPTIONS "https://api.example.com/healthz" \
+  -H "Origin: https://admin.example.com" \
   -H "Access-Control-Request-Method: GET"
-# Should include: access-control-allow-origin: https://admin.statewave.ai
+# Should include: access-control-allow-origin: https://admin.example.com
 ```
 
 ---
 
-## STATEWAVE-TS-004: Vercel Serverless Proxy Returns 500
+## STATEWAVE-TS-004: Admin Console Can't Reach the Backend
 
 **Symptoms:**
 
 - Admin dashboard shows "Failed to reach backend"
-- `/api/proxy?path=/admin/dashboard` returns `{"error": "STATEWAVE_API_URL not configured"}`
+- `/api/proxy?path=/admin/dashboard` returns `{"error": "STATEWAVE_API_URL not configured"}` or 502 / connection-refused
+- Browser network tab shows the admin's `/api/*` route returning 5xx
 
 **Root cause:**
 
-Vercel environment variables (`STATEWAVE_API_URL`, `STATEWAVE_API_KEY`) are not set for the project.
+The admin console's server-side proxy needs `STATEWAVE_API_URL` (the
+URL of your running Statewave API) and `STATEWAVE_API_KEY` (the API
+key the API is configured with) on the *admin* host's environment.
+One of them is missing, empty, or pointing at a host the admin process
+can't reach over the network.
 
 **Fix:**
 
+Set both on the admin host:
+
+```
+STATEWAVE_API_URL=https://your-statewave-api.example.com
+STATEWAVE_API_KEY=your-api-key
+```
+
+How to set them on each platform statewave-admin can run on:
+
+| Platform | Commands |
+|---|---|
+| Docker (`docker run`) | `docker run -e STATEWAVE_API_URL=… -e STATEWAVE_API_KEY=… statewave-admin` |
+| Docker Compose | edit `.env` next to `docker-compose.yml`, then `docker compose up -d --force-recreate admin` |
+| Standalone Node (`npm start`) | export both vars in your shell or systemd unit before running `npm start` |
+| Vercel | `vercel env add STATEWAVE_API_URL production` and `vercel env add STATEWAVE_API_KEY production`, then redeploy with `vercel --prod` |
+| Railway | add both as project variables and redeploy |
+
+**Verify** the admin process can actually reach the API host (network /
+DNS / firewall / Cloudflare-Access pinning are common failure modes
+distinct from the env var missing):
+
 ```bash
-cd statewave-admin
-vercel env add STATEWAVE_API_URL production   # https://statewave-api.fly.dev
-vercel env add STATEWAVE_API_KEY production   # your API key
-vercel --prod --yes                           # redeploy
+# From inside the admin container or host:
+curl -fsS -H "X-API-Key: $STATEWAVE_API_KEY" "$STATEWAVE_API_URL/healthz"
+# Expected: {"status":"ok"}
 ```
 
 ---
 
-## General: Reading Fly.io Logs
+## General: Reading Logs
+
+The Statewave API logs to stdout in JSON via `structlog`. How to tail
+those logs depends only on where you run it:
+
+| Platform | Tail logs | App / process status |
+|---|---|---|
+| Docker Compose | `docker compose logs -f api` | `docker compose ps` |
+| `docker run` | `docker logs -f <container-name>` | `docker ps -a` |
+| Fly.io | `fly logs -a <app-name>` | `fly status -a <app-name>` (`fly ssh console -a <app-name>` for an interactive shell) |
+| Railway | the Logs tab in the service UI, or `railway logs` from the CLI | the service overview page |
+| systemd / bare metal | `journalctl -u <unit> -f` | `systemctl status <unit>` |
+
+Useful structured-log queries (work the same on every platform once
+you've got a stream):
 
 ```bash
-# Live tail
-fly logs -a statewave-api
+# Errors only (jq):
+… | jq 'select(.level == "error")'
 
-# Check app status
-fly status -a statewave-api
+# Compile-job lifecycle for one job_id:
+… | jq 'select(.event | startswith("compile_job_") and (.job_id == "abc123"))'
 
-# SSH into running container
-fly ssh console -a statewave-api
+# Embedding-stub-active warning (fired once at first use when
+# STATEWAVE_EMBEDDING_PROVIDER=stub — semantic search will not work):
+… | jq 'select(.event == "embedding_provider_stub_active")'
 ```
