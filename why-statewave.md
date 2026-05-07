@@ -75,7 +75,7 @@ Episodes (raw events) → Compilation → Memories (typed, scored) → Context a
 
 ## Provable today
 
-These claims are backed by the [support-agent context quality eval](https://github.com/smaramwbc/statewave-examples/tree/main/eval-support-agent), which runs 7 tests with 14 binary assertions against a live Statewave instance, the [handoff eval](https://github.com/smaramwbc/statewave-examples/blob/main/eval-support-agent/eval_handoff.py) (7 tests, 16 assertions), the [advanced eval](https://github.com/smaramwbc/statewave-examples/blob/main/eval-support-agent/eval_support_advanced.py) (7 tests, 24 assertions), and the [support-agent benchmark](https://github.com/smaramwbc/statewave-examples/tree/main/benchmark-support-agent):
+These claims are backed by the [support-agent context quality eval](https://github.com/smaramwbc/statewave-examples/tree/main/eval-support-agent), which runs 7 tests with 14 binary assertions against a live Statewave instance, the [handoff eval](https://github.com/smaramwbc/statewave-examples/blob/main/eval-support-agent/test_handoff.py) (7 tests, 16 assertions), the [advanced eval](https://github.com/smaramwbc/statewave-examples/blob/main/eval-support-agent/test_support_advanced.py) (7 tests, 24 assertions), and the [support-agent benchmark](https://github.com/smaramwbc/statewave-examples/tree/main/benchmark-support-agent):
 
 | Claim | Evidence |
 |-------|----------|
