@@ -53,7 +53,7 @@ The two products **don't usually compete head-to-head** — they sit at differen
 
 - **You already have an agent loop** — built on the Vercel AI SDK, OpenAI Agents SDK, LangGraph, CrewAI, your own Express handler, anything else — and don't want to rewrite it. You just want context that survives sessions.
 - **You want memory portable across agent stacks.** Statewave's API is HTTP — your support agent, your coding agent, your sales copilot can all call the same memory layer regardless of how each is implemented.
-- **You need eval-driven memory.** Deterministic retrieval is a regression-testable surface. Statewave's [docs eval](https://github.com/smaramwbc/statewave-examples/tree/main/eval-docs-support) and [support-agent benchmark](https://github.com/smaramwbc/statewave-examples/tree/main/benchmark-support-agent) show the harness; the same shape works for your domain.
+- **You need eval-driven memory.** Deterministic retrieval is a regression-testable surface. Statewave's [docs eval](https://github.com/smaramwbc/statewave/tree/main/scripts/eval) and [support-agent benchmark](https://github.com/smaramwbc/statewave-examples/tree/main/benchmark-support-agent) show the harness; the same shape works for your domain.
 - **Provenance to source events matters.** When the agent says something about a customer, `source_episode_ids` traces back to the exact episodes that produced the fact. Letta's memory blocks are LLM-managed; Statewave's compiled memories are records.
 - **You want a small, focused runtime.** One Postgres + one container. No agent loop to operate, no skills system, no model-specific quirks.
 

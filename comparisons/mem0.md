@@ -50,7 +50,7 @@ The retrieval contract is deliberately deterministic: same `(subject_id, task, m
 ## When Statewave is the right call
 
 - **Self-hosted is non-negotiable.** Your data residency, vendor restriction, or compliance posture rules out a managed plane. Statewave runs entirely inside your infrastructure (heuristic compilation has zero data egress; LLM/embedding choices control the rest — see [privacy-and-data-flow.md](../architecture/privacy-and-data-flow.md)).
-- **You want eval-driven memory.** Deterministic retrieval means you can regression-test context quality. Statewave ships a [docs-grounded eval](https://github.com/smaramwbc/statewave-examples/tree/main/eval-docs-support) and [support-agent benchmark](https://github.com/smaramwbc/statewave-examples/tree/main/benchmark-support-agent) as runnable examples; the same harness pattern works for your own subject schemes.
+- **You want eval-driven memory.** Deterministic retrieval means you can regression-test context quality. Statewave ships a [docs-grounded eval](https://github.com/smaramwbc/statewave/tree/main/scripts/eval) and [support-agent benchmark](https://github.com/smaramwbc/statewave-examples/tree/main/benchmark-support-agent) as runnable examples; the same harness pattern works for your own subject schemes.
 - **Provenance is load-bearing.** When a customer asks "why did the agent say X about my account?", you need to trace back to the conversation that produced the fact. Statewave's `source_episode_ids` chain makes that a query, not a forensic exercise.
 - **Token-bounded retrieval is part of the contract.** When prompt budget matters (cost, latency, context-window pressure), Statewave packs by ranked score against an explicit `max_tokens` instead of leaving truncation to the caller.
 
