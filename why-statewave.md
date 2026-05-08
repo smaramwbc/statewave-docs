@@ -194,5 +194,5 @@ We are honest about these gaps. If any of these are blockers for your use case, 
 | Support agent example | [statewave-examples/support-agent-python](https://github.com/smaramwbc/statewave-examples/tree/main/support-agent-python) |
 | Context quality eval | [statewave-examples/eval-support-agent](https://github.com/smaramwbc/statewave-examples/tree/main/eval-support-agent) |
 | Live demo | Embedded chat widget on [statewave.ai](https://statewave.ai) |
-| Python SDK | [statewave-py](https://github.com/smaramwbc/statewave-py) |
-| TypeScript SDK | [statewave-ts](https://github.com/smaramwbc/statewave-ts) |
+| Python SDK | `pip install statewave` · [source](https://github.com/smaramwbc/statewave-py) |
+| TypeScript SDK | `npm install @statewavedev/sdk` · [source](https://github.com/smaramwbc/statewave-ts) |

@@ -85,19 +85,22 @@ SERVER_TARGETS: list[Target] = [
 PY_TARGETS: list[Target] = [
     Target(
         path=ROOT / "architecture" / "repo-map.md",
-        pattern=r"\| `statewave-py` \| Official Python SDK \(sync \+ async, typed exceptions, auth, batch\) \| (?P<version>\S+) \| Apache-2\.0 \|",
-        template="| `statewave-py` | Official Python SDK (sync + async, typed exceptions, auth, batch) | {version} | Apache-2.0 |",
+        pattern=r"\| `statewave` \(Python SDK\) \| Sync \+ async clients, typed exceptions, auth, batch \| (?P<version>\S+) \| Apache-2\.0 \|",
+        template="| `statewave` (Python SDK) | Sync + async clients, typed exceptions, auth, batch | {version} | Apache-2.0 |",
     ),
 ]
 
 TS_TARGETS: list[Target] = [
     Target(
         path=ROOT / "architecture" / "repo-map.md",
-        pattern=r"\| `statewave-ts` \| Official TypeScript SDK \(typed errors, auth, batch, ESM\) \| (?P<version>\S+) \| Apache-2\.0 \|",
-        template="| `statewave-ts` | Official TypeScript SDK (typed errors, auth, batch, ESM) | {version} | Apache-2.0 |",
+        pattern=r"\| `@statewavedev/sdk` \(TypeScript SDK\) \| Typed errors, auth, batch, ESM \| (?P<version>\S+) \| Apache-2\.0 \|",
+        template="| `@statewavedev/sdk` (TypeScript SDK) | Typed errors, auth, batch, ESM | {version} | Apache-2.0 |",
     ),
 ]
 
+# Bundles: (key, source-repo-dir-name, manifest-file, targets).
+# The source-repo dir names match the GitHub repo names — those are
+# unchanged. The published package names live inside the manifests.
 BUNDLES = [
     ("server", "statewave", "pyproject.toml", SERVER_TARGETS),
     ("py", "statewave-py", "pyproject.toml", PY_TARGETS),

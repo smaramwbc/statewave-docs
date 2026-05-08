@@ -4,24 +4,24 @@ Version: **0.7.1**
 
 ## Ecosystem
 
-| Repo | Purpose | Version | License |
-|------|---------|---------|----------|
-| `statewave` | Core server — API, domain model, DB, services, deployment | 0.7.1 | AGPL-3.0 |
-| `statewave-py` | Official Python SDK (sync + async, typed exceptions, auth, batch) | 0.6.2 | Apache-2.0 |
-| `statewave-ts` | Official TypeScript SDK (typed errors, auth, batch, ESM). Published on npm as **`@statewavedev/sdk`** (renamed from `statewave-ts` in v0.7.0; the GitHub repo keeps its name). | 0.7.0 | Apache-2.0 |
-| `statewave-examples` | Runnable demos, evals, benchmarks | — | Apache-2.0 |
-| `statewave-connectors` | Connector ecosystem — modular packages (GitHub, Markdown/docs, MCP server, …) that feed real-world events into Statewave as normalized episodes | — | Apache-2.0 |
-| `statewave-docs` | Architecture, specs, ADRs, coordination (no runtime code) | — | Apache-2.0 |
-| `statewave-web` | Marketing website + embedded comparison demo (statewave.ai) | — | Apache-2.0 |
-| `statewave-admin` | Operator console — system health, jobs, usage (read-only) | — | Apache-2.0 |
+| Project | Purpose | Version | License |
+|---|---|---|---|
+| Server | Core server — API, domain model, DB, services, deployment | 0.7.1 | AGPL-3.0 |
+| `statewave` (Python SDK) | Sync + async clients, typed exceptions, auth, batch | 0.7.0 | Apache-2.0 |
+| `@statewavedev/sdk` (TypeScript SDK) | Typed errors, auth, batch, ESM | 0.7.0 | Apache-2.0 |
+| Examples | Runnable demos, evals, benchmarks | — | Apache-2.0 |
+| `@statewavedev/connectors-*` | Connector ecosystem — modular packages (GitHub, Markdown/docs, MCP server, …) feeding real-world events into Statewave as normalized episodes | 0.1.0 | Apache-2.0 |
+| Docs | Architecture, specs, ADRs, coordination (no runtime code) | — | Apache-2.0 |
+| Website | Marketing website + embedded comparison demo (statewave.ai) | — | Apache-2.0 |
+| Admin | Operator console — system health, jobs, usage (read-only) | — | Apache-2.0 |
 
 ## Dependency direction
 
 ```
-statewave-examples → statewave-py / statewave-ts → statewave (API)
-statewave-connectors → @statewavedev/connectors-core → statewave (HTTP API)
-statewave-admin → statewave (API)
-statewave-web → statewave (API, via /api proxy for the embedded demo)
+Examples → SDKs (statewave / @statewavedev/sdk) → Server (HTTP API)
+@statewavedev/connectors-*  → @statewavedev/connectors-core → Server (HTTP API)
+Admin → Server (HTTP API)
+Website → Server (HTTP API, via /api proxy for the embedded demo)
 ```
 
 SDKs depend on the API contract. Examples depend on SDKs. Connectors depend on the API contract via the connector-core package — a connector for source X cannot pull in dependencies for source Y. Admin calls the API directly. Docs depend on nothing. Web is a static marketing site whose embedded chat-widget demo proxies to the live Statewave backend.
@@ -56,12 +56,13 @@ statewave/
 
 ## Test counts (as of v0.7.1)
 
-| Repo | Tests | Framework |
-|------|-------|----------|
-| `statewave` | 232+ | pytest + pytest-asyncio |
-| `statewave-py` | 14 | pytest |
-| `statewave-ts` | ~10 | vitest |
-| `statewave-examples` | 3 eval suites (54 assertions), 2 benchmarks | pytest |
+| Project | Tests | Framework |
+|---|---|---|
+| Server | 232+ | pytest + pytest-asyncio |
+| `statewave` (Python SDK) | 29 | pytest |
+| `@statewavedev/sdk` (TypeScript SDK) | 18 | vitest |
+| `@statewavedev/connectors-*` | 77 | vitest |
+| Examples | 3 eval suites (54 assertions), 2 benchmarks | pytest |
 
 ## Available examples
 

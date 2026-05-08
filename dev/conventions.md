@@ -40,16 +40,16 @@ Version: **0.4.x**
 ## CI
 
 All repos have GitHub Actions CI workflows:
-- `statewave`: lint + unit tests + integration tests on push/PR
-- `statewave-py`: lint + tests on push/PR
-- `statewave-ts`: build + tests on push/PR
+- Server: lint + unit tests + integration tests on push/PR
+- Python SDK (`statewave`): lint + tests on push/PR
+- TypeScript SDK (`@statewavedev/sdk`): build + tests on push/PR
 
 ## SDK versions
 
 | SDK | Version | Key features |
 |-----|---------|-------------|
-| statewave-py | 0.4.x | Sync + async clients, typed exceptions, auth, tenant, semantic search, batch ingestion, subject listing |
-| statewave-ts | 0.4.x | Typed errors, auth, tenant, semantic search, batch ingestion, subject listing, ESM |
+| `statewave` (Python) | 0.7.x | Sync + async clients, typed exceptions, auth, tenant, semantic search, batch ingestion, subject listing |
+| `@statewavedev/sdk` (TypeScript) | 0.7.x | Typed errors, auth, tenant, semantic search, batch ingestion, subject listing, ESM |
 
 ## Configuration
 
