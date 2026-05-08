@@ -87,7 +87,7 @@ npm install @statewavedev/sdk
 ```
 
 > The TypeScript SDK was renamed from `statewave-ts` to `@statewavedev/sdk` in v0.7.0. Existing 0.6.x installs of `statewave-ts` keep working; new code should use `@statewavedev/sdk`. See the [SDK README](https://github.com/smaramwbc/statewave-ts#migration-from-statewave-ts) for the one-line import change.
-
+>
 > **Not just live chats:** if your data lives in GitHub, a `docs/` folder, Slack, support tickets, email, or workflow runs, the [Statewave Connectors](connectors/index.md) feed those sources into Statewave as normalized episodes — modular packages, dry-run-first, no all-in-one install.
 
 ---
