@@ -2,29 +2,33 @@
 
 This page walks you through installing the Statewave connector CLI, running a connector against a real source, and wiring up the MCP server — all dry-run-first so nothing is ingested without your say-so.
 
-> **Prerequisites:** A running Statewave instance — see [Getting Started](../getting-started.md). Node 20+ for the connector tooling. Phase-1 connector packages live in [statewave-connectors](https://github.com/smaramwbc/statewave-connectors).
+> **Prerequisites:** A running Statewave instance — see [Getting Started](../getting-started.md). Node 20+ for the connector tooling. All packages below ship from [statewave-connectors](https://github.com/smaramwbc/statewave-connectors).
 
 ---
 
 ## 1. Install
 
-Phase-1 packages are scoped under `@statewavedev/`. Until they're published to npm, install from the connector repo by cloning and building locally:
+Pick what you need — every package is independent.
+
+```bash
+npm install -g @statewavedev/connectors-cli       # the `statewave-connectors` CLI
+
+npm install @statewavedev/connectors-github       # repo memory
+npm install @statewavedev/connectors-markdown     # docs / ADR / RFC memory
+npm install @statewavedev/connectors-slack        # team / channel memory
+npm install @statewavedev/connectors-n8n          # workflow memory
+npm install @statewavedev/connectors-zapier       # helper for Webhooks-by-Zapier flows
+
+npm install @statewavedev/mcp-server              # expose Statewave to MCP clients
+```
+
+Or build from source if you want the latest unreleased work:
 
 ```bash
 git clone https://github.com/smaramwbc/statewave-connectors.git
 cd statewave-connectors
 pnpm install
 pnpm build
-```
-
-When the packages publish, the install path will be:
-
-```bash
-# Planned — coming soon
-npm install -g @statewavedev/connectors-cli
-npm install @statewavedev/connectors-github
-npm install @statewavedev/connectors-markdown
-npm install @statewavedev/mcp-server
 ```
 
 ---
@@ -75,6 +79,38 @@ statewave-connectors sync markdown \
 ```
 
 ADRs under `adrs/`, RFCs under `rfcs/`, and decision/architecture docs are detected and mapped to `docs.adr`, `docs.rfc`, `docs.decision`. Everything else becomes `docs.page`.
+
+### Slack
+
+```bash
+export SLACK_BOT_TOKEN=xoxb-...   # only used by the Slack connector
+
+statewave-connectors sync slack \
+  --channels general,support \
+  --subject team:acme \
+  --since 2026-01-01 \
+  --dry-run
+```
+
+The bot needs `channels:history` + `channels:read` (and the `groups:*` equivalents for private channels — invite the bot first). Top-level messages map to `slack.message.posted`; thread replies to `slack.thread.replied`.
+
+### n8n
+
+```bash
+export N8N_API_KEY=...
+
+statewave-connectors sync n8n \
+  --workflows "Daily ETL,42" \
+  --instance-url https://n8n.example.com \
+  --since 2026-01-01 \
+  --dry-run
+```
+
+`--workflows` accepts ids (visible in the n8n URL) or names. Successful runs become `n8n.workflow.executed`; failed runs become `n8n.workflow.failed`; per-node errors are extracted from the execution's `runData` blob and emitted as `n8n.node.errored`.
+
+### Zapier — push-mode helper
+
+Zapier doesn't expose a public API for enumerating other zaps' run history, so it's not a `sync` source. Instead, configure a **"Webhooks by Zapier → POST"** step at the end of your zap and POST directly to `/v1/episodes/batch`, or use [`formatZapToEpisode()`](https://github.com/smaramwbc/statewave-connectors/blob/main/packages/zapier/README.md) on a server you run to massage payloads first.
 
 ---
 
