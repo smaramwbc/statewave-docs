@@ -8,8 +8,9 @@ Version: **0.7.1**
 |------|---------|---------|----------|
 | `statewave` | Core server — API, domain model, DB, services, deployment | 0.7.1 | AGPL-3.0 |
 | `statewave-py` | Official Python SDK (sync + async, typed exceptions, auth, batch) | 0.6.2 | Apache-2.0 |
-| `statewave-ts` | Official TypeScript SDK (typed errors, auth, batch, ESM) | 0.6.3 | Apache-2.0 |
+| `statewave-ts` | Official TypeScript SDK (typed errors, auth, batch, ESM). Published on npm as **`@statewavedev/sdk`** (renamed from `statewave-ts` in v0.7.0; the GitHub repo keeps its name). | 0.7.0 | Apache-2.0 |
 | `statewave-examples` | Runnable demos, evals, benchmarks | — | Apache-2.0 |
+| `statewave-connectors` | Connector ecosystem — modular packages (GitHub, Markdown/docs, MCP server, …) that feed real-world events into Statewave as normalized episodes | — | Apache-2.0 |
 | `statewave-docs` | Architecture, specs, ADRs, coordination (no runtime code) | — | Apache-2.0 |
 | `statewave-web` | Marketing website + embedded comparison demo (statewave.ai) | — | Apache-2.0 |
 | `statewave-admin` | Operator console — system health, jobs, usage (read-only) | — | Apache-2.0 |
@@ -18,11 +19,12 @@ Version: **0.7.1**
 
 ```
 statewave-examples → statewave-py / statewave-ts → statewave (API)
+statewave-connectors → @statewavedev/connectors-core → statewave (HTTP API)
 statewave-admin → statewave (API)
 statewave-web → statewave (API, via /api proxy for the embedded demo)
 ```
 
-SDKs depend on the API contract. Examples depend on SDKs. Admin calls the API directly. Docs depend on nothing. Web is a static marketing site whose embedded chat-widget demo proxies to the live Statewave backend.
+SDKs depend on the API contract. Examples depend on SDKs. Connectors depend on the API contract via the connector-core package — a connector for source X cannot pull in dependencies for source Y. Admin calls the API directly. Docs depend on nothing. Web is a static marketing site whose embedded chat-widget demo proxies to the live Statewave backend.
 
 ## Frontend repos explained
 

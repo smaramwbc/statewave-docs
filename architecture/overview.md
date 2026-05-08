@@ -15,6 +15,8 @@ RECORD → COMPILE → CONTEXT → GOVERN
 3. **Context** — assembly service builds ranked, token-bounded, deterministic context bundles using temporal reasoning and semantic similarity
 4. **Govern** — provenance inspection, delete-by-subject, authentication, rate limiting, webhook notifications
 
+> **Where do episodes come from?** Either the SDKs (Python / TypeScript) or the [Connectors](../connectors/index.md) — modular packages for GitHub, Markdown/ADRs, MCP-compatible agents, and more. Connectors normalize source events into the same episode shape Statewave records natively.
+
 ## Component architecture
 
 ```

@@ -97,6 +97,7 @@ Statewave is purpose-built for **support-agent workflows** — the first use cas
 - [ ] Memory templates for common patterns
 - [ ] Design partner onboarding package
 - [ ] Head-to-head benchmark against Mem0 / Zep
+- [ ] Connector ecosystem — modular packages for GitHub, Markdown/ADRs, MCP, Slack, Discord, Zendesk, Intercom, Freshdesk, Notion, Gmail, n8n, Zapier (see [Connectors → Roadmap](connectors/roadmap.md))
 
 ---
 

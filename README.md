@@ -18,6 +18,8 @@ Architecture docs, product specs, API contracts, and development coordination fo
 - [What is Statewave?](product.md)
 - [Why Statewave?](why-statewave.md) — technical comparison for support-agent workflows
 - [Use Cases map](https://statewave.ai/use-cases) — categorized inventory of what you can build (support, coding, workspace, account, voice, agent infrastructure, connectors, frontier ideas)
+- **[Connectors](connectors/index.md)** — feed real-world events (GitHub, Markdown/ADRs, MCP, and more) into Statewave as normalized episodes
+- [Subject Design](subject-design.md) — the architectural treatment of subjects (entity granularity, tenancy, modelling)
 - [Architecture Overview](architecture/overview.md)
 - [Repo Map](architecture/repo-map.md)
 - [API v1 Contract](api/v1-contract.md)
@@ -53,6 +55,7 @@ GitHub Discussions live on the core repo: **[statewave/discussions](https://gith
 | [statewave-ts](https://github.com/smaramwbc/statewave-ts) | TypeScript SDK |
 | [statewave-docs](https://github.com/smaramwbc/statewave-docs) | This repo — architecture, specs, ADRs (no runtime code) |
 | [statewave-examples](https://github.com/smaramwbc/statewave-examples) | Runnable examples, evals, benchmarks |
+| [statewave-connectors](https://github.com/smaramwbc/statewave-connectors) | Connector ecosystem — GitHub, Markdown/docs, MCP server, and more (modular packages) |
 | [statewave-web](https://github.com/smaramwbc/statewave-web) | Marketing website + embedded comparison demo ([statewave.ai](https://statewave.ai)) |
 | [statewave-admin](https://github.com/smaramwbc/statewave-admin) | Operator console — system health, jobs, usage (read-only) |
 

@@ -3,6 +3,8 @@
 Base URL: `http://localhost:8100`
 Version: **0.7.1**
 
+> **Pre-built ingestion paths:** [Statewave Connectors](../connectors/index.md) wrap this contract for common sources — GitHub, Markdown/ADRs, MCP, and more — so you don't have to hand-build episode payloads from each source.
+
 ---
 
 ## Authentication

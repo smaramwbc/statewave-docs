@@ -6,6 +6,8 @@ This is the most-asked architectural question we get. There's no one right answe
 
 If you're new to Statewave, read [What is Statewave?](product.md) first. If you've already shipped a prototype and you're reconsidering your subject scheme, jump to [Re-modelling existing subjects](#10-re-modelling-existing-subjects).
 
+> **Picking subjects for connectors?** [Connectors → Subject strategy](connectors/subject-strategy.md) is the connector-specific cheat sheet; this page is the deeper architectural treatment that backs it.
+
 ---
 
 ## 1. What a subject is
