@@ -81,8 +81,8 @@ Statewave is in active early development (v0.7.1). We document these honestly:
 
 ## SDKs
 
-- **Python** (`pip install statewave`): [statewave-py](https://github.com/smaramwbc/statewave-py) — sync and async clients, Pydantic models
-- **TypeScript** (`npm install @statewavedev/sdk`): [statewave-ts](https://github.com/smaramwbc/statewave-ts) — fetch-based client, full type definitions. Renamed from `statewave-ts` on npm in v0.7.0; the GitHub repo keeps its name.
+- **Python** — `pip install statewave` · sync and async clients, Pydantic models · [source](https://github.com/smaramwbc/statewave-py)
+- **TypeScript** — `npm install @statewavedev/sdk` · fetch-based client, full type definitions · [source](https://github.com/smaramwbc/statewave-ts)
 
 ## Getting started
 

@@ -48,16 +48,16 @@ GitHub Discussions live on the core repo: **[statewave/discussions](https://gith
 
 ## Ecosystem
 
-| Repo | Description |
-|------|-------------|
-| [statewave](https://github.com/smaramwbc/statewave) | Core server — API, domain model, DB, compilation, search |
-| [statewave-py](https://github.com/smaramwbc/statewave-py) | Python SDK (sync + async) |
-| [statewave-ts](https://github.com/smaramwbc/statewave-ts) | TypeScript SDK |
-| [statewave-docs](https://github.com/smaramwbc/statewave-docs) | This repo — architecture, specs, ADRs (no runtime code) |
-| [statewave-examples](https://github.com/smaramwbc/statewave-examples) | Runnable examples, evals, benchmarks |
-| [statewave-connectors](https://github.com/smaramwbc/statewave-connectors) | Connector ecosystem — GitHub, Markdown/docs, MCP server, and more (modular packages) |
-| [statewave-web](https://github.com/smaramwbc/statewave-web) | Marketing website + embedded comparison demo ([statewave.ai](https://statewave.ai)) |
-| [statewave-admin](https://github.com/smaramwbc/statewave-admin) | Operator console — system health, jobs, usage (read-only) |
+| Project | Description |
+|---|---|
+| [Server](https://github.com/smaramwbc/statewave) | Core server — API, domain model, DB, compilation, search |
+| [Python SDK](https://github.com/smaramwbc/statewave-py) | `pip install statewave` — sync + async client |
+| [TypeScript SDK](https://github.com/smaramwbc/statewave-ts) | `npm install @statewavedev/sdk` — fetch-based client |
+| [Connectors](https://github.com/smaramwbc/statewave-connectors) | `@statewavedev/connectors-*` — GitHub, Markdown/docs, MCP server, modular packages |
+| [Docs](https://github.com/smaramwbc/statewave-docs) | This repo — architecture, specs, ADRs (no runtime code) |
+| [Examples](https://github.com/smaramwbc/statewave-examples) | Runnable examples, evals, benchmarks |
+| [Website + demo](https://github.com/smaramwbc/statewave-web) | Marketing website + embedded comparison demo ([statewave.ai](https://statewave.ai)) |
+| [Admin](https://github.com/smaramwbc/statewave-admin) | Operator console — system health, jobs, usage (read-only) |
 
 ## Current status
 

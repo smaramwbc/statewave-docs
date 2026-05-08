@@ -78,7 +78,7 @@ Tell us where you'd put your weight. Order is alphabetical, not priority.
 
 A first-party integration package would, at minimum:
 
-- Live in its own repo or subdirectory under the relevant SDK (`statewave-py/integrations/<framework>/`)
+- Live in its own repo or subdirectory under the relevant SDK repo (`statewave-py` or `statewave-ts` → `integrations/<framework>/`)
 - Pin a tested version range against the framework
 - Ship with a worked example in [statewave-examples](https://github.com/smaramwbc/statewave-examples)
 - Document the convention for: subject naming, episode kinds, retrieval shape, when to compile

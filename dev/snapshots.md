@@ -21,7 +21,7 @@ They are an **advanced admin/bootstrap capability** — a way to clone known-goo
 
 - **Not the normal beginner workflow** — developers build subjects by ingesting episodes and compiling memories
 - **Not part of the public `/v1` API** — lives under `/admin` only
-- **Not exposed in SDKs** — neither statewave-py nor statewave-ts include snapshot methods
+- **Not exposed in SDKs** — neither the Python (`statewave`) nor TypeScript (`@statewavedev/sdk`) SDK includes snapshot methods
 - **Not documented in getting-started or beginner materials** — intentionally hidden from the simple product story
 - **Not a replacement for the episode→compile→context lifecycle** — snapshots produce subjects that went through that lifecycle, they don't replace it
 
