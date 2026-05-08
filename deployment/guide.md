@@ -212,13 +212,45 @@ See [`.env.example`](https://github.com/smaramwbc/statewave/blob/main/.env.examp
 
 For operator visibility into your running Statewave instance, you can deploy the admin console.
 
-See [statewave-admin](https://github.com/smaramwbc/statewave-admin) for setup instructions.
-
 The admin console provides:
+
 - System readiness and database health status
 - Compile job monitoring
 - Webhook delivery status
 - Usage metering (episodes, memories, compiles)
 - Subject health distribution
 
-**Important:** The admin console is an internal tool. Deploy it behind an access gateway (Cloudflare Access, OAuth2 Proxy, etc.) — do not expose publicly.
+### How to run it
+
+Three paths, all equivalent — pick whichever fits your deployment:
+
+**1. Bundled with the server via the default compose stack** (recommended for self-hosters):
+
+The [`statewave/docker-compose.yml`](https://github.com/smaramwbc/statewave/blob/main/docker-compose.yml) stack includes an `admin` service that pulls [`statewavedev/statewave-admin`](https://hub.docker.com/r/statewavedev/statewave-admin) from Docker Hub. `docker compose up -d` brings it up alongside the API.
+
+**2. Standalone Docker container** (any orchestrator — Kubernetes, Nomad, ECS, App Runner, Cloud Run, Render, …):
+
+```bash
+docker run -d --name statewave-admin -p 8080:8080 \
+  -e STATEWAVE_API_URL=https://your-statewave-instance \
+  -e STATEWAVE_API_KEY=$STATEWAVE_API_KEY \
+  -e ADMIN_PASSWORD=$ADMIN_PASSWORD \
+  -e ADMIN_SESSION_SECRET=$ADMIN_SESSION_SECRET \
+  statewavedev/statewave-admin:latest
+```
+
+**3. From source** (Node ≥18, useful when contributing to the admin codebase):
+
+See [statewave-admin/README.md](https://github.com/smaramwbc/statewave-admin#readme).
+
+### Production-mode auth
+
+In production you **must** set both `ADMIN_PASSWORD` and `ADMIN_SESSION_SECRET`, and **must not** set `ADMIN_AUTH_DISABLED=true`. The compose default ships `ADMIN_AUTH_DISABLED=true` for local dev — production deployments override this by leaving it empty in your `.env` and supplying real values for the other two:
+
+```bash
+ADMIN_AUTH_DISABLED=          # required: leave empty
+ADMIN_PASSWORD=$(openssl rand -base64 32)
+ADMIN_SESSION_SECRET=$(openssl rand -hex 32)
+```
+
+**Important:** even with the password gate enabled, the admin console is an internal tool. Deploy it behind an access gateway (Cloudflare Access, OAuth2 Proxy, identity-aware proxy, …) — do not expose publicly. See [statewave-admin/SECURITY.md](https://github.com/smaramwbc/statewave-admin/blob/master/SECURITY.md) for the full security posture.

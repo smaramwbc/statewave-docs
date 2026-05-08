@@ -215,12 +215,52 @@ print(f"Deleted {result.episodes_deleted} episodes, {result.memories_deleted} me
 
 ## Optional: run the full local stack (server + admin + website)
 
-If you also want the operator console and the marketing/demo website running locally — useful for end-to-end testing of the chat widget and admin flows — you'll need Node ≥18.
+### Recommended — server + admin via `docker compose up -d`
+
+The default `docker-compose.yml` in [statewave](https://github.com/smaramwbc/statewave) brings up **both** the API and the admin console (using the published [`statewavedev/statewave-admin`](https://hub.docker.com/r/statewavedev/statewave-admin) Docker Hub image) with one command:
 
 ```bash
-# Already running: server on :8100 (from §1)
+git clone https://github.com/smaramwbc/statewave.git
+cd statewave
+docker compose up -d
+# → API:   http://localhost:8100
+# → Admin: http://localhost:8080
+```
 
-# Operator console — http://localhost:5173
+The compose file ships `ADMIN_AUTH_DISABLED=true` by default for the same reason it ships `STATEWAVE_DEBUG=true` — a fresh `docker compose up -d` should work without you having to invent a password first. **Don't expose this admin to the internet without overriding** (see the production-override block below).
+
+If you only want the core API + DB, skip the admin service: `docker compose up -d api db`.
+
+### Production override for the admin console
+
+When you're not on localhost any more, the compose stack reads two env vars from your `.env` (or shell):
+
+```bash
+# in your .env (next to docker-compose.yml)
+ADMIN_AUTH_DISABLED=          # leave empty to require auth
+ADMIN_PASSWORD=$(openssl rand -base64 32)
+ADMIN_SESSION_SECRET=$(openssl rand -hex 32)
+```
+
+`docker compose up -d` then forwards them through to the admin container, the auth-disabled flag is no longer set, and the login form gates access. See [statewave-admin SECURITY.md](https://github.com/smaramwbc/statewave-admin/blob/master/SECURITY.md) before exposing the console anywhere beyond your laptop.
+
+### Marketing site / demo widget
+
+The marketing/demo website is a Vite SPA — it doesn't have a Docker image, run it from source:
+
+```bash
+git clone https://github.com/smaramwbc/statewave-web.git
+cd statewave-web
+npm install
+npm run dev
+# → http://localhost:5173 (or next free port)
+```
+
+### Hacking on the admin from source (contributors)
+
+If you're working on the admin codebase itself, you can still run it from source instead of pulling the image:
+
+```bash
 git clone https://github.com/smaramwbc/statewave-admin.git
 cd statewave-admin
 cat > .env.local << 'EOF'
@@ -229,19 +269,10 @@ ADMIN_AUTH_DISABLED=true
 EOF
 npm install
 npm run dev
-
-# Website (in a separate shell) — http://localhost:5173 (or next free port)
-git clone https://github.com/smaramwbc/statewave-web.git
-cd statewave-web
-npm install
-npm run dev
+# → http://localhost:5173
 ```
 
-Both admin and web are Vite SPAs and run via `npm run dev`. There's no Docker path for them today — they're development surfaces against your already-running Statewave server.
-
-> **Why `ADMIN_AUTH_DISABLED=true`?** The admin console ships with a built-in password gate that's required in production. For local-only dev, this flag short-circuits the gate. See [statewave-admin SECURITY.md](https://github.com/smaramwbc/statewave-admin/blob/master/SECURITY.md) before exposing the console anywhere beyond your laptop.
-
-Total time from `git clone` to all three running: typically **5–8 minutes** on a machine with Docker and Node already installed.
+Total time from `git clone` to API + admin running: typically **2–3 minutes** with Docker already installed (just one image pull).
 
 ---
 
@@ -265,4 +296,4 @@ Total time from `git clone` to all three running: typically **5–8 minutes** on
 | `401 missing_api_key` | Set `X-API-Key` header or remove `STATEWAVE_API_KEY` from `.env` |
 | `422 validation_error` | Check request body — `subject_id`, `source`, `type`, `payload` are required |
 | No memories after compile | Heuristic compiler extracts from conversation payloads with `messages[].content`. Switch to `STATEWAVE_COMPILER_TYPE=llm` for richer extraction. |
-| Admin shows "ADMIN_PASSWORD and ADMIN_SESSION_SECRET are required" on login | Set `ADMIN_AUTH_DISABLED=true` in `statewave-admin/.env.local` and restart `npm run dev`. Production deploys must set the password instead. |
+| Admin shows "ADMIN_PASSWORD and ADMIN_SESSION_SECRET are required" on login | **Compose path:** the default already sets `ADMIN_AUTH_DISABLED=true` — if you removed it or set it empty, either restore that or supply both `ADMIN_PASSWORD` + `ADMIN_SESSION_SECRET` in your `.env` and run `docker compose up -d --force-recreate admin`. **From source:** set `ADMIN_AUTH_DISABLED=true` in `statewave-admin/.env.local` and restart `npm run dev`. Production deploys must set the password instead. |
