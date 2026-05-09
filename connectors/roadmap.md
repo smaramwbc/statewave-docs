@@ -1,46 +1,91 @@
 # Connectors Roadmap
 
-The connector ecosystem ships in phases. Each phase brings a new class of memory online. Connectors are developed in the [statewave-connectors](https://github.com/smaramwbc/statewave-connectors) monorepo and published as separate packages — install only the ones you need.
+The connector ecosystem ships in waves. Each wave brings a new class of memory online or polishes an existing one. Connectors are developed in the [statewave-connectors](https://github.com/smaramwbc/statewave-connectors) monorepo and published as separate packages — install only the ones you need.
 
-## Phase 1 — foundation ✅ shipped (v0.1.0)
+> **State of the world:** the v0.1 connector matrix is fully shipped, plus two polish waves (v0.5.x, v0.6.0). Tier 2 push receivers and Tier 3 daemon shapes are queued. See the [release notes in the connectors repo](https://github.com/smaramwbc/statewave-connectors/blob/main/RELEASE_NOTES.md) for the per-wave change-log.
+
+## ✅ Shipped
+
+### Phase 1 — foundation (v0.1.0)
 
 - `@statewavedev/connectors-core` — connector contract, episode schema, idempotency, retry, redaction, source state
-- `@statewavedev/connectors-cli` — `statewave-connectors` CLI: `doctor`, `sync`, `replay`, `test`, `mcp`
+- `@statewavedev/connectors-cli` — `statewave-connectors` CLI: `doctor`, `sync`, `replay`, `test`, `listen`, `mcp start`
 - `@statewavedev/mcp-server` — `ingest_episode`, `search_memories`, `get_context`, `get_timeline`, `compile_subject` over stdio JSON-RPC 2.0
 - `@statewavedev/connectors-github` — issues, PRs, comments, reviews, releases
 - `@statewavedev/connectors-markdown` — local docs, ADRs, RFCs, decision pages
 
-## Phase 2 — community & team (v0.1.1) ✅ partially shipped
+### Phase 2 — community & workflow (v0.1.1, v0.2.0, v0.2.1, v0.3.x)
 
-- `@statewavedev/connectors-slack` ✅ — channel + thread history pull. Bot-token auth, required `--channels` allowlist, `slack.message.posted` and `slack.thread.replied`. Live Events-API mode, DMs, reactions, pinned, and channel summarization deferred.
-- `@statewavedev/connectors-discord` — community memory from servers, channels, forum posts (placeholder)
+- `@statewavedev/connectors-n8n` (v0.1.1) — workflow executions, failures, and per-node errors via the n8n REST API. `n8n.workflow.executed`, `n8n.workflow.failed`, `n8n.node.errored`.
+- `@statewavedev/connectors-zapier` (v0.1.1) — push-mode helper for the Webhooks-by-Zapier path.
+- `@statewavedev/connectors-discord` (v0.2.1) — server channel + thread history pull. `discord.message.posted`, `discord.thread.replied`.
+- `@statewavedev/connectors-slack` evolved through this phase:
+  - v0.1.1 — pull mode (channel + thread history)
+  - v0.2.0 — Events-API webhook receiver (`createSlackWebhookHandler`) + `listen slack` daemon CLI
+  - v0.3.0 — webhook dispatch for reactions + pins
+  - v0.3.1 — opt-in DM pull (`--include-dms`, subjects `dm:<user>`)
+  - v0.3.2 — opt-in MPIM / group-DM pull (`--include-mpim`, subjects `mpim:<channel>`)
 
-## Phase 3 — customer support
+### Phase 3 — customer support (v0.4.0–v0.4.2)
 
-- `@statewavedev/connectors-zendesk` — ticket and reply memory
-- `@statewavedev/connectors-intercom` — conversation and contact-note memory
-- `@statewavedev/connectors-freshdesk` — ticket and reply memory
+- `@statewavedev/connectors-zendesk` (v0.4.0, current 0.1.2) — tickets + comments → `customer:<org_or_requester>`. API token + OAuth bearer auth.
+- `@statewavedev/connectors-intercom` (v0.4.1, current 0.1.1) — conversations + replies + admin notes → `customer:<company_or_contact>`. US/EU/AU regions; bearer auth.
+- `@statewavedev/connectors-freshdesk` (v0.4.2, current 0.1.1) — tickets + conversations → `customer:<company_or_requester>`. API key (Basic) auth; status-code normalization; channel-source labels.
 
-## Phase 4 — knowledge & relationships
+### Phase 4 — knowledge & relationships (v0.4.3, v0.4.4)
 
-- `@statewavedev/connectors-notion` — pages, databases, decision docs
-- `@statewavedev/connectors-gmail` — thread-level relationship memory, scoped by label/query
+- `@statewavedev/connectors-notion` (v0.4.3, current 0.1.2) — pages + opt-in body content + opt-in page-level comments + database scoping → `workspace:notion` by default. Bearer auth; pinned to Notion-Version 2022-06-28.
+- `@statewavedev/connectors-gmail` (v0.4.4, current 0.1.2) — messages matching a required Gmail query → `relationship:<other_email>`. OAuth 2.0 refresh-token flow; History API delta sync via `--cursor`.
 
-## Phase 5 — workflow (v0.1.1) ✅ shipped
+### Tier 1 polish (v0.5.0, v0.5.1)
 
-- `@statewavedev/connectors-n8n` ✅ — workflow executions, failures, and per-node errors via the n8n REST API. `n8n.workflow.executed`, `n8n.workflow.failed`, `n8n.node.errored`.
-- `@statewavedev/connectors-zapier` ✅ — push-mode helper. Zapier doesn't expose a public API for enumerating other zaps' run history, so the package ships `formatZapToEpisode()` plus integration docs for the Webhooks-by-Zapier path.
+- v0.5.0 — Slack v0.3.2 (MPIM ingestion; see Phase 2 above).
+- v0.5.1 — `0.1.1` polish across the customer-support + knowledge connectors (Zendesk `--brands` + `--statuses`; Intercom `--tags` + `--teams`; Freshdesk server-side `updated_since`; Notion `notion.comment.posted`; Gmail `--label-ids`).
+
+### Per-connector polish (v0.6.0)
+
+- Zendesk `0.1.2` — Incremental Tickets Export delta sync via `--cursor` / `--use-incremental`.
+- Gmail `0.1.2` — History API delta sync via `--cursor`. Falls back to cold-start when historyId expires (~7 days).
+- Notion `0.1.2` — `--databases` allowlist scopes to specific databases via `/v1/databases/{id}/query`.
+
+## 📌 Queued
+
+### Tier 2 — webhook (push) receivers
+
+Each takes its own focused arc: a new always-on daemon with signature verification, dedup, and retry semantics.
+
+- Slack DM/MPIM event dispatch over the existing webhook handler
+- Zendesk webhook receiver (ticket + comment events)
+- Intercom webhook receiver (conversation + part events)
+- Freshdesk webhook receiver
+- Gmail Pub/Sub watch (push subscription + push endpoint)
+
+### Tier 3 — new daemon shapes
+
+Each changes the deployment surface (long-lived stateful connection vs request/response handler).
+
+- Slack Socket Mode (alternative WebSocket transport)
+- Discord Gateway (stateful WebSocket; heartbeats; sequence numbers)
+- Gmail service account / domain-wide delegation (needs JWT/RS256 signing — adds a crypto dep)
+
+### Other deferred polish (per connector)
+
+- **Zendesk**: macros-applied as a signal kind; side conversations
+- **Intercom**: Search Conversations API; Articles + Outbound message ingestion
+- **Freshdesk**: Solutions / KB articles; time entries + survey responses
+- **Notion**: per-block inline comments; tables, callouts, embeds, columns, synced blocks in body rendering; typed property mapping
+- **Gmail**: thread-level episodes; attachment metadata extraction
 
 ## Out of scope (for now)
 
-- **Real-time webhook receivers / long-running daemons.** Every shipped connector is pull-first. A daemon contract (which would back Slack live mode, n8n webhooks, etc.) is a separate design effort once we have signal from real users.
-- **Hosted "all-in-one" agent.** Connectors are libraries plus a CLI. We do not ship a hosted ingestion server.
-- **Slack App Directory / Zapier Directory listings.** Both require a different SDK and review cycle and live in separate efforts.
-- **Telemetry / phone-home.** There is none, and there will not be.
+- Hosted "all-in-one" ingestion service — connectors are libraries plus a CLI; we do not ship a hosted SaaS.
+- Slack App Directory / Zapier Directory listings — both require a separate SDK + review cycle and live in their own efforts.
+- Channel / conversation summarization episodes — held until the LLM-architecture call lands so the cost/quality tradeoff has a documented answer.
+- Telemetry / phone-home — there is none, and there will not be.
 
 ## Tracking
 
-Open issues and milestones in the [statewave-connectors GitHub project](https://github.com/smaramwbc/statewave-connectors) reflect the canonical state. The [roadmap inside that repo](https://github.com/smaramwbc/statewave-connectors/blob/main/docs/roadmap.md) is updated when a phase ships.
+Workspace-wide issues and feature requests are tracked centrally on [`smaramwbc/statewave/issues`](https://github.com/smaramwbc/statewave/issues). The [release notes inside the connectors repo](https://github.com/smaramwbc/statewave-connectors/blob/main/RELEASE_NOTES.md) are the canonical change-log.
 
 ## See also
 

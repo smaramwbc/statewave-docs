@@ -4,7 +4,7 @@ Statewave Connectors feed real-world events into Statewave so agents can remembe
 
 A connector is a small, focused package that reads from one source, normalizes its events into the Statewave [episode schema](concepts.md), and lets the CLI or your own code ingest them. Statewave compiles those episodes into durable memories per subject, and serves compact context to your agents on demand.
 
-> **Status:** Phase 1 packages (Core, CLI, MCP server, GitHub, Markdown) plus three Phase-2 packages (Slack, n8n, Zapier helper) ship with the [statewave-connectors](https://github.com/smaramwbc/statewave-connectors) repository. Discord, Zendesk, Intercom, Freshdesk, Notion, and Gmail are still planned — see the [roadmap](roadmap.md).
+> **Status:** the v0.1 connector matrix is fully shipped, plus two polish waves (v0.5.x, v0.6.0). All packages — GitHub, Markdown, MCP, Slack (with DMs + group DMs + Events-API webhook), n8n, Zapier helper, Discord, Zendesk, Intercom, Freshdesk, Notion, Gmail — are on npm with provenance attestation. Tier 2 push receivers and Tier 3 daemon shapes are queued. See the [roadmap](roadmap.md) for the full release timeline.
 
 ## What's available
 
@@ -32,17 +32,29 @@ Turn workflow executions, failures, and per-node errors into **workflow memory**
 
 Push-mode helper rather than a sync connector — Zapier deliberately doesn't expose a public API for enumerating other zaps' run history. The package ships `formatZapToEpisode()` for users who want to receive Zap webhooks server-side, plus integration docs for the no-code "POST straight to `/v1/episodes/batch`" path. → [`@statewavedev/connectors-zapier` README](https://github.com/smaramwbc/statewave-connectors/blob/main/packages/zapier/README.md)
 
-### Discord — *planned*
+### Discord
 
-Community memory for servers, channels, and forum posts.
+Turn server channel + thread history into **community memory** under `community:<guild_id>`. Bot-token auth; required `--guild` + `--channels`. `discord.message.posted`, `discord.thread.replied`. → [`@statewavedev/connectors-discord` README](https://github.com/smaramwbc/statewave-connectors/blob/main/packages/discord/README.md)
 
-### Zendesk / Intercom / Freshdesk — *planned*
+### Zendesk
 
-Turn support tickets and conversations into **customer memory**, scoped per account.
+Turn tickets + public replies + internal notes into **customer memory** under `customer:<org_or_requester_id>`. API token + OAuth bearer auth; `--brands` / `--statuses` allowlists; Incremental Tickets Export delta sync via `--cursor` / `--use-incremental`. `zendesk.ticket.created`, `zendesk.ticket.solved`, `zendesk.comment.posted`, `zendesk.comment.internal_note`. → [`@statewavedev/connectors-zendesk` README](https://github.com/smaramwbc/statewave-connectors/blob/main/packages/zendesk/README.md)
 
-### Notion / Gmail — *planned*
+### Intercom
 
-Turn workspace decision docs and inbox threads into **decision and relationship memory**.
+Turn conversations + replies + admin notes into **customer memory** under `customer:<company_or_contact_id>`. Bearer auth (personal-access or OAuth); US/EU/AU regions; `--tags` / `--teams` allowlists. `intercom.conversation.created`, `intercom.conversation.closed`, `intercom.conversation.replied`, `intercom.conversation.note_added`. → [`@statewavedev/connectors-intercom` README](https://github.com/smaramwbc/statewave-connectors/blob/main/packages/intercom/README.md)
+
+### Freshdesk
+
+Turn tickets + public replies + private notes into **customer memory** under `customer:<company_or_requester_id>`. API key auth (Basic); native `updated_since` server-side `--since` filter; status-code normalization. `freshdesk.ticket.created`, `freshdesk.ticket.resolved`, `freshdesk.conversation.posted`, `freshdesk.conversation.internal_note`. → [`@statewavedev/connectors-freshdesk` README](https://github.com/smaramwbc/statewave-connectors/blob/main/packages/freshdesk/README.md)
+
+### Notion
+
+Turn pages, optional body content, and (opt-in) page-level discussion comments into **decision memory** under `workspace:notion` (or any operator-supplied subject). Bearer auth; pinned to `Notion-Version: 2022-06-28`; `--databases` allowlist for database-scoped pulls. `notion.page.created`, `notion.page.updated`, `notion.comment.posted`. → [`@statewavedev/connectors-notion` README](https://github.com/smaramwbc/statewave-connectors/blob/main/packages/notion/README.md)
+
+### Gmail
+
+Turn messages matching a required Gmail search query into **relationship memory** under `relationship:<other_email>`. OAuth 2.0 refresh-token flow; History API delta sync via `--cursor`; `--label-ids` server-side filter; MIME body extraction (text/plain → text/html → snippet). `gmail.message.received`, `gmail.message.sent`. → [`@statewavedev/connectors-gmail` README](https://github.com/smaramwbc/statewave-connectors/blob/main/packages/gmail/README.md)
 
 ## Modular by design
 

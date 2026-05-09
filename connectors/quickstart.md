@@ -15,12 +15,20 @@ npm install -g @statewavedev/connectors-cli       # the `statewave-connectors` C
 
 npm install @statewavedev/connectors-github       # repo memory
 npm install @statewavedev/connectors-markdown     # docs / ADR / RFC memory
-npm install @statewavedev/connectors-slack        # team / channel memory
+npm install @statewavedev/connectors-slack        # team / channel / DM / group-DM memory + Events-API webhook
+npm install @statewavedev/connectors-discord      # community memory (servers + threads)
+npm install @statewavedev/connectors-zendesk      # customer memory (tickets + comments)
+npm install @statewavedev/connectors-intercom     # customer memory (conversations + notes)
+npm install @statewavedev/connectors-freshdesk    # customer memory (tickets + conversations)
+npm install @statewavedev/connectors-notion       # decision memory (pages + databases + comments)
+npm install @statewavedev/connectors-gmail        # relationship memory (messages + History API delta)
 npm install @statewavedev/connectors-n8n          # workflow memory
 npm install @statewavedev/connectors-zapier       # helper for Webhooks-by-Zapier flows
 
 npm install @statewavedev/mcp-server              # expose Statewave to MCP clients
 ```
+
+Each package is independent — install only what you need. The convenience meta-package `@statewavedev/connectors` re-exports all of the above for callers who genuinely want every connector at once; it is **not** required for normal usage.
 
 Or build from source if you want the latest unreleased work:
 
