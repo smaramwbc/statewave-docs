@@ -10,7 +10,7 @@ Version: **0.7.1**
 | `statewave` (Python SDK) | Sync + async clients, typed exceptions, auth, batch | 0.7.0 | Apache-2.0 |
 | `@statewavedev/sdk` (TypeScript SDK) | Typed errors, auth, batch, ESM | 0.7.0 | Apache-2.0 |
 | Examples | Runnable demos, evals, benchmarks | — | Apache-2.0 |
-| `@statewavedev/connectors-*` | Connector ecosystem — modular packages (GitHub, Markdown/docs, MCP server, …) feeding real-world events into Statewave as normalized episodes | 0.1.0 | Apache-2.0 |
+| `@statewavedev/connectors-*` | Connector ecosystem — 13 modular packages (Core, CLI, MCP server, GitHub, Markdown, Slack, Discord, n8n, Zapier, Zendesk, Intercom, Freshdesk, Notion, Gmail) feeding real-world events into Statewave as normalized episodes. Latest release wave: v0.6.0. | latest wave v0.6.0 | Apache-2.0 |
 | Docs | Architecture, specs, ADRs, coordination (no runtime code) | — | Apache-2.0 |
 | Website | Marketing website + embedded comparison demo (statewave.ai) | — | Apache-2.0 |
 | Admin | Operator console — system health, jobs, usage (read-only) | — | Apache-2.0 |
@@ -61,7 +61,7 @@ statewave/
 | Server | 232+ | pytest + pytest-asyncio |
 | `statewave` (Python SDK) | 29 | pytest |
 | `@statewavedev/sdk` (TypeScript SDK) | 18 | vitest |
-| `@statewavedev/connectors-*` | 77 | vitest |
+| `@statewavedev/connectors-*` | 297 | vitest |
 | Examples | 3 eval suites (54 assertions), 2 benchmarks | pytest |
 
 ## Available examples

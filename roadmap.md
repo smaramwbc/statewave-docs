@@ -87,7 +87,7 @@ Statewave is purpose-built for **support-agent workflows** — the first use cas
 
 ---
 
-## v0.8 — Adoption & Ecosystem (planned)
+## v0.8 — Adoption & Ecosystem (in progress)
 
 **Goal:** Make it trivial for teams to adopt Statewave and integrate it into existing stacks.
 
@@ -97,7 +97,7 @@ Statewave is purpose-built for **support-agent workflows** — the first use cas
 - [ ] Memory templates for common patterns
 - [ ] Design partner onboarding package
 - [ ] Head-to-head benchmark against Mem0 / Zep
-- [ ] Connector ecosystem — modular packages for GitHub, Markdown/ADRs, MCP, Slack, Discord, Zendesk, Intercom, Freshdesk, Notion, Gmail, n8n, Zapier (see [Connectors → Roadmap](connectors/roadmap.md))
+- [x] **Connector ecosystem — fully shipped** ✅ Modular packages for GitHub, Markdown/ADRs, MCP, Slack (with DMs + group DMs + Events-API webhook), Discord, Zendesk, Intercom, Freshdesk, Notion, Gmail, n8n, Zapier. v0.6.0 added cursor-based delta sync (Zendesk Incremental Tickets Export, Gmail History API) and Notion database scoping. See [Connectors → Roadmap](connectors/roadmap.md) for the full release timeline and what's queued next (Tier 2 push receivers, Tier 3 daemon shapes).
 
 ---
 
