@@ -136,7 +136,7 @@ Move up when **two or more** of the per-tier signals from [sizing.md](sizing.md)
 | **Tier 1 (Local / Dev)** | Putting it in front of real users; needing observability or persistence guarantees | [Tier 2](sizing.md#tier-2--small-production) |
 | **Tier 2 (Small Production)** | Sustained DB CPU > 60%; subject count past a few thousand; HNSW index approaching DB RAM; multiple teams/tenants on a single instance | [Tier 3](sizing.md#tier-3--growing-production) |
 | **Tier 3 (Growing Production)** | DB CPU > 70% after tuning; HNSW recall degrading; compile backlog persistent; multiple noisy-neighbor tenants | [Tier 4](sizing.md#tier-4--enterprise--heavy-load) |
-| **Tier 4 (Enterprise)** | Single primary can't keep up after tuning, replica, and pooler; provider rate limits are the floor; compliance demands self-hosted models | Shard by tenant; add a self-hosted model sidecar; see the v0.7 horizontal-scaling guide on the [roadmap](../roadmap.md) |
+| **Tier 4 (Enterprise)** | Single primary can't keep up after tuning, replica, and pooler; provider rate limits are the floor; compliance demands self-hosted models | Shard by tenant; add a self-hosted model sidecar; consult the [Horizontal Scaling Guide](horizontal-scaling.md) for the multi-instance connection-budget runbook and PgBouncer guidance |
 
 ---
 
@@ -156,6 +156,7 @@ These are not failures of Statewave to scale — they are the layer being satura
 ## See also
 
 - [Deployment Sizing Guide](sizing.md) — tier-by-tier hardware profiles
+- [Horizontal Scaling Guide](horizontal-scaling.md) — multi-instance runbook (connection budget, PgBouncer, replica diagnostics)
 - [Hardware & Scaling](hardware-and-scaling.md) — GPU question and scaling characteristics
 - [Deployment Troubleshooting](troubleshooting.md) — specific incident runbooks
 - [Migration & Upgrade Runbook](migrations.md) — operational hygiene during upgrades

@@ -45,9 +45,11 @@ In short: the Statewave container is CPU-only and is happy on a `shared-cpu-1x` 
 - **Rate limiting** is per-IP, sliding-window, Postgres-backed — shared correctly across multiple workers.
 - **Tenant isolation** is app-layer (`tenant_id` scoping in queries). It is not row-level-security; if you have hard-isolation requirements, run separate databases per tenant.
 
-### What's coming
+### Multi-instance specifics
 
-A horizontal-scaling guide with read replicas, connection pool sizing, and tested patterns is on the [roadmap](../roadmap.md). If you have a specific scaling target you need confidence around, open an issue with the workload shape — we'll prioritize what we benchmark.
+For the multi-instance operational runbook — connection-budget arithmetic, when to add a transaction-mode connection pooler, what coordinates correctly across replicas, and the diagnostics that differ from single-instance — see the [Horizontal Scaling Guide](horizontal-scaling.md). It is honest about what is and is not load-tested, and gives you the math to size a multi-replica deployment without surprises.
+
+If you have a specific scaling target you need confidence around, open an issue with the workload shape — we'll prioritize what we benchmark.
 
 ---
 
@@ -66,6 +68,7 @@ Pick the compiler that matches your scale and privacy needs first. Don't conflat
 ## See also
 
 - [Deployment Sizing Guide](sizing.md) — tier-by-tier hardware profiles and topology patterns
+- [Horizontal Scaling Guide](horizontal-scaling.md) — multi-instance runbook (connection budget, PgBouncer, replica diagnostics)
 - [Capacity Planning & Tuning Checklist](capacity-planning.md) — what to check and tune when load grows
 - [Compiler Modes](../architecture/compiler-modes.md)
 - [Privacy & Data Flow](../architecture/privacy-and-data-flow.md)
