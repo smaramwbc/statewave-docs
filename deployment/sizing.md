@@ -216,10 +216,10 @@ Five reference topologies, in upgrade order. Pick the lowest one that meets your
 The Tier 2 default. Fly / Railway / Render / a small VM, plus Neon / Supabase / RDS for Postgres. **Must use a pgvector-capable Postgres image** — see `infra/postgres-pgvector/` in the core repo for a Dockerfile that bundles the extension.
 
 ### C. API replicas + managed Postgres + reverse proxy
-Tier 3. Replicas are stateless; the rate limiter is Postgres-backed and shared correctly across them. The reverse proxy terminates TLS and lets you pin timeouts (Statewave's `/v1/context` can be longer than typical HTTP traffic). Horizontal scaling is **supported by design but not load-tested** — measure your own workload and report findings if you push past prior boundaries.
+Tier 3. Replicas are stateless; the rate limiter is Postgres-backed and shared correctly across them. The reverse proxy terminates TLS and lets you pin timeouts (Statewave's `/v1/context` can be longer than typical HTTP traffic). Horizontal scaling is **supported by design but not load-tested** — measure your own workload and report findings if you push past prior boundaries. See the [Horizontal Scaling Guide](horizontal-scaling.md) for the multi-instance runbook (connection-budget math, what coordinates correctly across replicas, common mistakes).
 
 ### D. API replicas + dedicated Postgres + read replica + observability
-Tier 4 baseline. Add a connection pooler (PgBouncer or your managed equivalent) once total connections × replicas approach the DB's `max_connections`. Use a read replica today as a safety net and for analytics; native replica routing for `/v1/context` is on the roadmap.
+Tier 4 baseline. Add a connection pooler (PgBouncer or your managed equivalent) once total connections × replicas approach the DB's `max_connections`. Use a read replica today as a safety net and for analytics; native replica routing for `/v1/context` is on the roadmap. See the [Horizontal Scaling Guide](horizontal-scaling.md) for the PgBouncer transaction-mode guidance and the connection-budget formula.
 
 ### E. Topology D + self-hosted model sidecar
 Tier 4 optional layer. The model server (vLLM / TGI / Ollama / TEI) sits beside the Statewave deployment. Statewave talks to it via LiteLLM as if it were any other provider. **GPU sizing belongs to this server, not the API tier.** Treat it as its own product with its own runbook — model warm-up time, batch size, KV cache memory, request queue depth.
@@ -260,9 +260,10 @@ The recommendations above are derived from the architecture's design points and 
 ## See also
 
 - [Capacity Planning & Tuning Checklist](capacity-planning.md) — the diagnostic companion to this guide
+- [Horizontal Scaling Guide](horizontal-scaling.md) — multi-instance runbook (connection budget, PgBouncer, replica diagnostics)
 - [Hardware & Scaling](hardware-and-scaling.md) — the GPU question and scaling characteristics
 - [Compiler Modes](../architecture/compiler-modes.md) — heuristic vs LLM cost/throughput
 - [Privacy & Data Flow](../architecture/privacy-and-data-flow.md) — what each layer sends where
 - [Deployment Guide](guide.md) — Docker / Fly / Railway recipes
 - [Migration & Upgrade Runbook](migrations.md) — operational hygiene
-- [Roadmap](../roadmap.md) — horizontal-scaling guide, memory TTL, Helm chart
+- [Roadmap](../roadmap.md) — memory TTL, Helm chart

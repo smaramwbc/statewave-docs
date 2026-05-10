@@ -75,7 +75,7 @@ Statewave is purpose-built for **support-agent workflows** — the first use cas
 - [x] Admin dashboard (read-only) — system health, jobs, webhooks, counts, health distribution
 - [x] Usage metering — episodes/month, compiles/month, per-tenant usage
 - [ ] Memory TTL / expiry policies — automatic cleanup of stale memories
-- [ ] Horizontal scaling guide — read replicas, connection pooling, tested patterns
+- [x] **Horizontal scaling guide** — multi-instance reference topologies, connection-budget runbook, PgBouncer guidance, multi-instance diagnostics, and the design properties that hold across replicas (Postgres-backed compile queue, webhook DLQ, rate limit, L2 query embedding cache). See [`deployment/horizontal-scaling.md`](deployment/horizontal-scaling.md). Honest framing: the guide is derived from architectural design points and operational arithmetic, not a load-test campaign — see "What we have not validated".
 - [ ] Helm chart + Kubernetes deployment guide
 - [x] In-process query embedding cache (LRU + TTL) — eliminates repeat provider calls on identical task text in `/v1/context`
 - [x] **Native pgvector similarity path** — `memories.embedding` migrated from `TEXT` to `vector(1536)` (alembic `0013_pgvector_native`); `search_memories_by_embedding` rewritten to use the `<=>` cosine-distance operator with an HNSW index. Removes the in-Python cosine compute that was the ~1.5s floor per `/v1/context`. Requires pgvector-bundled Postgres image — see `infra/postgres-pgvector/` for the Dockerfile + deployment runbook.
