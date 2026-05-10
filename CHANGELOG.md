@@ -2,6 +2,25 @@
 
 All notable changes to the Statewave workspace.
 
+## v0.7.2 (2026-05-10)
+
+### Added
+- **Per-kind memory TTL** — operators configure global expiry windows per memory kind (`profile_fact`, `episode_summary`, `procedure`, `artifact_ref`) via `STATEWAVE_KIND_TTL_DAYS` (JSON). Compilers stamp `valid_to = valid_from + ttl_days` at insert; `/v1/context` retrieval filters expired rows immediately; an hourly cleanup loop tombstones expired rows. Soft-delete only — rows are preserved for audit and future receipt lookup. ([#59](https://github.com/smaramwbc/statewave/issues/59), full operator guide: [`deployment/memory-ttl.md`](deployment/memory-ttl.md))
+- **MemoryStatus enum aligned to `active | superseded | tombstoned`** — the previously unused `deleted` value renamed to `tombstoned` (alembic 0016) so the status surface composes cleanly with the receipts work in [#49](https://github.com/smaramwbc/statewave/issues/49).
+- **Helm chart** at [`helm/statewave`](https://github.com/smaramwbc/statewave/tree/main/helm/statewave) — API-only chart with pre-install hook ordering, externalSecret support, optional HPA + Ingress + PDB, and migration Job. ([#58](https://github.com/smaramwbc/statewave/issues/58))
+- **Cross-machine query embedding cache (L2)** — Postgres-backed `query_embedding_cache` table (alembic 0014) shared across all backend instances. Wraps the in-process LRU as L2: warm calls are sub-second regardless of which instance handles them. 24h TTL, composite (text, model) key.
+- **In-process LRU + TTL query embedding cache (L1)** — eliminates repeat provider calls on identical task text in `/v1/context`.
+- **CODE_OF_CONDUCT.md** — adopt-by-reference Contributor Covenant 2.1.
+
+### Changed
+- **All LLM and embedding calls go through a single LiteLLM adapter** (`server/services/llm.py`). One env-var contract (`STATEWAVE_LITELLM_*`), 100+ provider compatibility, consistent retry + timeout + structured logging.
+- **Cross-workspace positioning unified** — `Open-source memory runtime for AI agents` is now the canonical tagline across homepage, READMEs, package descriptions, GitHub bios, and Docker Hub.
+- **Docker Hub repo description sync** now succeeds via the OAT-scoped `DOCKERHUB_TOKEN`.
+
+### Docs
+- New: dual licensing model published (AGPLv3 + Statewave Commercial License).
+- New: deployment sizing guide, capacity-planning checklist.
+
 ## v0.6.1 — Support-Agent Superiority (2026-04-29)
 
 ### Added

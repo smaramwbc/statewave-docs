@@ -58,6 +58,7 @@ Statewave is in active early development (v0.7.1). We document these honestly:
 - Episode ingestion (single + batch, append-only, durable)
 - Memory compilation (heuristic or LLM via [LiteLLM](https://github.com/BerriAI/litellm) — 100+ providers)
 - Context assembly (ranked, token-bounded, with provenance)
+- Memory expiry — per-kind global TTL windows; retrieval filters expired memories immediately, hourly cleanup tombstones soft-deleted rows ([memory-ttl.md](deployment/memory-ttl.md))
 - Subject lifecycle (timeline, search, deletion)
 - Self-hosted deployment (Docker, Fly.io, bare metal)
 

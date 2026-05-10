@@ -147,7 +147,6 @@ bundle = client.get_context("customer-123", "Help with billing question")
 | LLM compiler vs heuristic compiler quality | LLM compiler exists but no comparative eval published. |
 | Comparison against Mem0 or similar products | No head-to-head benchmark against external products. Internal [benchmark](https://github.com/smaramwbc/statewave-examples/tree/main/benchmark-support-agent) compares Statewave vs history stuffing vs naive RAG. |
 | Dashboard / UI for operators | API-only today. |
-| Memory TTL / expiry policies | Not implemented. |
 | Webhook filters (subscribe to specific event types) | Not yet — all events fire to one URL. |
 | 50-session production-scale benchmark | Not yet run. |
 
