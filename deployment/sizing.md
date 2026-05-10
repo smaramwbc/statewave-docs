@@ -81,7 +81,7 @@ Same split as embeddings.
 Multi-tenant isolation today is **app-layer** (`tenant_id` scoping in queries; v0.5). Tenant count drives connection pool math (concurrent in-flight requests across all tenants) and operational discipline (monitoring per-tenant usage), not extra processes per tenant. If you have a hard isolation requirement, run separate databases per tenant; this is a topology choice, not a sizing one.
 
 ### Retention window
-Episodes and memories are kept until you delete them (per-subject delete is in-API; TTL/expiry policies are on the [roadmap](../roadmap.md) for v0.7). Long retention compounds storage and HNSW memory.
+Episodes are kept until you delete them. Memories are kept until you delete them OR until their per-kind TTL expires (configured via `STATEWAVE_KIND_TTL_DAYS`; see [Memory TTL](memory-ttl.md)). Long retention compounds storage and HNSW memory.
 
 ### Bootstrap / docs pack usage
 The default support docs pack (`default-support-docs-pack.md`) is small as text but compiles into many memories. If your design loads it **per-tenant** or **per-subject**, multiply storage and compile cost accordingly. Loading it once globally is cheap.
@@ -267,4 +267,5 @@ The recommendations above are derived from the architecture's design points and 
 - [Privacy & Data Flow](../architecture/privacy-and-data-flow.md) — what each layer sends where
 - [Deployment Guide](guide.md) — Docker / Fly / Railway recipes
 - [Migration & Upgrade Runbook](migrations.md) — operational hygiene
-- [Roadmap](../roadmap.md) — memory TTL
+- [Memory TTL](memory-ttl.md) — per-kind expiry windows
+- [Roadmap](../roadmap.md)
