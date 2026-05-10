@@ -97,7 +97,7 @@ Statewave is purpose-built for **support-agent workflows** — the first use cas
 - [ ] Memory templates for common patterns
 - [ ] Design partner onboarding package
 - [ ] Head-to-head benchmark against Mem0 / Zep
-- [x] **Connector ecosystem — fully shipped** ✅ Modular packages for GitHub, Markdown/ADRs, MCP, Slack (with DMs + group DMs + Events-API webhook), Discord, Zendesk, Intercom, Freshdesk, Notion, Gmail, n8n, Zapier. v0.6.0 added cursor-based delta sync (Zendesk Incremental Tickets Export, Gmail History API) and Notion database scoping. See [Connectors → Roadmap](connectors/roadmap.md) for the full release timeline and what's queued next (Tier 2 push receivers, Tier 3 daemon shapes).
+- [x] **Connector ecosystem — fully shipped** ✅ Modular packages for GitHub, Markdown/ADRs, MCP, Slack, Discord, Zendesk, Intercom, Freshdesk, Notion, Gmail, n8n, Zapier. v0.6.0 added cursor-based delta sync (Zendesk Incremental Tickets Export, Gmail History API) and Notion database scoping. **Tier 2 push receivers shipped (v0.7.0–v0.11.0)** — every connector with a meaningful push surface in its source system now has a real-time receiver alongside its pull connector: Slack DM/MPIM dispatch (`slack.dm.*`, `slack.mpim.*`), Freshdesk webhook, Zendesk webhook, Intercom webhook, and Gmail Cloud Pub/Sub push. `statewave-connectors listen <connector>` is the unified daemon; the same `(Request) => Promise<Response>` factory mounts on Vercel / Cloudflare / Express identically across the lineup. See [Connectors → Roadmap](connectors/roadmap.md) for the full release timeline and what's queued next (Tier 3 daemon shapes — Slack Socket Mode, Discord Gateway, Gmail service-account auth, built-in OIDC for Pub/Sub).
 
 ---
 
