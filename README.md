@@ -3,7 +3,9 @@
 [![CI](https://github.com/smaramwbc/statewave-docs/workflows/CI/badge.svg)](https://github.com/smaramwbc/statewave-docs/actions/workflows/ci.yml)
 [![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 
-Architecture docs, product specs, API contracts, and development coordination for the Statewave workspace.
+**Statewave is the open-source memory runtime for AI agents.** It compiles raw events into ranked, token-bounded context bundles with full provenance — so your AI stops forgetting across sessions. Self-hosted on Postgres, no vendor lock-in.
+
+This repo contains the architecture docs, product specs, API contracts, and development coordination for the Statewave workspace.
 
 > This repo contains no production runtime code.
 >
