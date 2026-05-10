@@ -221,6 +221,7 @@ See [`.env.example`](https://github.com/smaramwbc/statewave/blob/main/.env.examp
 - [ ] `STATEWAVE_API_KEY` set to a strong secret
 - [ ] `STATEWAVE_CORS_ORIGINS` restricted to your domain(s)
 - [ ] `STATEWAVE_RATE_LIMIT_RPM` set (e.g., 120)
+- [ ] `STATEWAVE_KIND_TTL_DAYS` configured if you want stale memories to stop influencing `/v1/context` automatically — see [Memory TTL](memory-ttl.md)
 - [ ] Database backups configured
 - [ ] Migrations run before first request
 - [ ] Health endpoint monitored (`GET /healthz`)
