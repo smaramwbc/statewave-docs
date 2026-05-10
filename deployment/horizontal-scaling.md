@@ -217,6 +217,7 @@ The guidance on this page derives from the system's design points — Postgres-b
 - [Deployment Sizing Guide](sizing.md) — single-instance sizing, tier definitions, topology patterns
 - [Capacity Planning & Tuning Checklist](capacity-planning.md) — symptom → action diagnostics
 - [Hardware & Scaling](hardware-and-scaling.md) — GPU question and scaling characteristics
+- [Kubernetes Deployment](kubernetes.md) — running the multi-instance topologies on k8s via the in-tree Helm chart
 - [Migration & Upgrade Runbook](migrations.md) — schema migrations under multi-instance deploys
 - [Deployment Troubleshooting](troubleshooting.md) — specific incident runbooks
-- [Roadmap](../roadmap.md) — native read-replica routing and Helm chart
+- [Roadmap](../roadmap.md) — native read-replica routing
