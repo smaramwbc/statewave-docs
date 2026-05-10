@@ -1,6 +1,6 @@
 # What is Statewave?
 
-Statewave is a **memory runtime for AI agents and AI-powered applications**.
+Statewave is an **open-source memory runtime for AI agents**. It compiles raw events into ranked, token-bounded context bundles with full provenance — so your AI stops forgetting across sessions. Self-hosted on Postgres, no vendor lock-in.
 
 It gives your AI system durable, structured memory — so it can remember what happened, learn from past interactions, and retrieve relevant context at task time.
 
