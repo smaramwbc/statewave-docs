@@ -192,6 +192,25 @@ A minimal `fly.toml`:
 
 ---
 
+## 6. Kubernetes (in-tree Helm chart)
+
+> Another concrete recipe for the single-container deploy in Section 3 — this one runs the API as a `Deployment` on Kubernetes. The chart is API-only; you bring a pgvector-capable Postgres reachable from the cluster.
+
+The full walkthrough — secret-management patterns, Postgres options, Ingress timeout cheatsheet, HPA and connection-budget guidance, k8s-specific troubleshooting — lives in the dedicated [Kubernetes Deployment](kubernetes.md) page. The five-second sketch:
+
+```bash
+helm install statewave \
+  https://github.com/smaramwbc/statewave/releases/download/helm-0.1.0/statewave-0.1.0.tgz \
+  --namespace statewave --create-namespace \
+  --set database.url='postgresql+asyncpg://USER:PASS@db.example.com:5432/statewave' \
+  --set llm.apiKey='sk-…' \
+  --set auth.apiKey='replace-me'
+```
+
+Schema migrations run as a Helm pre-install + pre-upgrade Job (`alembic upgrade head`); the Deployment never serves traffic against an out-of-date schema. For multi-replica deploys, walk the connection-budget runbook in [horizontal-scaling.md](horizontal-scaling.md) before raising `replicaCount`.
+
+---
+
 ## Environment Variables Reference
 
 See [`.env.example`](https://github.com/smaramwbc/statewave/blob/main/.env.example) for all available `STATEWAVE_*` configuration options.

@@ -261,9 +261,10 @@ The recommendations above are derived from the architecture's design points and 
 
 - [Capacity Planning & Tuning Checklist](capacity-planning.md) — the diagnostic companion to this guide
 - [Horizontal Scaling Guide](horizontal-scaling.md) — multi-instance runbook (connection budget, PgBouncer, replica diagnostics)
+- [Kubernetes Deployment](kubernetes.md) — running on k8s via the in-tree Helm chart
 - [Hardware & Scaling](hardware-and-scaling.md) — the GPU question and scaling characteristics
 - [Compiler Modes](../architecture/compiler-modes.md) — heuristic vs LLM cost/throughput
 - [Privacy & Data Flow](../architecture/privacy-and-data-flow.md) — what each layer sends where
 - [Deployment Guide](guide.md) — Docker / Fly / Railway recipes
 - [Migration & Upgrade Runbook](migrations.md) — operational hygiene
-- [Roadmap](../roadmap.md) — memory TTL, Helm chart
+- [Roadmap](../roadmap.md) — memory TTL
