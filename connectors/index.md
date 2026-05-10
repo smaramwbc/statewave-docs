@@ -4,7 +4,7 @@ Statewave Connectors feed real-world events into Statewave so agents can remembe
 
 A connector is a small, focused package that reads from one source, normalizes its events into the Statewave [episode schema](concepts.md), and lets the CLI or your own code ingest them. Statewave compiles those episodes into durable memories per subject, and serves compact context to your agents on demand.
 
-> **Status:** the v0.1 connector matrix is fully shipped, plus two polish waves (v0.5.x, v0.6.0). All packages — GitHub, Markdown, MCP, Slack (with DMs + group DMs + Events-API webhook), n8n, Zapier helper, Discord, Zendesk, Intercom, Freshdesk, Notion, Gmail — are on npm with provenance attestation. Tier 2 push receivers and Tier 3 daemon shapes are queued. See the [roadmap](roadmap.md) for the full release timeline.
+> **Status:** the v0.1 connector matrix is fully shipped, plus two polish waves (v0.5.x, v0.6.0) and the **Tier 2 push-receiver wave (v0.7.0–v0.11.0)**. All packages — GitHub, Markdown, MCP, Slack (pull + Events-API webhook + DM/MPIM dispatch), n8n, Zapier helper, Discord, Zendesk (pull + webhook receiver), Intercom (pull + webhook receiver), Freshdesk (pull + webhook receiver), Notion, Gmail (pull + Cloud Pub/Sub push receiver) — are on npm with provenance attestation. `statewave-connectors listen <connector>` is the unified daemon for the five push receivers. Tier 3 daemon shapes are queued. See the [roadmap](roadmap.md) for the full release timeline.
 
 ## What's available
 
@@ -22,7 +22,7 @@ Turn local docs, ADRs, RFCs, and decision notes into **project memory** — the 
 
 ### Slack
 
-Turn channel and thread history into **team memory** under `team:<team_id>`. Pull-mode against the Slack Web API; bot-token auth; required `--channels` allowlist. `slack.message.posted` and `slack.thread.replied`. → [`@statewavedev/connectors-slack` README](https://github.com/smaramwbc/statewave-connectors/blob/main/packages/slack/README.md)
+Turn channel and thread history into **team memory** under `team:<team_id>`. Pull mode (Web API + bot token + `--channels` allowlist) and an Events-API webhook receiver (`statewave-connectors listen slack`) that ingests messages, replies, reactions, and pins in real time, with opt-in DMs and group DMs (subjects `dm:<user>` / `mpim:<channel>`). `slack.message.posted`, `slack.thread.replied`, `slack.dm.*`, `slack.mpim.*`. → [`@statewavedev/connectors-slack` README](https://github.com/smaramwbc/statewave-connectors/blob/main/packages/slack/README.md)
 
 ### n8n
 
@@ -38,15 +38,15 @@ Turn server channel + thread history into **community memory** under `community:
 
 ### Zendesk
 
-Turn tickets + public replies + internal notes into **customer memory** under `customer:<org_or_requester_id>`. API token + OAuth bearer auth; `--brands` / `--statuses` allowlists; Incremental Tickets Export delta sync via `--cursor` / `--use-incremental`. `zendesk.ticket.created`, `zendesk.ticket.solved`, `zendesk.comment.posted`, `zendesk.comment.internal_note`. → [`@statewavedev/connectors-zendesk` README](https://github.com/smaramwbc/statewave-connectors/blob/main/packages/zendesk/README.md)
+Turn tickets + public replies + internal notes into **customer memory** under `customer:<org_or_requester_id>`. Pull mode (API token + OAuth bearer auth, `--brands` / `--statuses` allowlists, Incremental Tickets Export delta sync via `--cursor` / `--use-incremental`) plus a webhook receiver (`statewave-connectors listen zendesk`) with HMAC-SHA256 signature verification, replay-window protection, and support for both trigger-driven and event-driven payloads. `zendesk.ticket.created`, `zendesk.ticket.solved`, `zendesk.comment.posted`, `zendesk.comment.internal_note`. → [`@statewavedev/connectors-zendesk` README](https://github.com/smaramwbc/statewave-connectors/blob/main/packages/zendesk/README.md)
 
 ### Intercom
 
-Turn conversations + replies + admin notes into **customer memory** under `customer:<company_or_contact_id>`. Bearer auth (personal-access or OAuth); US/EU/AU regions; `--tags` / `--teams` allowlists. `intercom.conversation.created`, `intercom.conversation.closed`, `intercom.conversation.replied`, `intercom.conversation.note_added`. → [`@statewavedev/connectors-intercom` README](https://github.com/smaramwbc/statewave-connectors/blob/main/packages/intercom/README.md)
+Turn conversations + replies + admin notes into **customer memory** under `customer:<company_or_contact_id>`. Pull mode (bearer auth — personal-access or OAuth, US/EU/AU regions, `--tags` / `--teams` allowlists) plus a webhook receiver (`statewave-connectors listen intercom`) that verifies Intercom's `X-Hub-Signature` HMAC-SHA1 and dispatches all five `conversation.*` notification topics. `intercom.conversation.created`, `intercom.conversation.closed`, `intercom.conversation.replied`, `intercom.conversation.note_added`. → [`@statewavedev/connectors-intercom` README](https://github.com/smaramwbc/statewave-connectors/blob/main/packages/intercom/README.md)
 
 ### Freshdesk
 
-Turn tickets + public replies + private notes into **customer memory** under `customer:<company_or_requester_id>`. API key auth (Basic); native `updated_since` server-side `--since` filter; status-code normalization. `freshdesk.ticket.created`, `freshdesk.ticket.resolved`, `freshdesk.conversation.posted`, `freshdesk.conversation.internal_note`. → [`@statewavedev/connectors-freshdesk` README](https://github.com/smaramwbc/statewave-connectors/blob/main/packages/freshdesk/README.md)
+Turn tickets + public replies + private notes into **customer memory** under `customer:<company_or_requester_id>`. Pull mode (API key Basic auth, native `updated_since` server-side `--since` filter, status-code normalization) plus a webhook receiver (`statewave-connectors listen freshdesk`) that verifies a configurable shared-secret header set on the Freshdesk Automation step. `freshdesk.ticket.created`, `freshdesk.ticket.resolved`, `freshdesk.conversation.posted`, `freshdesk.conversation.internal_note`. → [`@statewavedev/connectors-freshdesk` README](https://github.com/smaramwbc/statewave-connectors/blob/main/packages/freshdesk/README.md)
 
 ### Notion
 
@@ -54,7 +54,7 @@ Turn pages, optional body content, and (opt-in) page-level discussion comments i
 
 ### Gmail
 
-Turn messages matching a required Gmail search query into **relationship memory** under `relationship:<other_email>`. OAuth 2.0 refresh-token flow; History API delta sync via `--cursor`; `--label-ids` server-side filter; MIME body extraction (text/plain → text/html → snippet). `gmail.message.received`, `gmail.message.sent`. → [`@statewavedev/connectors-gmail` README](https://github.com/smaramwbc/statewave-connectors/blob/main/packages/gmail/README.md)
+Turn messages matching a required Gmail search query into **relationship memory** under `relationship:<other_email>`. Pull mode (OAuth 2.0 refresh-token flow, History API delta sync via `--cursor`, `--label-ids` server-side filter, MIME body extraction text/plain → text/html → snippet) plus a Cloud Pub/Sub push receiver (`statewave-connectors listen gmail`) — Gmail's `users.watch` publishes a `{ emailAddress, historyId }` pointer to a Pub/Sub topic; the receiver walks the History API from a persistent per-mailbox cursor and emits the same episode kinds the pull connector does. `gmail.message.received`, `gmail.message.sent`. → [`@statewavedev/connectors-gmail` README](https://github.com/smaramwbc/statewave-connectors/blob/main/packages/gmail/README.md)
 
 ## Modular by design
 

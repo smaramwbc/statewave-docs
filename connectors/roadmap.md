@@ -2,7 +2,7 @@
 
 The connector ecosystem ships in waves. Each wave brings a new class of memory online or polishes an existing one. Connectors are developed in the [statewave-connectors](https://github.com/smaramwbc/statewave-connectors) monorepo and published as separate packages — install only the ones you need.
 
-> **State of the world:** the v0.1 connector matrix is fully shipped, plus two polish waves (v0.5.x, v0.6.0). Tier 2 push receivers and Tier 3 daemon shapes are queued. See the [release notes in the connectors repo](https://github.com/smaramwbc/statewave-connectors/blob/main/RELEASE_NOTES.md) for the per-wave change-log.
+> **State of the world:** the v0.1 connector matrix is fully shipped, plus two polish waves (v0.5.x, v0.6.0) and the **Tier 2 push-receiver wave (v0.7.0–v0.11.0)**. Every connector with a meaningful push surface in its source system now has a real-time receiver alongside its pull connector; `statewave-connectors listen <connector>` is the unified daemon. Tier 3 daemon shapes are queued. See the [release notes in the connectors repo](https://github.com/smaramwbc/statewave-connectors/blob/main/RELEASE_NOTES.md) for the per-wave change-log.
 
 ## ✅ Shipped
 
@@ -28,14 +28,14 @@ The connector ecosystem ships in waves. Each wave brings a new class of memory o
 
 ### Phase 3 — customer support (v0.4.0–v0.4.2)
 
-- `@statewavedev/connectors-zendesk` (v0.4.0, current 0.1.2) — tickets + comments → `customer:<org_or_requester>`. API token + OAuth bearer auth.
-- `@statewavedev/connectors-intercom` (v0.4.1, current 0.1.1) — conversations + replies + admin notes → `customer:<company_or_contact>`. US/EU/AU regions; bearer auth.
-- `@statewavedev/connectors-freshdesk` (v0.4.2, current 0.1.1) — tickets + conversations → `customer:<company_or_requester>`. API key (Basic) auth; status-code normalization; channel-source labels.
+- `@statewavedev/connectors-zendesk` (v0.4.0, current `0.2.0`) — tickets + comments → `customer:<org_or_requester>`. API token + OAuth bearer auth.
+- `@statewavedev/connectors-intercom` (v0.4.1, current `0.2.0`) — conversations + replies + admin notes → `customer:<company_or_contact>`. US/EU/AU regions; bearer auth.
+- `@statewavedev/connectors-freshdesk` (v0.4.2, current `0.2.0`) — tickets + conversations → `customer:<company_or_requester>`. API key (Basic) auth; status-code normalization; channel-source labels.
 
 ### Phase 4 — knowledge & relationships (v0.4.3, v0.4.4)
 
-- `@statewavedev/connectors-notion` (v0.4.3, current 0.1.2) — pages + opt-in body content + opt-in page-level comments + database scoping → `workspace:notion` by default. Bearer auth; pinned to Notion-Version 2022-06-28.
-- `@statewavedev/connectors-gmail` (v0.4.4, current 0.1.2) — messages matching a required Gmail query → `relationship:<other_email>`. OAuth 2.0 refresh-token flow; History API delta sync via `--cursor`.
+- `@statewavedev/connectors-notion` (v0.4.3, current `0.1.2`) — pages + opt-in body content + opt-in page-level comments + database scoping → `workspace:notion` by default. Bearer auth; pinned to Notion-Version 2022-06-28.
+- `@statewavedev/connectors-gmail` (v0.4.4, current `0.2.0`) — messages matching a required Gmail query → `relationship:<other_email>`. OAuth 2.0 refresh-token flow; History API delta sync via `--cursor`.
 
 ### Tier 1 polish (v0.5.0, v0.5.1)
 
@@ -48,17 +48,19 @@ The connector ecosystem ships in waves. Each wave brings a new class of memory o
 - Gmail `0.1.2` — History API delta sync via `--cursor`. Falls back to cold-start when historyId expires (~7 days).
 - Notion `0.1.2` — `--databases` allowlist scopes to specific databases via `/v1/databases/{id}/query`.
 
+### Tier 2 — webhook / push receivers (v0.7.0–v0.11.0)
+
+Each landed as its own focused arc: a new always-on daemon with signature verification, dedup, and retry semantics. Every connector with a meaningful push surface in its source system now has one alongside its pull connector. `statewave-connectors listen <connector>` is the unified daemon; the same `(Request) => Promise<Response>` factory mounts on Vercel / Cloudflare / Express identically across the lineup.
+
+| Wave | Connector | Auth scheme | Episode kinds dispatched | Release |
+|---|---|---|---|---|
+| 2.1 | Slack DM + MPIM (extension to existing webhook handler) | HMAC-SHA256 (Events-API) | `slack.dm.message.posted`, `slack.dm.thread.replied`, `slack.mpim.message.posted`, `slack.mpim.thread.replied` | v0.7.0 (`connectors-slack@0.4.0`) |
+| 2.2 | Freshdesk | Shared-secret header (`X-Statewave-Token` by default) | `freshdesk.ticket.created`, `freshdesk.ticket.resolved`, `freshdesk.conversation.posted`, `freshdesk.conversation.internal_note` | v0.8.0 (`connectors-freshdesk@0.2.0`) |
+| 2.3 | Zendesk | HMAC-SHA256 + replay window (trigger and event-driven payloads) | `zendesk.ticket.created`, `zendesk.ticket.solved`, `zendesk.comment.posted`, `zendesk.comment.internal_note` | v0.9.0 (`connectors-zendesk@0.2.0`) |
+| 2.4 | Intercom | HMAC-SHA1 (`X-Hub-Signature`) | `intercom.conversation.created`, `intercom.conversation.replied`, `intercom.conversation.note_added`, `intercom.conversation.closed` | v0.10.0 (`connectors-intercom@0.2.0`) |
+| 2.5 | Gmail | Cloud Pub/Sub push + path-token (pluggable `verifyAuth` for OIDC) | `gmail.message.received`, `gmail.message.sent` (after walking the History API from a persistent per-mailbox cursor) | v0.11.0 (`connectors-gmail@0.2.0`) |
+
 ## 📌 Queued
-
-### Tier 2 — webhook (push) receivers
-
-Each takes its own focused arc: a new always-on daemon with signature verification, dedup, and retry semantics.
-
-- Slack DM/MPIM event dispatch over the existing webhook handler
-- Zendesk webhook receiver (ticket + comment events)
-- Intercom webhook receiver (conversation + part events)
-- Freshdesk webhook receiver
-- Gmail Pub/Sub watch (push subscription + push endpoint)
 
 ### Tier 3 — new daemon shapes
 
@@ -67,6 +69,7 @@ Each changes the deployment surface (long-lived stateful connection vs request/r
 - Slack Socket Mode (alternative WebSocket transport)
 - Discord Gateway (stateful WebSocket; heartbeats; sequence numbers)
 - Gmail service account / domain-wide delegation (needs JWT/RS256 signing — adds a crypto dep)
+- Built-in OIDC verification for the Gmail Pub/Sub receiver (today: operators plug a `verifyAuth: (req) => Promise<boolean>` callback if they don't want path-token auth)
 
 ### Other deferred polish (per connector)
 
@@ -74,7 +77,7 @@ Each changes the deployment surface (long-lived stateful connection vs request/r
 - **Intercom**: Search Conversations API; Articles + Outbound message ingestion
 - **Freshdesk**: Solutions / KB articles; time entries + survey responses
 - **Notion**: per-block inline comments; tables, callouts, embeds, columns, synced blocks in body rendering; typed property mapping
-- **Gmail**: thread-level episodes; attachment metadata extraction
+- **Gmail**: thread-level episodes; attachment metadata extraction; a renew-watch helper that calls `users.watch` on a schedule
 
 ## Out of scope (for now)
 
