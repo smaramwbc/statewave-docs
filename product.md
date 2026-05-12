@@ -44,7 +44,7 @@ Everything is organised around **subjects** — a user, account, workspace, repo
 
 ## Current limitations
 
-Statewave is in active early development (v0.7.1). We document these honestly:
+Statewave is in active early development (v0.7.2). We document these honestly:
 
 | Limitation | Impact | Status |
 |-----------|--------|--------|
