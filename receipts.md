@@ -36,8 +36,10 @@ inputs in this order:
 1. **Env kill-switch** — `STATEWAVE_RECEIPTS_DISABLED=true` blocks all
    emission. Operational hygiene only.
 2. **Policy force-on** — reserved for the
-   [sensitivity-label policy layer](https://github.com/smaramwbc/statewave/issues/50)
-   sibling work. Returns "no opinion" today.
+   [sensitivity-label policy layer](./sensitivity-labels.md). v1 of
+   the policy layer returns "no opinion" on the emission gate; it
+   *does* fill `policy.filters_applied` and `policy.policy_bundle_hash`
+   on the body of receipts that are emitted for other reasons.
 3. **Per-tenant config** — `tenant_configs.config.receipts` set to
    `always` | `on_request` | `never`. `always` and `never` override
    the per-request flag. Default `on_request`.
@@ -184,9 +186,6 @@ audit artifact; they must not break agent serving.
 
 ## What's coming in v2
 
-- [Sensitivity-label policy layer](https://github.com/smaramwbc/statewave/issues/50)
-  — fills `policy.filters_applied` and lets receipts record what was
-  filtered and why.
 - HMAC signing of receipt bodies (`receipt_signature` column already
   reserved).
 - Scheduled retention-purge worker reading
@@ -194,6 +193,10 @@ audit artifact; they must not break agent serving.
 - Review-time redaction UI in the admin app.
 - Receipt-driven replay (`as_of_replay` mode) for time-travel
   debugging.
+- Compiler/connector heuristic auto-labeling to populate
+  `sensitivity_labels` without operator effort (the
+  [policy layer](./sensitivity-labels.md) it feeds shipped in v1
+  with operator-only labeling).
 
 ## See also
 

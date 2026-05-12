@@ -29,6 +29,7 @@ This repo contains the architecture docs, product specs, API contracts, and deve
 - [Repo Map](architecture/repo-map.md)
 - [API v1 Contract](api/v1-contract.md)
 - [State-assembly receipts](receipts.md) — the immutable audit artifact emitted on each context assembly
+- [Sensitivity labels & policy](sensitivity-labels.md) — per-memory capability tags + bundled rules consulted on every assembly call
 - [Deployment Guide](deployment/guide.md)
 - [Deployment Sizing Guide](deployment/sizing.md) — hardware profiles by tier, topology patterns, bottleneck guidance
 - [Capacity Planning & Tuning Checklist](deployment/capacity-planning.md) — diagnostic flow when load grows, tuning order, when to move up a tier

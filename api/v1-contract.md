@@ -305,14 +305,22 @@ Assemble a ranked, token-bounded context bundle.
   "emit_receipt": true,
   "query_id": "req-123",
   "task_id": "task-456",
-  "parent_receipt_id": "01ARZ3NDEKTSV4RRFFQ69G5FA0"
+  "parent_receipt_id": "01ARZ3NDEKTSV4RRFFQ69G5FA0",
+  "caller_id": "agent-7",
+  "caller_type": "support_agent"
 }
 ```
 
-`session_id`, `emit_receipt`, `query_id`, `task_id`, and
-`parent_receipt_id` are all optional. `emit_receipt` controls
-whether a [state-assembly receipt](../receipts.md) is written; the
-ULID of the resulting receipt is echoed back in `receipt_id`.
+`session_id`, `emit_receipt`, `query_id`, `task_id`,
+`parent_receipt_id`, `caller_id`, and `caller_type` are all optional.
+`emit_receipt` controls whether a
+[state-assembly receipt](../receipts.md) is written; the ULID of the
+resulting receipt is echoed back in `receipt_id`.
+
+`caller_id` and `caller_type` feed the
+[sensitivity-label policy layer](../sensitivity-labels.md). When the
+tenant config sets `require_caller_identity: true`, both are
+**mandatory** — missing values return `401`.
 
 **Scoring model:**
 
@@ -392,6 +400,27 @@ List receipts for a subject, newest first.
 ```
 
 `next_cursor` is `null` when there are no further results.
+
+---
+
+### PATCH /v1/memories/{memory_id}/labels
+
+Replace a memory's `sensitivity_labels` — the per-memory capability
+tags consumed by the [policy layer](../sensitivity-labels.md).
+
+**Request:**
+
+```json
+{ "sensitivity_labels": ["pii", "financial"] }
+```
+
+Server normalises labels (deduplicate, lowercase, trim) and caps at
+32 entries. An empty list clears all labels (memory becomes untagged
+→ policy default-allow). Tenant-scoped: PATCHing a memory belonging
+to another tenant returns `404`, not `403`.
+
+**Response:** `200` — the updated `MemoryResponse` with the canonical
+label set.
 
 ---
 
