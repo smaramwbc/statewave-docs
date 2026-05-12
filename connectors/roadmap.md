@@ -2,7 +2,7 @@
 
 The connector ecosystem ships in waves. Each wave brings a new class of memory online or polishes an existing one. Connectors are developed in the [statewave-connectors](https://github.com/smaramwbc/statewave-connectors) monorepo and published as separate packages — install only the ones you need.
 
-> **State of the world:** the v0.1 connector matrix is fully shipped, plus two polish waves (v0.5.x, v0.6.0) and the **Tier 2 push-receiver wave (v0.7.0–v0.11.0)**. Every connector with a meaningful push surface in its source system now has a real-time receiver alongside its pull connector; `statewave-connectors listen <connector>` is the unified daemon. Tier 3 daemon shapes are queued. See the [release notes in the connectors repo](https://github.com/smaramwbc/statewave-connectors/blob/main/RELEASE_NOTES.md) for the per-wave change-log.
+> **State of the world:** the v0.1 connector matrix is fully shipped, plus two polish waves (v0.5.x, v0.6.0), the **Tier 2 push-receiver wave (v0.7.0–v0.11.0)**, and the **Tier 3 operator/cloud productization wave (v0.12.0–v0.17.0)** — TOML config file (multi-instance), hosted runner (`statewave-connectors run`), persistent state adapters (file / Postgres / Redis), built-in OIDC verification for Gmail Pub/Sub, auth-gated Prometheus `/metrics`, and deployment recipes (Docker / Compose / Helm / Fly / Railway). `statewave-connectors listen <connector>` is the unified push-receiver daemon; `statewave-connectors run` is the hosted runner. Long-running daemon shapes (Slack Socket Mode, Discord Gateway, Gmail service-account auth) are still queued. See the [release notes in the connectors repo](https://github.com/smaramwbc/statewave-connectors/blob/main/RELEASE_NOTES.md) for the per-wave change-log.
 
 ## ✅ Shipped
 

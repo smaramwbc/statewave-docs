@@ -66,4 +66,4 @@ GitHub Discussions live on the core repo: **[statewave/discussions](https://gith
 
 ## Current status
 
-**v0.7.1** — Full support-agent intelligence stack: session-aware context, resolution tracking, handoff packs, health scoring, SLA tracking, proactive alerts. Proven by 232 unit tests, 3 eval suites, 2 benchmarks. See [roadmap](roadmap.md) and [CHANGELOG](CHANGELOG.md).
+**v0.7.2** — Per-kind memory TTL with hourly tombstone sweep, Helm chart (API-only with HPA / Ingress / PDB), cross-machine query embedding cache (L1 + L2), and `MemoryStatus.tombstoned` alignment, on top of v0.7.1's full support-agent intelligence stack (session-aware context, resolution tracking, handoff packs, health scoring, SLA tracking, proactive alerts). See [roadmap](roadmap.md) and [CHANGELOG](CHANGELOG.md).
