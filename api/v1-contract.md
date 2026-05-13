@@ -300,9 +300,19 @@ Assemble a ranked, token-bounded context bundle.
 {
   "subject_id": "user-42",
   "task": "Help the user with billing",
-  "max_tokens": 4000
+  "max_tokens": 4000,
+  "session_id": "sess-xyz",
+  "emit_receipt": true,
+  "query_id": "req-123",
+  "task_id": "task-456",
+  "parent_receipt_id": "01ARZ3NDEKTSV4RRFFQ69G5FA0"
 }
 ```
+
+`session_id`, `emit_receipt`, `query_id`, `task_id`, and
+`parent_receipt_id` are all optional. `emit_receipt` controls
+whether a [state-assembly receipt](../receipts.md) is written; the
+ULID of the resulting receipt is echoed back in `receipt_id`.
 
 **Scoring model:**
 
@@ -331,9 +341,57 @@ Items are sorted by composite score, packed into the token budget, and rendered 
     "episode_ids": ["..."]
   },
   "assembled_context": "## Task\nHelp the user...\n\n## About this user\n- ...",
-  "token_estimate": 312
+  "token_estimate": 312,
+  "receipt_id": "01ARZ3NDEKTSV4RRFFQ69G5FAV",
+  "receipt_emitted": true
 }
 ```
+
+`receipt_id` is `null` when no receipt was emitted (either the caller
+did not request one, the tenant config is `never`, or the kill-switch
+is active). `receipt_emitted` distinguishes "no receipt requested"
+(both fields default) from "receipt was attempted but the write
+failed" (`receipt_id` null, `receipt_emitted` false plus a structured
+log on the server).
+
+---
+
+### GET /v1/receipts/{receipt_id}
+
+Fetch one [state-assembly receipt](../receipts.md) by ULID.
+Tenant-scoped: a receipt belonging to another tenant returns `404`
+with no distinction from a non-existent id, so a tenant cannot probe
+another tenant's id space.
+
+**Response:** `200` — the full receipt body (see
+[receipts.md](../receipts.md)).
+
+---
+
+### GET /v1/receipts
+
+List receipts for a subject, newest first.
+
+**Query params:**
+
+| Param | Required | Description |
+|-------|----------|-------------|
+| `subject_id` | yes | Subject the receipts were written for |
+| `since` | no | Lower bound on `created_at` (ISO 8601) |
+| `until` | no | Upper bound on `created_at` (ISO 8601) |
+| `cursor` | no | Last `receipt_id` from the previous page — ULIDs sort lexically by time, so this is a stable cursor |
+| `limit` | no | 1–200, default 50 |
+
+**Response:** `200`
+
+```json
+{
+  "receipts": [ ...Receipt ],
+  "next_cursor": "01ARZ3NDEKTSV4RRFFQ69G5FA0"
+}
+```
+
+`next_cursor` is `null` when there are no further results.
 
 ---
 
