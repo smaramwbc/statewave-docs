@@ -10,6 +10,12 @@ kind:
         Pattern's capture group 1 is the current version. Bumper writes
         replacement_template.format(ver=new_version) into the matched span.
 
+    "mechanical_minor"
+        Same as "mechanical", but the surface only tracks the major.minor
+        of the workspace version (e.g. marketing chips that read "v0.8"
+        and don't carry the patch). Capture group 1 is the current
+        major.minor; replacement_template uses {ver_minor}.
+
     "mechanical_resub"
         Pattern uses multiple capture groups. Replacement_template contains
         \\g<N> backrefs to preserve surrounding text, and {ver} for the new
@@ -98,5 +104,19 @@ TARGETS = [
         r'\*\*v(\d+\.\d+\.\d+)\*\* —',
         None,
         "editorial",
+    ),
+    (
+        "web_homepage_chip",
+        "statewave-web/src/pages/HomePage.tsx",
+        r'Open source · Self-hosted · v(\d+\.\d+)',
+        'Open source · Self-hosted · v{ver_minor}',
+        "mechanical_minor",
+    ),
+    (
+        "web_hsw_eyebrow",
+        "statewave-web/src/components/HowStatewaveWorks.tsx",
+        r"'Open source · Self-hosted · v(\d+\.\d+)'",
+        "'Open source · Self-hosted · v{ver_minor}'",
+        "mechanical_minor",
     ),
 ]

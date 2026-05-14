@@ -38,6 +38,7 @@ def read_truth() -> str:
 
 def bump(new_version: str, apply: bool) -> int:
     truth = read_truth()
+    ver_minor = ".".join(new_version.split(".")[:2])
     print(f"truth source: {TRUTH_FILE} (currently v{truth} → target v{new_version})")
     if truth != new_version:
         print(
@@ -70,6 +71,7 @@ def bump(new_version: str, apply: bool) -> int:
 
         if kind == "mechanical":
             current = m.group(1)
+            target = new_version
             new_content = re.sub(
                 pattern,
                 replacement.format(ver=new_version),
@@ -77,9 +79,20 @@ def bump(new_version: str, apply: bool) -> int:
                 count=1,
                 flags=re.MULTILINE,
             )
+        elif kind == "mechanical_minor":
+            current = m.group(1)
+            target = ver_minor
+            new_content = re.sub(
+                pattern,
+                replacement.format(ver_minor=ver_minor),
+                content,
+                count=1,
+                flags=re.MULTILINE,
+            )
         elif kind == "mechanical_resub":
             # capture group 2 holds the version for this kind
             current = m.group(2)
+            target = new_version
             new_content = re.sub(
                 pattern,
                 replacement.replace("{ver}", new_version),
@@ -91,15 +104,15 @@ def bump(new_version: str, apply: bool) -> int:
             issues += 1
             continue
 
-        if current == new_version and new_content == content:
-            print(f"  · {key}: already v{new_version}")
+        if current == target and new_content == content:
+            print(f"  · {key}: already v{target}")
             continue
 
         if apply:
             path.write_text(new_content)
-            print(f"  ✓ {key}: v{current} → v{new_version}  [{rel}]")
+            print(f"  ✓ {key}: v{current} → v{target}  [{rel}]")
         else:
-            print(f"  would write {key}: v{current} → v{new_version}  [{rel}]")
+            print(f"  would write {key}: v{current} → v{target}  [{rel}]")
         changed += 1
 
     print()
