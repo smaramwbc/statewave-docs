@@ -6,9 +6,9 @@ Version: **0.7.1**
 
 | Project | Purpose | Version | License |
 |---|---|---|---|
-| Server | Core server — API, domain model, DB, services, deployment | 0.7.1 | AGPL-3.0 |
-| `statewave` (Python SDK) | Sync + async clients, typed exceptions, auth, batch | 0.7.2 | Apache-2.0 |
-| `@statewavedev/sdk` (TypeScript SDK) | Typed errors, auth, batch, ESM | 0.7.2 | Apache-2.0 |
+| Server | Core server — API, domain model, DB, services, deployment | 0.8.0 | AGPL-3.0 |
+| `statewave` (Python SDK) | Sync + async clients, typed exceptions, auth, batch, receipts + label / policy methods | 0.8.0 | Apache-2.0 |
+| `@statewavedev/sdk` (TypeScript SDK) | Typed errors, auth, batch, ESM, receipts + label / policy methods | 0.8.0 | Apache-2.0 |
 | Examples | Runnable demos, evals, benchmarks | — | Apache-2.0 |
 | `@statewavedev/connectors-*` | Connector ecosystem — 13 modular packages (Core, CLI, MCP server, GitHub, Markdown, Slack, Discord, n8n, Zapier, Zendesk, Intercom, Freshdesk, Notion, Gmail) feeding real-world events into Statewave as normalized episodes. Latest release wave: v0.17.0 (Tier 3 operator/cloud productization — config file, hosted runner, persistent state, OIDC, metrics, deployment recipes). | latest wave v0.17.0 | Apache-2.0 |
 | Docs | Architecture, specs, ADRs, coordination (no runtime code) | — | Apache-2.0 |
