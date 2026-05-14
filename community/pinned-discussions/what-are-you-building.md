@@ -47,4 +47,4 @@ Drop a comment with whatever you're comfortable sharing. You don't need to fill 
 - Surface common patterns in roadmap updates
 - Reach out (privately, if preferred) when something is a great fit for a deeper case study or design partnership
 
-If you'd rather share privately — for example because the use case touches customer data or an unannounced product — reach out via the contact channels listed in [SUPPORT.md](https://github.com/smaramwbc/statewave/blob/main/SUPPORT.md) (enterprise inquiries to [enterprise@statewave.ai](mailto:enterprise@statewave.ai), licensing to [licensing@statewave.ai](mailto:licensing@statewave.ai)).
+If you'd rather share privately — for example because the use case touches customer data or an unannounced product — reach out via the contact channels listed in [SUPPORT.md](https://github.com/smaramwbc/statewave/blob/main/SUPPORT.md) (enterprise and licensing inquiries to [licensing@statewave.ai](mailto:licensing@statewave.ai)).
