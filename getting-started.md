@@ -242,7 +242,7 @@ ADMIN_PASSWORD=$(openssl rand -base64 32)
 ADMIN_SESSION_SECRET=$(openssl rand -hex 32)
 ```
 
-`docker compose up -d` then forwards them through to the admin container, the auth-disabled flag is no longer set, and the login form gates access. See [statewave-admin SECURITY.md](https://github.com/smaramwbc/statewave-admin/blob/master/SECURITY.md) before exposing the console anywhere beyond your laptop.
+`docker compose up -d` then forwards them through to the admin container, the auth-disabled flag is no longer set, and the login form gates access. See [statewave-admin SECURITY.md](https://github.com/smaramwbc/statewave-admin/blob/main/SECURITY.md) before exposing the console anywhere beyond your laptop.
 
 ### Marketing site / demo widget
 

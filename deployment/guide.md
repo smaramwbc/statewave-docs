@@ -273,4 +273,4 @@ ADMIN_PASSWORD=$(openssl rand -base64 32)
 ADMIN_SESSION_SECRET=$(openssl rand -hex 32)
 ```
 
-**Important:** even with the password gate enabled, the admin console is an internal tool. Deploy it behind an access gateway (Cloudflare Access, OAuth2 Proxy, identity-aware proxy, …) — do not expose publicly. See [statewave-admin/SECURITY.md](https://github.com/smaramwbc/statewave-admin/blob/master/SECURITY.md) for the full security posture.
+**Important:** even with the password gate enabled, the admin console is an internal tool. Deploy it behind an access gateway (Cloudflare Access, OAuth2 Proxy, identity-aware proxy, …) — do not expose publicly. See [statewave-admin/SECURITY.md](https://github.com/smaramwbc/statewave-admin/blob/main/SECURITY.md) for the full security posture.
