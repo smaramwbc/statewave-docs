@@ -66,7 +66,7 @@ Statewave is purpose-built for **support-agent workflows** — the first use cas
 
 ---
 
-## v0.7 — Operator & Cloud Experience ← CURRENT
+## v0.7 — Operator & Cloud Experience
 
 **Goal:** Make Statewave trustworthy to operate at scale. An operator should be able to deploy, monitor, upgrade, and scale Statewave without surprises.
 
@@ -87,9 +87,19 @@ Statewave is purpose-built for **support-agent workflows** — the first use cas
 
 ---
 
-## v0.8 — Adoption & Ecosystem (in progress)
+## v0.8 — Governance & Adoption ← CURRENT
 
-**Goal:** Make it trivial for teams to adopt Statewave and integrate it into existing stacks.
+**Goal:** Make Statewave deployable in compliance-grade settings (regulated industries, multi-tenant SaaS) and make adoption trivial for teams integrating it into existing stacks.
+
+### Governance & audit — shipped
+
+- [x] **State-assembly receipts** ([#49](https://github.com/smaramwbc/statewave/issues/49)) — every `/v1/context` and `/v1/handoff` call can emit an immutable, ULID-addressable audit artifact recording exactly which memories + episodes influenced the bundle, with a SHA-256 hash of the bytes delivered to the agent and per-entry supersession status. `GET /v1/receipts/{id}` + cursor-paginated list per subject. Strict-superset schema with a `mode` discriminator so future modes (`as_of_replay`, `eval_run`) can extend without breaking. Emission gate: per-request flag → per-tenant config (`always | on_request | never`) → env kill-switch. Tenant-controlled retention surface (`receipt_retention_days` in `tenant_configs`; purge worker is v0.9). Full design + six negative-test acceptance criteria in [`receipts.md`](receipts.md).
+- [x] **Sensitivity labels + per-memory policy bindings** ([#50](https://github.com/smaramwbc/statewave/issues/50)) — per-memory capability tags (`pii`, `financial`, `secret`, …) carried as a `TEXT[]` column with a GIN index; set via `PATCH /v1/memories/{id}/labels`. Policy bundles are YAML/JSON, content-hashed, immutable, stored in `policy_bundles`; six predicates (`memory_has_any_label`, `memory_has_all_labels`, `caller_type`, `caller_type_in`, `caller_type_not_in`, `caller_id`) and two actions (`deny`, `redact`); first-match-wins evaluation, default-allow on no match. Per-tenant `policy_mode: log_only | enforce` — `log_only` records decisions into receipts without filtering (safe rollout), `enforce` drops denied memories before ranking. Receipts surface every fired decision via `policy.filters_applied` and the unfired-rule summary via `policy.filters_skipped`. Full reference in [`sensitivity-labels.md`](sensitivity-labels.md).
+- [x] **Caller identity** — `caller_id` and `caller_type` on `/v1/context` and `/v1/handoff` feed the policy evaluator. Tenant config `require_caller_identity: true` 401s anonymous calls — the lever compliance-grade tenants flip to make policy enforcement non-bypassable.
+- [x] **Per-tenant configuration endpoint** — `GET / PATCH /admin/tenants/{tenant_id}/config` for receipts emission policy, retention, policy_mode, caller-identity gating. PATCH-shape merge (only touches supplied keys, preserves the rest), enum/bound validation at the API boundary, optimistic concurrency via `expected_version`. Makes `policy_mode: enforce` and `require_caller_identity: true` reachable via API without a SQL shell — the gap caught in the enforce-mode prod smoke.
+- [x] **Cross-tenant policy bundle uniqueness** ([#79](https://github.com/smaramwbc/statewave/issues/79)) — `policy_bundles` keyed on `(tenant_id, bundle_hash)` composite uniqueness (PG15+ `NULLS NOT DISTINCT`). Two tenants installing the IDENTICAL YAML produce two independently-resolvable rows. Pre-fix the second tenant's upload silently re-bound the first's row.
+
+### Adoption — in progress
 
 - [ ] SDK convenience methods for support endpoints (health, SLA, handoff, resolutions)
 - [ ] Framework integrations (LangChain, CrewAI, AutoGen)
@@ -98,6 +108,19 @@ Statewave is purpose-built for **support-agent workflows** — the first use cas
 - [ ] Design partner onboarding package
 - [ ] Head-to-head benchmark against Mem0 / Zep
 - [x] **Connector ecosystem — fully shipped** ✅ Modular packages for GitHub, Markdown/ADRs, MCP, Slack, Discord, Zendesk, Intercom, Freshdesk, Notion, Gmail, n8n, Zapier. v0.6.0 added cursor-based delta sync (Zendesk Incremental Tickets Export, Gmail History API) and Notion database scoping. **Tier 2 push receivers shipped (v0.7.0–v0.11.0)** — every connector with a meaningful push surface in its source system now has a real-time receiver alongside its pull connector: Slack DM/MPIM dispatch (`slack.dm.*`, `slack.mpim.*`), Freshdesk webhook, Zendesk webhook, Intercom webhook, and Gmail Cloud Pub/Sub push. `statewave-connectors listen <connector>` is the unified daemon; the same `(Request) => Promise<Response>` factory mounts on Vercel / Cloudflare / Express identically across the lineup. **Tier 3 operator/cloud productization shipped (v0.12.0–v0.17.0)** — TOML config file (multi-instance), hosted runner (`statewave-connectors run`), persistent state adapters (file / Postgres / Redis), built-in OIDC verification for Gmail Pub/Sub, auth-gated Prometheus `/metrics`, and deployment recipes (Docker / Compose / Helm / Fly / Railway). See [Connectors → Roadmap](connectors/roadmap.md) for the full release timeline and what's queued next (long-running daemon shapes — Slack Socket Mode, Discord Gateway, Gmail service-account auth).
+
+---
+
+## v0.9 — Replay, Signing, & Auto-Labeling (planned)
+
+Building on the v0.8 governance foundation:
+
+- [ ] **Receipt-driven replay** — new receipt `mode: as_of_replay` lets `/v1/replay` re-run assembly against historical state (using receipt's recorded selected entries + bundle hash) and emit a "what would have happened" receipt for time-travel debugging.
+- [ ] **HMAC signing for receipts** — the `receipt_signature` column reserved in v0.8 lights up with a tenant-key-signed digest of the canonical receipt body. Lets compliance reviewers verify a receipt wasn't tampered with after the fact.
+- [ ] **Scheduled retention-purge worker** — reads `tenant_configs.receipt_retention_days` and tombstones expired receipts. Surface shipped in v0.8; worker is the implementation.
+- [ ] **Compiler/connector heuristic auto-labeling** — opt-in regex/LLM detection of PII, financial identifiers, etc. during memory compilation. Surfaces as `suggested_labels` (separate from authoritative operator-supplied `sensitivity_labels`) so false positives never silently filter memories.
+- [ ] **Visual policy editor** — operator-friendly form on the admin app to build rule sets without writing YAML by hand (YAML still ships as the canonical artifact for git review).
+- [ ] **Cross-region data residency** — `region` column reserved on receipts in v0.8 lights up with per-tenant region pinning so EU-only tenants can guarantee assembly artifacts stay in EU storage.
 
 ---
 

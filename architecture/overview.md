@@ -12,8 +12,8 @@ RECORD → COMPILE → CONTEXT → GOVERN
 
 1. **Record** — immutable episodes capture raw interaction truth
 2. **Compile** — pluggable compilers (heuristic or LLM) derive typed memories with provenance, embeddings, and conflict resolution
-3. **Context** — assembly service builds ranked, token-bounded, deterministic context bundles using temporal reasoning and semantic similarity
-4. **Govern** — provenance inspection, delete-by-subject, authentication, rate limiting, webhook notifications
+3. **Context** — assembly service builds ranked, token-bounded, deterministic context bundles using temporal reasoning and semantic similarity, gated by the [policy layer](../sensitivity-labels.md) (memory `sensitivity_labels` ✕ caller identity → allow / deny / redact) before ranking
+4. **Govern** — provenance inspection, delete-by-subject, authentication, rate limiting, webhook notifications, immutable [state-assembly receipts](../receipts.md) per call (content-hash integrity, ULID-addressable), per-tenant configuration for emission / retention / enforce mode
 
 > **Where do episodes come from?** Either the SDKs (Python / TypeScript) or the [Connectors](../connectors/index.md) — modular packages for GitHub, Markdown/ADRs, MCP-compatible agents, and more. Connectors normalize source events into the same episode shape Statewave records natively.
 

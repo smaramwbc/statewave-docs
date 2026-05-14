@@ -6,7 +6,9 @@ This page explains how Statewave decides which memories make it into a context b
 
 ## How ranking works
 
-Every candidate memory is scored deterministically by summing a small number of signals. Items are then sorted by composite score and packed into the requested token budget, section by section (facts → procedures → history → episodes).
+Every candidate memory is first **policy-filtered**, then scored deterministically by summing a small number of signals. Items are sorted by composite score and packed into the requested token budget, section by section (facts → procedures → history → episodes).
+
+The policy filter is the first gate. When a tenant has activated a [sensitivity-label policy bundle](../sensitivity-labels.md), each candidate memory is evaluated against the rules using the call's `caller_id` / `caller_type`. Memories that match a `deny` rule (under `policy_mode: enforce`) are removed from the candidate pool **before scoring** — they cannot leak through via a high ranking score. Memories matching a `redact` rule are kept in the pool but their content is replaced with `[REDACTED by policy]` before delivery. Decisions are recorded into the [state-assembly receipt](../receipts.md) in either mode (`log_only` records without filtering; `enforce` filters and records).
 
 ### Core signals (always applied)
 

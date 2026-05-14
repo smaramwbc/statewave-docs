@@ -68,6 +68,8 @@ Episodes (raw events) → Compilation → Memories (typed, scored) → Context a
 | **Token-bounded** | Context assembly respects a configurable token budget. Items are packed by ranked score, not truncated arbitrarily. |
 | **Ranked** | Scoring formula: kind priority × recency × task relevance × temporal validity × semantic similarity (when available). |
 | **Provenance-traced** | Every memory traces to its source episode IDs. Every context bundle reports which facts, summaries, and episodes were included. |
+| **Auditable** | Every assembly call can emit an immutable [state-assembly receipt](receipts.md) — a ULID-addressable record of which memories and episodes influenced the bundle, with a SHA-256 hash of the bytes delivered to the agent. Compliance reviewers can answer "what state did the agent actually see at decision time?" without trusting application logs. |
+| **Governable** | Per-memory [sensitivity labels](sensitivity-labels.md) feed a declarative YAML policy engine. Operators express rules like "PII memories cannot be read by marketing tools" once, and `/v1/context` enforces them per call — with the decision recorded into the receipt either way (`log_only` for audit-without-filtering, `enforce` for hard blocking). |
 | **Idempotent** | Recompiling the same subject produces no duplicate memories. |
 | **Subject-centric** | Everything is organised around subjects (customer, account, workspace). Full lifecycle: ingest → compile → retrieve → inspect → delete. |
 

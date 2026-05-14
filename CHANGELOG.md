@@ -2,6 +2,71 @@
 
 All notable changes to the Statewave workspace.
 
+## v0.8.0 — Governance & Audit (2026-05-14)
+
+This release adds the governance layer that turns Statewave from "structured memory with provenance" into "structured memory with emitted, queryable, policy-governed accountability." Three components:
+
+### Added — state-assembly receipts ([#49](https://github.com/smaramwbc/statewave/issues/49))
+
+- Every `/v1/context` and `/v1/handoff` call can emit an **immutable, ULID-addressable receipt** of which memories + episodes influenced the assembled bundle, plus a SHA-256 hash of the bytes delivered to the agent. Receipts are tenant-scoped, append-only, and queryable via `GET /v1/receipts/{id}` and `GET /v1/receipts?subject_id=&since=&until=&cursor=`.
+- Strict-superset schema with a `mode` discriminator (`retrieval` in v0.8; `as_of_replay` and `eval_run` reserved for v0.9) so future modes extend without breaking parsers.
+- Per-entry fields cover the supersession status (`active | superseded | tombstoned`), source episodes, provenance hash, rank, and a `fact_key` / `conflict_status` slot for the conflict-resolution layer to fill in.
+- Reserved schema slots for v0.9 work: `parent_receipt_id` (wired in v0.8 for chaining), `region` (for data residency), `receipt_signature` (for HMAC tamper-evidence).
+- Emission control is a single decision function consulting (env kill-switch → per-policy force-on → per-tenant config `receipts: always | on_request | never` → per-request `emit_receipt: bool`). Fail-open: a receipt write error logs a structured warning and the assembly bundle still returns.
+- Six negative-test acceptance criteria from the design doc — stale fact selected, superseded memory ranked, tombstoned memory resurrected, unresolved conflict, as-of drift, byte tampering — each phrased as a deterministic assertion against the receipt body.
+- Read API surface ships in both SDKs: `client.get_receipt(id)`, `client.list_receipts(subject_id, ...)`. Receipts also exposed via the admin app's `/receipts` page (read-only, cross-tenant) and the `/admin/receipts` cross-tenant operator endpoints.
+- Full reference in [`receipts.md`](receipts.md).
+
+### Added — sensitivity labels & per-memory policy bindings ([#50](https://github.com/smaramwbc/statewave/issues/50))
+
+- Per-memory **capability tags** stored as `memories.sensitivity_labels: TEXT[]` with a GIN index for cheap overlap queries on the hot path. Operator-supplied via `PATCH /v1/memories/{id}/labels`; server normalises (deduplicate + lowercase + trim) and caps at 32 entries per memory.
+- **Declarative policy bundles** in YAML or JSON, content-hashed and immutable in the new `policy_bundles` table. Six predicates (`memory_has_any_label`, `memory_has_all_labels`, `caller_type`, `caller_type_in`, `caller_type_not_in`, `caller_id`) AND-ed inside `when:`; first-match-wins across rules; default-allow on no match. Two actions: `deny` (drop memory) and `redact` (replace content with `[REDACTED by policy]`).
+- **Caller identity** in requests: `caller_id` and `caller_type` on `/v1/context` and `/v1/handoff` feed the evaluator. Tenant config `require_caller_identity: true` 401s anonymous calls — the lever compliance customers flip to make policy enforcement non-bypassable.
+- **Per-tenant policy_mode: log_only | enforce**. Ships in `log_only` by default — receipts record what *would* be denied without filtering the response, so operators can audit a policy for a few days before flipping to `enforce`. Without this lever the day a tenant enabled policy would silently lose memories for any under-tagged subject.
+- Receipts fill `policy.filters_applied` (one entry per memory where a rule fired) and `policy.filters_skipped` (one entry per rule that ran but matched nothing — bounded by `len(bundle.rules)`, not memory count).
+- Admin endpoints: `POST /admin/policy/bundles` (upload + optional activate), `GET /admin/policy/bundles` (list, optional tenant filter), `GET /admin/policy/bundles/{hash}?tenant_id=` (detail with disambiguation), `POST /admin/policy/activate` (flip active in a scope), `POST /admin/policy/reload` (bust in-process cache for direct DB fix-ups), `GET /admin/policy/active?tenant_id=` (returns `200 + null` for unconfigured scopes).
+- Admin app `/policy` page: list, upload YAML, activate, detail viewer with parsed rules + when blocks + actions.
+- Full reference in [`sensitivity-labels.md`](sensitivity-labels.md).
+
+### Added — per-tenant configuration
+
+- `GET / PATCH /admin/tenants/{tenant_id}/config` covers the receipt emission policy, retention window (worker is v0.9), policy mode, and caller-identity gate. PATCH is partial-merge (only touches supplied keys, preserves the rest) so future per-tenant knobs land without each endpoint knowing the full key set.
+- Validation at the API boundary: enum values, integer bounds, and the documented key set are all checked by Pydantic before they reach the JSONB. A typo like `policy_mode: "enforced"` returns 422 instead of silently leaving enforcement off — the failure mode the JSONB shape made too easy to introduce.
+- Optimistic concurrency via `expected_version`: lost-update races between parallel admin edits surface as 409 with a clear message, not silent overwrites. `expected_version=0` is the create semantic for a tenant with no row yet.
+- Admin app: tenant-config form on the `/policy` page (rendered when a tenant scope is selected), with an enforce-mode warning and 409-auto-reload on concurrent edits.
+
+### Added — cross-tenant policy bundle independence ([#79](https://github.com/smaramwbc/statewave/issues/79))
+
+- `policy_bundles` now keyed on a synthetic UUID `id` PK plus a composite unique index `(tenant_id, bundle_hash) NULLS NOT DISTINCT` (PG15+). Two tenants installing the identical YAML produce two independently-resolvable rows.
+- `GET /admin/policy/bundles/{hash}` accepts `?tenant_id=` for disambiguation; `POST /admin/policy/activate` request body includes `tenant_id` so the flip targets exactly `(tenant, hash)`.
+- Pre-fix, the second tenant's upload silently re-bound the first's row and broke their policy resolution. Caught in the enforce-mode prod smoke; the temporary workaround was to add a tenant-identifying comment to the YAML.
+
+### Fixed
+
+- **Multi-replica policy bundle cache staleness** ([#77](https://github.com/smaramwbc/statewave/issues/77)) — dropped the in-process cache on `policy_bundles`. The 60-second TTL caused replicas that hadn't handled the admin upload to keep serving the pre-upload `None` value until their TTL expired, which under `enforce` would silently pass sensitive memories through for up to a minute after a tenant activated a policy. DB lookup is sub-millisecond with the existing index; correctness > caching savings. Caught in production smoke testing.
+- **`/admin/policy/active` 404 → 200 + null** when no bundle is active for the scope. "No bundle uploaded yet" is the default state on fresh install, not an error. 404 polluted every operator's browser console on first page load.
+- **Stacked-PR rebase hygiene** in the merged history — the closed-by-cascade PRs (server #73, py #8, ts #10) have explanatory comments pointing at their replacement PRs.
+
+### Architectural notes
+
+- The receipt body shape was chosen as a strict superset rather than a tagged union so v0.9's `as_of_replay` and `eval_run` modes can extend without forcing every receipt consumer to update its parser. The `mode` discriminator carries the actual variant.
+- `policy_bundles` uses a synthetic UUID PK rather than a sentinel-tenant approach (`tenant_id NOT NULL DEFAULT ''`) so wire shapes don't shift — global bundles still appear as `tenant_id: null` on the wire post-#79.
+- The policy evaluator is intentionally pure (no DB, no IO inside `evaluate_memory`) so it can be tested directly with synthetic rules and memories. Bundle resolution is the only DB-touching part.
+
+### Migrated
+
+- `alembic` head moved from `0016_memory_status_tombstoned` to `0019_per_tenant_bundles`. Three new migrations:
+  - `0017_receipts_and_policy` — `receipts`, `tenant_configs`, `policy_bundles` tables.
+  - `0018_sensitivity_labels` — `memories.sensitivity_labels TEXT[]` + GIN index.
+  - `0019_per_tenant_bundles` — composite uniqueness on `policy_bundles` (synthetic UUID PK + `(tenant_id, bundle_hash) NULLS NOT DISTINCT`).
+
+### Companion releases
+
+- `statewave` server v0.8.0 — full surface above.
+- `statewave-py` 0.8.0 (PyPI) — `Receipt`, `ReceiptList`, `set_memory_labels`, `get_receipt`, `list_receipts`, `caller_id` / `caller_type` on `get_context()`.
+- `statewave-ts` 0.8.0 (npm `@statewavedev/sdk`) — same surface, first-class types.
+- `statewave-admin` — Receipts viewer, Policy page (upload + activate + bundle detail), Tenant config form, sensitivity-labels editor on `MemoryDetailModal`.
+
 ## v0.7.2 (2026-05-10)
 
 ### Added

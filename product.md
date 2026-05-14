@@ -21,6 +21,7 @@ Everything is organised around **subjects** — a user, account, workspace, repo
 - A structured memory store backed by Postgres + pgvector
 - A context assembly engine that returns prompt-ready bundles with token estimates
 - A provenance system that traces every memory back to its source episodes
+- A governance layer ([receipts](receipts.md) + [sensitivity labels & policy](sensitivity-labels.md)) that records *which memories influenced each agent response* with byte-level integrity hashes, and filters per-memory access by caller identity through declarative YAML policy
 - Framework-neutral — works with any AI stack, any language
 
 ## What Statewave is not
@@ -44,7 +45,7 @@ Everything is organised around **subjects** — a user, account, workspace, repo
 
 ## Current limitations
 
-Statewave is in active early development (v0.7.2). We document these honestly:
+Statewave is in active early development (v0.8.0). We document these honestly:
 
 | Limitation | Impact | Status |
 |-----------|--------|--------|
@@ -76,9 +77,15 @@ Statewave is in active early development (v0.7.2). We document these honestly:
 | `GET /v1/subjects/{id}/sla` | SLA metrics — response time, resolution time, breach flags |
 | `webhook: subject.health_degraded` | Fires when health state worsens (healthy→watch, watch→at_risk) |
 | `webhook: subject.health_improved` | Fires when health state recovers (at_risk→watch, watch→healthy) |
+| `GET /v1/receipts/{id}` | Fetch one state-assembly receipt by ULID |
+| `GET /v1/receipts` | List receipts for a subject (cursor-paginated) |
+| `PATCH /v1/memories/{id}/labels` | Set per-memory sensitivity labels |
 | `GET /v1/timeline` | View subject timeline |
 | `GET /v1/subjects` | List subjects with counts |
 | `DELETE /v1/subjects/{id}` | Delete all data for a subject |
+| `GET / PATCH /admin/tenants/{id}/config` | Per-tenant config — receipts emission, retention, policy_mode, caller-identity gate |
+| `POST /admin/policy/bundles` | Upload (and optionally activate) a YAML policy bundle |
+| `POST /admin/policy/activate` | Switch active bundle for a scope |
 
 ## SDKs
 

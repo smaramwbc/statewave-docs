@@ -40,6 +40,8 @@ statewave/
   server/
     api/          # Route handlers (thin — delegate to services)
       episodes.py, memories.py, context.py, timeline.py, subjects.py
+      handoff.py, resolutions.py, sla.py, health.py
+      receipts.py, admin.py    # receipts read API + admin policy/tenant-config surface
     core/         # Cross-cutting: config, errors, middleware, auth, rate limit, tenant
     db/           # ORM tables, repositories, engine
     domain/       # Pure domain models (Pydantic, no ORM coupling)
@@ -47,20 +49,23 @@ statewave/
     services/     # Business logic
       compilers/  # BaseCompiler protocol, HeuristicCompiler, LLMCompiler
       embeddings/ # BaseEmbeddingProvider, StubProvider, LiteLLMProvider
-      context.py  # Ranked, token-bounded, temporal context assembly
-      conflicts.py # Memory conflict resolution
-      webhooks.py # Event hook delivery
-  alembic/        # DB migrations (3 versions)
+      context.py    # Ranked, token-bounded, temporal context assembly
+      handoff.py    # Handoff context-pack assembly
+      conflicts.py  # Memory conflict resolution
+      webhooks.py   # Event hook delivery
+      receipts.py   # State-assembly receipt — emission decision, ULID, canonicalization, write
+      policy.py     # Sensitivity-label policy — YAML bundle loader, evaluator, decision projection
+  alembic/        # DB migrations (latest: 0019_per_tenant_bundles)
   tests/          # Unit + integration tests
 ```
 
-## Test counts (as of v0.7.2)
+## Test counts (as of v0.8.0)
 
 | Project | Tests | Framework |
 |---|---|---|
-| Server | 232+ | pytest + pytest-asyncio |
-| `statewave` (Python SDK) | 29 | pytest |
-| `@statewavedev/sdk` (TypeScript SDK) | 18 | vitest |
+| Server | 470+ | pytest + pytest-asyncio |
+| `statewave` (Python SDK) | 34 | pytest |
+| `@statewavedev/sdk` (TypeScript SDK) | 23 | vitest |
 | `@statewavedev/connectors-*` | 297 | vitest |
 | Examples | 3 eval suites (54 assertions), 2 benchmarks | pytest |
 
