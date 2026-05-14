@@ -6,7 +6,7 @@ Version: **0.7.1**
 
 | Project | Purpose | Version | License |
 |---|---|---|---|
-| Server | Core server — API, domain model, DB, services, deployment | 0.8.0 | AGPL-3.0 |
+| Server | Core server — API, domain model, DB, services, deployment | 0.8.0 | Apache-2.0 |
 | `statewave` (Python SDK) | Sync + async clients, typed exceptions, auth, batch, receipts + label / policy methods | 0.8.0 | Apache-2.0 |
 | `@statewavedev/sdk` (TypeScript SDK) | Typed errors, auth, batch, ESM, receipts + label / policy methods | 0.8.0 | Apache-2.0 |
 | Examples | Runnable demos, evals, benchmarks | — | Apache-2.0 |

@@ -92,18 +92,18 @@ This is also the best signal we have for prioritizing the roadmap.
 
 Maintainers may move, edit, lock, or delete posts that don't fit these guidelines.
 
-## Open source and commercial sustainability
+## Open source and sustainability
 
-Statewave is positioned as a long-lived piece of infrastructure. To keep it that way, the project balances two tracks:
+Statewave is positioned as a long-lived piece of infrastructure:
 
 - **Model-agnostic, durable memory and state outside the model** — inspectable, portable, self-hostable, vendor-neutral, built for real agents and production systems.
-- **AGPLv3 for open-source / community use**, with a separate **Statewave Commercial License** for proprietary, SaaS, embedded, hosted, or enterprise use. See [LICENSING.md](https://github.com/smaramwbc/statewave/blob/main/LICENSING.md).
+- **Licensed under Apache-2.0** — a permissive OSS license with an explicit patent grant. Use it freely in open-source, proprietary, SaaS, embedded, or hosted products. See [LICENSING.md](https://github.com/smaramwbc/statewave/blob/main/LICENSING.md).
 
 What this means in practice for community participation:
 
 - Architecture, API design, integrations, and roadmap are discussed openly. Public RFCs and Discussions are the right venue.
-- Bug reports, fixes, features, docs improvements — all welcome under the dual-license contribution model described in [CONTRIBUTING.md](https://github.com/smaramwbc/statewave/blob/main/CONTRIBUTING.md).
-- **Commercial terms, custom contracts, indemnity, SLAs** are handled privately at [licensing@statewave.ai](mailto:licensing@statewave.ai), not in public Discussions.
-- General licensing *questions* (which license fits my use case? what does AGPL §13 mean here?) are fine to discuss publicly. Specific commercial *terms* are not.
+- Bug reports, fixes, features, docs improvements — all welcome. Contributions are accepted under Apache-2.0 with a DCO sign-off — see [CONTRIBUTING.md](https://github.com/smaramwbc/statewave/blob/main/CONTRIBUTING.md).
+- **Enterprise support contracts** (SLA, indemnity, procurement) are handled privately at [licensing@statewave.ai](mailto:licensing@statewave.ai), not in public Discussions.
+- General licensing *questions* are fine to discuss publicly; specific support-contract *terms* are not.
 
 This guide is community guidance, not legal advice. For licensing questions specific to your situation, consult qualified counsel.

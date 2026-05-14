@@ -34,7 +34,7 @@ The retrieval contract is deliberately deterministic: same `(subject_id, task, m
 | **Provenance** | Not surfaced in the public overview. | Every memory returns `source_episode_ids`. Every episode is immutable and timestamped. Citation chain is queryable. |
 | **Token-bounded context** | Not advertised as a contract. | First-class: `max_tokens` is part of the context request; bundle reports `token_estimate` against budget. |
 | **Compliance** | "SOC 2, audit logs, workspace governance" advertised on the platform tier. | Customer-side — you self-host, you own the controls. No managed plane to audit. |
-| **Pricing** | Tiered platform plans + free OSS. Refer to [mem0.ai pricing](https://mem0.ai/pricing). | OSS (AGPLv3) free; commercial license for proprietary use. See [LICENSING.md](https://github.com/smaramwbc/statewave/blob/main/LICENSING.md). |
+| **Pricing** | Tiered platform plans + free OSS. Refer to [mem0.ai pricing](https://mem0.ai/pricing). | Free OSS (Apache-2.0) — proprietary, hosted, and commercial use allowed without a separate license. See [LICENSING.md](https://github.com/smaramwbc/statewave/blob/main/LICENSING.md). |
 | **API surface** | `add`, `search`, `update`, `delete` per Mem0's overview. | `POST /v1/episodes`, `POST /v1/memories/compile`, `POST /v1/context`, `GET /v1/timeline`, `DELETE /v1/subjects/{id}`. See [api/v1-contract.md](../api/v1-contract.md). |
 | **Compilation** | Implicit — the platform manages extraction. | Explicit `/v1/memories/compile` step; pluggable heuristic or LLM compiler. See [architecture/compiler-modes.md](../architecture/compiler-modes.md). |
 

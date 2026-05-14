@@ -56,7 +56,7 @@ The full community guide is in [statewave-docs/community/discussions.md](https:/
 
 ### Licensing in one paragraph
 
-Statewave Core is **dual-licensed**: AGPLv3 for open-source / community use, and a separate **Statewave Commercial License** for proprietary, SaaS, embedded, hosted, or enterprise use. The full breakdown is in [LICENSING.md](https://github.com/smaramwbc/statewave/blob/main/LICENSING.md). General licensing questions — *which license fits my use case?* — are fine to discuss publicly. Specific commercial terms, contracts, and enterprise procurement go to [licensing@statewave.ai](mailto:licensing@statewave.ai).
+Statewave is licensed under **Apache-2.0** — a permissive OSS license with an explicit patent grant. Use it freely in open-source, proprietary, SaaS, embedded, or hosted products without a separate agreement. The full overview is in [LICENSING.md](https://github.com/smaramwbc/statewave/blob/main/LICENSING.md). For enterprise support contracts (SLA, indemnity, procurement), email [licensing@statewave.ai](mailto:licensing@statewave.ai).
 
 ### Introduce yourself
 

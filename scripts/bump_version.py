@@ -72,8 +72,8 @@ SERVER_TARGETS: list[Target] = [
     ),
     Target(
         path=ROOT / "architecture" / "repo-map.md",
-        pattern=r"\| `statewave` \| Core server — API, domain model, DB, services, deployment \| (?P<version>\S+) \| AGPL-3\.0 \|",
-        template="| `statewave` | Core server — API, domain model, DB, services, deployment | {version} | AGPL-3.0 |",
+        pattern=r"\| `statewave` \| Core server — API, domain model, DB, services, deployment \| (?P<version>\S+) \| Apache-2\.0 \|",
+        template="| `statewave` | Core server — API, domain model, DB, services, deployment | {version} | Apache-2.0 |",
     ),
     Target(
         path=ROOT / "architecture" / "repo-map.md",

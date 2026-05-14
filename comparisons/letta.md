@@ -34,7 +34,7 @@ Your agent code (whether built with the Vercel AI SDK, OpenAI's Agents SDK, Lang
 | **Provider lock-in** | Provider-neutral via the underlying open-source project; the Letta Code app advertises "deployment that works across every model provider" | Provider-neutral via LiteLLM (100+ providers) |
 | **Determinism** | Not advertised as a contract; the agent loop's behaviour is governed by the model and tool calls | Deterministic context bundle for `(subject, task, budget)` triples |
 | **Tool use, reasoning loops, agent state machines** | First-class | Out of scope — your orchestrator handles this |
-| **Pricing** | Platform tiers + open-source server. Refer to [letta.com pricing](https://www.letta.com/) | OSS (AGPLv3) + commercial license — see [LICENSING.md](https://github.com/smaramwbc/statewave/blob/main/LICENSING.md) |
+| **Pricing** | Platform tiers + open-source server. Refer to [letta.com pricing](https://www.letta.com/) | Free OSS (Apache-2.0) — proprietary, hosted, and commercial use allowed without a separate license. See [LICENSING.md](https://github.com/smaramwbc/statewave/blob/main/LICENSING.md) |
 | **Best fit** | Teams without an agent stack who want a complete one | Teams with an agent stack who want a memory layer |
 
 The two products **don't usually compete head-to-head** — they sit at different layers. The honest comparison is "do I want to adopt a runtime, or do I want a memory service my existing runtime can call?"
