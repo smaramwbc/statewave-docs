@@ -39,6 +39,7 @@ def read_truth() -> str:
 
 def main() -> None:
     truth = read_truth()
+    truth_minor = ".".join(truth.split(".")[:2])
     print(f"truth: v{truth}  ({TRUTH_FILE})")
     print()
 
@@ -56,10 +57,11 @@ def main() -> None:
             missing.append((key, rel, "pattern not found"))
             continue
         current = m.group(1) if kind != "mechanical_resub" else m.group(2)
+        expected = truth_minor if kind == "mechanical_minor" else truth
         if kind == "editorial":
             editorial.append((key, rel, current))
-        elif current != truth:
-            drift.append((key, rel, current))
+        elif current != expected:
+            drift.append((key, rel, current, expected))
 
     fail = False
 
@@ -76,8 +78,8 @@ def main() -> None:
 
     if drift:
         print(f"✗ {len(drift)} mechanical surface(s) drift from truth (v{truth}):")
-        for key, rel, cur in drift:
-            print(f"  {key}: v{cur} ≠ v{truth}  [{rel}]")
+        for key, rel, cur, exp in drift:
+            print(f"  {key}: v{cur} ≠ v{exp}  [{rel}]")
         print()
         print(f"  fix: python tools/bump-version.py {truth} --apply")
         print()
