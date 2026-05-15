@@ -1,6 +1,6 @@
 # Architecture Overview
 
-Version: **0.6.x**
+Version: **0.8.x**
 
 Statewave is an **open-source memory runtime for AI agents**. It compiles raw events into ranked, token-bounded context bundles with full provenance — so your AI stops forgetting across sessions. Self-hosted on Postgres, no vendor lock-in.
 
@@ -102,12 +102,23 @@ In addition to the core signals above, support-agent workloads apply session, ur
 | Entity | Description | Key fields |
 |--------|-------------|------------|
 | **Episode** | Immutable raw event | id, subject_id, source, type, payload, metadata, provenance, created_at, last_compiled_at |
-| **Memory** | Derived typed memory | id, subject_id, kind, content, summary, confidence, valid_from, valid_to, source_episode_ids, status, embedding |
+| **Memory** | Derived typed memory | id, subject_id, kind, content, summary, confidence, valid_from, valid_to, source_episode_ids, status, embedding, sensitivity_labels |
 | **ContextBundle** | Runtime output | subject_id, task, facts, episodes, procedures, provenance, assembled_context, token_estimate |
+| **Receipt** | Immutable audit artifact for a `/v1/context` or `/v1/handoff` call | id (ULID), tenant_id, subject_id, mode, selected_entries, bundle_hash, policy (filters_applied, filters_skipped), parent_receipt_id, created_at |
+| **PolicyBundle** | Content-hashed, immutable rule set governing memory access | id, tenant_id (nullable for global), bundle_hash, rules (predicates + actions), source_yaml, created_at |
+| **TenantConfig** | Per-tenant operator knobs | tenant_id, receipts (`always \| on_request \| never`), receipt_retention_days, policy_mode (`log_only \| enforce`), require_caller_identity, version |
 
 ## Version history
 
 Ordered newest first. See [roadmap.md](../roadmap.md) for the canonical list of shipped items per release.
+
+### v0.8 — Governance & Audit
+- **State-assembly receipts** ([#49](https://github.com/smaramwbc/statewave/issues/49)) — `/v1/context` and `/v1/handoff` can emit an immutable, ULID-addressable receipt of which memories + episodes shaped the bundle, with a SHA-256 hash of the bytes delivered. Strict-superset schema with a `mode` discriminator (`retrieval` ships; `as_of_replay` / `eval_run` reserved for v0.9). Emission gated by env kill-switch → per-tenant config (`always | on_request | never`) → per-request flag. Read API in both SDKs and the admin app.
+- **Sensitivity labels + per-memory policy bindings** ([#50](https://github.com/smaramwbc/statewave/issues/50)) — `memories.sensitivity_labels TEXT[]` + GIN index, set via `PATCH /v1/memories/{id}/labels`. Declarative YAML/JSON policy bundles (content-hashed, immutable) with six predicates and `deny` / `redact` actions; first-match-wins, default-allow. Per-tenant `policy_mode: log_only | enforce` for safe rollout — `log_only` records decisions into receipts without filtering.
+- **Caller identity** — `caller_id` / `caller_type` on `/v1/context` and `/v1/handoff` feed the policy evaluator; tenant config `require_caller_identity: true` 401s anonymous calls.
+- **Per-tenant configuration endpoint** — `GET / PATCH /admin/tenants/{tenant_id}/config` for receipts emission, retention, policy mode, and caller-identity gate. PATCH-shape merge, enum/bound validation at the API boundary, optimistic concurrency via `expected_version`.
+- **Cross-tenant policy bundle uniqueness** ([#79](https://github.com/smaramwbc/statewave/issues/79)) — `policy_bundles` keyed on `(tenant_id, bundle_hash) NULLS NOT DISTINCT`; two tenants installing identical YAML produce independently-resolvable rows.
+- **Connector ecosystem** — modular packages for GitHub, Markdown/ADRs, MCP, Slack, Discord, Zendesk, Intercom, Freshdesk, Notion, Gmail, n8n, Zapier. Tier 2 push receivers (Slack DM/MPIM, Freshdesk/Zendesk/Intercom webhooks, Gmail Pub/Sub) and Tier 3 operator productization (TOML config, hosted runner, persistent state adapters, auth-gated Prometheus `/metrics`, Docker/Compose/Helm/Fly/Railway recipes) shipped via `statewave-connectors`.
 
 ### v0.7 — Operator & Cloud Experience
 - **Single LiteLLM adapter** — `server/services/llm.py` is the only module that imports LiteLLM; compilers, embeddings, and the readiness check route through it. Provider swaps are config-only via `STATEWAVE_LITELLM_*`. AST-based isolation test enforces the boundary.

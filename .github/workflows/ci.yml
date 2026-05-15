@@ -25,3 +25,44 @@ jobs:
           # browser, just unverifiable from CI.
           args: --no-progress --exclude 'localhost' --exclude '127.0.0.1' --exclude 'statewave.ai' --exclude 'platform.openai.com' '**/*.md'
           fail: true
+
+  versions:
+    # tools/check-versions.py is a workspace-wide tool: it reads
+    # statewave/pyproject.toml as the version truth and validates registered
+    # surfaces across the sibling repos. CI must reconstruct the workspace
+    # layout (sibling dirs under a common parent) before running it.
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout statewave-docs
+        uses: actions/checkout@v6
+        with:
+          path: statewave-docs
+
+      - name: Checkout statewave (version truth + core README)
+        uses: actions/checkout@v6
+        with:
+          repository: smaramwbc/statewave
+          ref: main
+          path: statewave
+
+      - name: Checkout statewave-py
+        uses: actions/checkout@v6
+        with:
+          repository: smaramwbc/statewave-py
+          ref: main
+          path: statewave-py
+
+      - name: Checkout statewave-ts
+        uses: actions/checkout@v6
+        with:
+          repository: smaramwbc/statewave-ts
+          ref: main
+          path: statewave-ts
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Verify workspace version consistency
+        run: python statewave-docs/tools/check-versions.py

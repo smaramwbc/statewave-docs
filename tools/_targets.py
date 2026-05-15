@@ -94,9 +94,9 @@ TARGETS = [
     (
         "core_status_blurb",
         "statewave/README.md",
-        r'> \*\*Status:\*\* v(\d+\.\d+\.\d+) —',
-        None,
-        "editorial",
+        r'(> \*\*v)(\d+\.\d+\.\d+)(\*\* — actively developed)',
+        r'\g<1>{ver}\g<3>',
+        "mechanical_resub",
     ),
     (
         "docs_readme_feature_blurb",
@@ -105,18 +105,35 @@ TARGETS = [
         None,
         "editorial",
     ),
+    # Doc-level "Version: **0.X.x**" banners. These track the workspace
+    # major.minor (not the patch) so conceptual docs don't churn every
+    # patch release; the literal ".x" suffix is preserved by the template.
     (
-        "web_homepage_chip",
-        "statewave-web/src/pages/HomePage.tsx",
-        r'Open source · Self-hosted · v(\d+\.\d+)',
-        'Open source · Self-hosted · v{ver_minor}',
+        "docs_banner_overview",
+        "statewave-docs/architecture/overview.md",
+        r'^Version: \*\*(\d+\.\d+)\.x\*\*',
+        'Version: **{ver_minor}.x**',
         "mechanical_minor",
     ),
     (
-        "web_hsw_eyebrow",
-        "statewave-web/src/components/HowStatewaveWorks.tsx",
-        r"'Open source · Self-hosted · v(\d+\.\d+)'",
-        "'Open source · Self-hosted · v{ver_minor}'",
+        "docs_banner_repo_map",
+        "statewave-docs/architecture/repo-map.md",
+        r'^Version: \*\*(\d+\.\d+)\.x\*\*',
+        'Version: **{ver_minor}.x**',
+        "mechanical_minor",
+    ),
+    (
+        "docs_banner_v1_contract",
+        "statewave-docs/api/v1-contract.md",
+        r'^Version: \*\*(\d+\.\d+)\.x\*\*',
+        'Version: **{ver_minor}.x**',
+        "mechanical_minor",
+    ),
+    (
+        "docs_banner_conventions",
+        "statewave-docs/dev/conventions.md",
+        r'^Version: \*\*(\d+\.\d+)\.x\*\*',
+        'Version: **{ver_minor}.x**',
         "mechanical_minor",
     ),
 ]
