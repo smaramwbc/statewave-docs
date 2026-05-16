@@ -2,7 +2,7 @@
 
 This guide walks you through deploying Statewave, ingesting data, and retrieving context — everything a developer needs to start building with Statewave in under 10 minutes.
 
-> **Prerequisites:** Docker Desktop (or any Docker engine + `docker compose`). Nothing else is required for the server itself. Python ≥3.11 / Node ≥18 are only needed if you also want the SDKs or the local website / admin console.
+> **Prerequisites:** [Docker Desktop](https://www.docker.com/products/docker-desktop/) (Mac/Windows) or a [Docker Engine](https://docs.docker.com/engine/install/) install with the [Compose plugin](https://docs.docker.com/compose/install/) (Linux/servers). Nothing else is required for the server itself. [Python ≥3.11](https://www.python.org/downloads/) / [Node ≥18](https://nodejs.org/en/download) are only needed if you also want the SDKs or the local website / admin console.
 
 ---
 
