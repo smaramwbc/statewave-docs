@@ -46,7 +46,7 @@ Compilation reads `settings.compiler_type` at startup. To switch:
 ```bash
 # In .env
 STATEWAVE_COMPILER_TYPE=llm
-STATEWAVE_LLM_MODEL=gpt-4o-mini  # any LiteLLM model id
+STATEWAVE_LITELLM_MODEL=gpt-4o-mini  # any LiteLLM model id
 ```
 
 Restart the API container. Existing memories are not re-compiled automatically — call `compile_memories(subject_id)` to recompile uncompiled episodes (compilation is idempotent).
@@ -65,6 +65,7 @@ When in doubt: **start on heuristic.** It's the default for a reason — zero op
 
 ## See also
 
+- [LLM and embedding provider configuration](../deployment/guide.md#llm-and-embedding-provider-configuration) — hosted vs. local Ollama, the no-key contract, embedding-dimension constraint
 - [Privacy & Data Flow](privacy-and-data-flow.md) — what each compiler sends where
 - [Architecture Overview](overview.md)
 - [ADR 002 — Heuristic Compilation](../adrs/002-heuristic-compilation.md)

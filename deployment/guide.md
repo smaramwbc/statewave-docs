@@ -224,6 +224,50 @@ Schema migrations run as a Helm pre-install + pre-upgrade Job (`alembic upgrade 
 
 See [`.env.example`](https://github.com/smaramwbc/statewave/blob/main/.env.example) for all available `STATEWAVE_*` configuration options.
 
+## LLM and embedding provider configuration
+
+Two settings decide whether you get real semantic memory: the **compiler** and the **embedding provider**. Both route through [LiteLLM](https://github.com/BerriAI/litellm), so any LiteLLM-supported provider works by changing the model identifier. Without either, Statewave runs in demo mode (regex extraction + hash-based embeddings, no semantic search).
+
+### Hosted provider (OpenAI, Anthropic, Azure, Bedrock, …)
+
+```bash
+STATEWAVE_COMPILER_TYPE=llm
+STATEWAVE_EMBEDDING_PROVIDER=litellm
+STATEWAVE_LITELLM_API_KEY=sk-...
+STATEWAVE_LITELLM_MODEL=gpt-4o-mini
+STATEWAVE_LITELLM_EMBEDDING_MODEL=text-embedding-3-small
+```
+
+### Local, no API key (Ollama / self-hosted)
+
+A model identifier starting with `ollama/` tells Statewave the provider is local: it leaves `STATEWAVE_LITELLM_API_KEY` unset *by design*, suppresses the missing-key startup warning, and makes `/readyz` probe the local server instead of reporting a missing key ([issue #122](https://github.com/smaramwbc/statewave/issues/122)).
+
+```bash
+STATEWAVE_COMPILER_TYPE=llm
+STATEWAVE_LITELLM_MODEL=ollama/llama3
+STATEWAVE_LITELLM_API_BASE=http://host.docker.internal:11434   # API container → host Ollama
+```
+
+`host.docker.internal` resolves on Docker Desktop; on Linux add `extra_hosts: ["host.docker.internal:host-gateway"]` to the `api` service or use the host's LAN IP.
+
+### Embedding dimensions — the local-embeddings constraint
+
+The pgvector column is fixed at **1536 dimensions** (migration `0013`; changing it means ALTERing the column type and rebuilding the HNSW index). `STATEWAVE_LITELLM_EMBEDDING_MODEL` must produce vectors of that size — Statewave does **not** resize the provider's output.
+
+| Embedding source | Native dims | Works against the default schema? |
+|---|---|---|
+| OpenAI `text-embedding-3-small` / `-large` | 1536 (configurable) | Yes |
+| Ollama `nomic-embed-text` | 768 | No — insert fails without a migration |
+| Ollama `mxbai-embed-large` | 1024 | No — insert fails without a migration |
+
+A fully key-free deployment therefore has three honest options:
+
+1. **Ollama compiler + `STATEWAVE_EMBEDDING_PROVIDER=stub`** — LLM extraction is local; retrieval is keyword/text only (no semantic vectors). Simplest, zero egress. Good for first-touch local exploration.
+2. **Ollama compiler + hosted embedding provider** — compilation stays local; only short embedding inputs leave the network. Keeps semantic search. Best when semantic recall matters but egress should be minimal.
+3. **Ollama compiler + local embedding model + a schema migration** to the model's native dimension. Fully local semantic search, at the cost of maintaining a custom migration. Only when zero egress is a hard requirement.
+
+See [Compiler Modes](../architecture/compiler-modes.md) for the compiler trade-offs and [Privacy & Data Flow](../architecture/privacy-and-data-flow.md) for what each configuration sends where.
+
 ## Production Checklist
 
 - [ ] `STATEWAVE_DEBUG=false`

@@ -16,18 +16,40 @@ cd statewave
 cp .env.example .env
 ```
 
-**Set your LLM provider key** in `.env` (recommended — without it, Statewave runs in demo mode with regex-based extraction and hash-based embeddings, no real semantic search):
+**Pick an LLM provider** in `.env`. Either path gives you real LLM extraction and semantic search — without one of them Statewave falls back to demo mode (regex extraction + hash-based embeddings, no real semantic search).
+
+**Option A — hosted provider (OpenAI, Anthropic, Azure, Bedrock, …):**
 
 ```bash
-# In .env — uncomment and fill in:
+# In .env:
 STATEWAVE_COMPILER_TYPE=llm
 STATEWAVE_EMBEDDING_PROVIDER=litellm
-STATEWAVE_LITELLM_API_KEY=sk-...           # OpenAI key, or any LiteLLM-supported provider
-# STATEWAVE_LITELLM_MODEL=gpt-4o-mini        # any LiteLLM model identifier
-# STATEWAVE_LITELLM_EMBEDDING_MODEL=text-embedding-3-small
+STATEWAVE_LITELLM_API_KEY=sk-...                  # provider key
+STATEWAVE_LITELLM_MODEL=gpt-4o-mini               # any LiteLLM chat model
+STATEWAVE_LITELLM_EMBEDDING_MODEL=text-embedding-3-small
 ```
 
-Statewave routes every LLM and embedding call through [LiteLLM](https://github.com/BerriAI/litellm), so the same `STATEWAVE_LITELLM_*` config works for OpenAI, Anthropic, Azure, Bedrock, Ollama (no key — runs locally), Cohere, Voyage, Mistral, Groq, and 100+ others. See [`server/services/llm.py`](https://github.com/smaramwbc/statewave/blob/main/server/services/llm.py) for the full env-var contract.
+**Option B — fully local with Ollama (no API key):**
+
+[Ollama](https://ollama.com) runs models on your own machine, so there is **no key to set** — leave `STATEWAVE_LITELLM_API_KEY` empty (or omit it entirely). Pull a model and make sure `ollama serve` is running first:
+
+```bash
+ollama pull llama3
+```
+
+```bash
+# In .env — no STATEWAVE_LITELLM_API_KEY line is needed
+STATEWAVE_COMPILER_TYPE=llm
+STATEWAVE_LITELLM_MODEL=ollama/llama3             # MUST start with "ollama/"
+STATEWAVE_LITELLM_API_BASE=http://host.docker.internal:11434
+STATEWAVE_EMBEDDING_PROVIDER=stub                 # see the embeddings note below
+```
+
+`host.docker.internal` lets the API *container* reach Ollama running on your *host*. On Linux without Docker Desktop, add `extra_hosts: ["host.docker.internal:host-gateway"]` to the `api` service in `docker-compose.yml`, or point `STATEWAVE_LITELLM_API_BASE` at the host's LAN IP.
+
+> **Why no key:** the model name must start with `ollama/` — that is exactly how Statewave detects a local provider, skips the missing-key warning, and stops `/readyz` from false-alarming about an unset key ([issue #122](https://github.com/smaramwbc/statewave/issues/122)). Embeddings are separate: native Ollama embedding models don't match Statewave's fixed vector size, so the block above keeps `STATEWAVE_EMBEDDING_PROVIDER=stub` (keyword/text retrieval, no semantic vectors) — it works verbatim. To get local *semantic* search instead, see [LLM and embedding provider configuration](deployment/guide.md#llm-and-embedding-provider-configuration).
+
+Statewave routes every LLM and embedding call through [LiteLLM](https://github.com/BerriAI/litellm), so the same `STATEWAVE_LITELLM_*` config works for OpenAI, Anthropic, Azure, Bedrock, Ollama, Cohere, Voyage, Mistral, Groq, and 100+ others — switch providers by changing the model identifier. See [`server/services/llm.py`](https://github.com/smaramwbc/statewave/blob/main/server/services/llm.py) for the full env-var contract.
 
 Then bring it up:
 
@@ -49,7 +71,10 @@ curl http://localhost:8100/readyz
 #    ]}
 ```
 
-If `llm` shows `"detail":"STATEWAVE_LITELLM_API_KEY is not set"`, the key isn't being read — re-check `.env` and re-run `docker compose up -d` to pick it up. (Using a local `ollama/*` model? No API key is needed, and this message won't appear for Ollama.)
+**Reading the `llm` check:**
+
+- **Hosted provider (Option A):** `{"name":"llm","status":"ok","detail":"STATEWAVE_LITELLM_API_KEY is not set"}` means your key isn't being read — Statewave is silently in demo mode. Re-check `.env` and run `docker compose up -d` again to pick it up.
+- **Ollama (Option B):** there is no key, so this check makes a **real one-token call to your local Ollama server**. `"status":"ok"` with a `latency_ms` means Ollama was actually reached; `"status":"degraded"` means the API container couldn't reach `STATEWAVE_LITELLM_API_BASE` (Ollama not running, wrong host/port, or the model isn't pulled).
 
 > **Alternative:** See the [Deployment Guide](deployment/guide.md) for bare-metal, Fly.io, or Railway setups.
 
@@ -398,7 +423,7 @@ Total time from `git clone` to API + admin running: typically **2–3 minutes** 
 | Symptom | Fix |
 |---------|-----|
 | `Connection refused` on port 8100 | Check `docker compose ps` — is the `api` container running? Logs: `docker compose logs api` |
-| `readyz` `llm` check shows `"detail":"STATEWAVE_LITELLM_API_KEY is not set"` | The key isn't set/loaded. Edit `.env`, re-run `docker compose up -d`. Not applicable to local `ollama/*` models (no key needed). |
+| `readyz` shows `"llm":{"status":"ok","detail":"STATEWAVE_LITELLM_API_KEY is not set"}` | Hosted-provider key isn't being read — you're silently in demo mode. Set `STATEWAVE_LITELLM_API_KEY` in `.env` and run `docker compose up -d`. For `ollama/*` models this message never appears (no key is expected); there, a `degraded` llm check means the local Ollama server is unreachable. |
 | `readyz` `database` check `"detail":"DATABASE_URL is not set"` | No DB URL configured. Set `STATEWAVE_DATABASE_URL` in `.env` (or use the bundled compose `db` service) and re-run `docker compose up -d`. |
 | `readyz` `database` check `"detail":"DATABASE_URL is set but couldn't be parsed: …"` | The URL is malformed. Expected form: `postgresql+asyncpg://user:pass@host:5432/dbname`. |
 | `readyz` `database` check `"detail":"Postgres unreachable: …"` | URL is valid but Postgres isn't responding. Check `docker compose logs db` — first start can take 5–10s for the pgvector image. |
