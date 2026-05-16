@@ -1,6 +1,6 @@
 # Architecture Overview
 
-Version: **0.8.x**
+Version: **0.9.x**
 
 Statewave is an **open-source memory runtime for AI agents**. It compiles raw events into ranked, token-bounded context bundles with full provenance — so your AI stops forgetting across sessions. Self-hosted on Postgres, no vendor lock-in.
 
