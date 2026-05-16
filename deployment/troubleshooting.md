@@ -189,8 +189,8 @@ distinct from the env var missing):
 
 ```bash
 # From inside the admin container or host:
-curl -fsS -H "X-API-Key: $STATEWAVE_API_KEY" "$STATEWAVE_API_URL/healthz"
-# Expected: {"status":"ok"}
+curl -fsS -H "X-API-Key: $STATEWAVE_API_KEY" "$STATEWAVE_API_URL/admin/webhooks/stats"
+# Expected: {"pending": 0, "delivered": 0, "dead_letter": 0, "total": 0}
 ```
 
 ---
