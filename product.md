@@ -53,7 +53,7 @@ Statewave is in active early development (v0.8.0). We document these honestly:
 | Rate limiting is per-IP only | No per-tenant or per-API-key limits yet | Future: per-tenant limits |
 | Single-node only | No horizontal scaling | Future: scaling guide |
 | PostgreSQL required | No alternative backends | No change planned |
-| Admin console is early | Read-only dashboard; no memory editing or advanced ops | Active development |
+| Admin console is early | Dashboards plus policy/tenant-config management; no memory editing or advanced ops | Active development |
 
 **What works well today:**
 - Episode ingestion (single + batch, append-only, durable)
