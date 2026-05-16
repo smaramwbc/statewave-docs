@@ -49,7 +49,7 @@ curl http://localhost:8100/readyz
 #    ]}
 ```
 
-If `llm` shows `"detail":"not configured (skip)"`, your `STATEWAVE_LITELLM_API_KEY` isn't being read — re-check `.env` and `docker compose up -d` again to pick it up.
+If `llm` shows `"detail":"STATEWAVE_LITELLM_API_KEY is not set"`, the key isn't being read — re-check `.env` and re-run `docker compose up -d` to pick it up. (Using a local `ollama/*` model? No API key is needed, and this message won't appear for Ollama.)
 
 > **Alternative:** See the [Deployment Guide](deployment/guide.md) for bare-metal, Fly.io, or Railway setups.
 
@@ -398,8 +398,10 @@ Total time from `git clone` to API + admin running: typically **2–3 minutes** 
 | Symptom | Fix |
 |---------|-----|
 | `Connection refused` on port 8100 | Check `docker compose ps` — is the `api` container running? Logs: `docker compose logs api` |
-| `readyz` returns `{"status":"ready",...,"llm":{"detail":"not configured (skip)"}}` | `STATEWAVE_LITELLM_API_KEY` isn't set. Edit `.env` and run `docker compose up -d` to pick it up. |
-| `readyz` returns 503 with a DB error | Database not ready. Check `docker compose logs db` — first start can take 5–10s for the pgvector image. |
+| `readyz` `llm` check shows `"detail":"STATEWAVE_LITELLM_API_KEY is not set"` | The key isn't set/loaded. Edit `.env`, re-run `docker compose up -d`. Not applicable to local `ollama/*` models (no key needed). |
+| `readyz` `database` check `"detail":"DATABASE_URL is not set"` | No DB URL configured. Set `STATEWAVE_DATABASE_URL` in `.env` (or use the bundled compose `db` service) and re-run `docker compose up -d`. |
+| `readyz` `database` check `"detail":"DATABASE_URL is set but couldn't be parsed: …"` | The URL is malformed. Expected form: `postgresql+asyncpg://user:pass@host:5432/dbname`. |
+| `readyz` `database` check `"detail":"Postgres unreachable: …"` | URL is valid but Postgres isn't responding. Check `docker compose logs db` — first start can take 5–10s for the pgvector image. |
 | `401 missing_api_key` | Set `X-API-Key` header or remove `STATEWAVE_API_KEY` from `.env` |
 | `422 validation_error` | Check request body — `subject_id`, `source`, `type`, `payload` are required |
 | No memories after compile | Heuristic compiler extracts from conversation payloads with `messages[].content`. Switch to `STATEWAVE_COMPILER_TYPE=llm` for richer extraction. |
