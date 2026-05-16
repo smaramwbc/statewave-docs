@@ -67,7 +67,7 @@ STATEWAVE_API_KEY=my-secret-key-123
 Restart the server, then include the key in all requests:
 
 ```bash
-curl -H "X-API-Key: my-secret-key-123" http://localhost:8100/healthz
+curl -H "X-API-Key: my-secret-key-123" http://localhost:8100/admin/webhooks/stats
 ```
 
 ---
