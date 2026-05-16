@@ -94,6 +94,8 @@ npm install @statewavedev/sdk
 
 Episodes are raw interaction records — the ground truth that Statewave remembers.
 
+**Python:**
+
 ```python
 from statewave import StatewaveClient
 
@@ -115,7 +117,32 @@ episode = sw.create_episode(
 print(f"Episode created: {episode.id}")
 ```
 
+**TypeScript:**
+
+```typescript
+import { StatewaveClient } from "@statewavedev/sdk";
+
+const sw = new StatewaveClient("http://localhost:8100");
+// const sw = new StatewaveClient({ baseUrl: "http://localhost:8100", apiKey: "my-secret-key-123" });
+
+// Record a conversation
+const episode = await sw.createEpisode({
+  subject_id: "user-42",
+  source: "support-chat",
+  type: "conversation",
+  payload: {
+    messages: [
+      { role: "user", content: "My name is Alice and I work at Globex Corp." },
+      { role: "assistant", content: "Welcome Alice! How can I help?" },
+    ],
+  },
+});
+console.log(`Episode created: ${episode.id}`);
+```
+
 For bulk data, use batch ingestion (up to 100 per call):
+
+**Python:**
 
 ```python
 result = sw.create_episodes_batch([
@@ -135,17 +162,49 @@ result = sw.create_episodes_batch([
 print(f"Batch ingested: {result.episodes_created} episodes")
 ```
 
+**TypeScript:**
+
+```typescript
+const result = await sw.createEpisodesBatch([
+  {
+    subject_id: "user-42",
+    source: "support-chat",
+    type: "conversation",
+    payload: { messages: [{ role: "user", content: "I prefer email over Slack." }] },
+  },
+  {
+    subject_id: "user-42",
+    source: "support-chat",
+    type: "conversation",
+    payload: { messages: [{ role: "user", content: "We had a billing issue last week." }] },
+  },
+]);
+console.log(`Batch ingested: ${result.episodes_created} episodes`);
+```
+
 ---
 
 ## 5. Compile memories
 
 Compilation extracts structured memories from raw episodes — facts, summaries, and procedures — with provenance back to the source.
 
+**Python:**
+
 ```python
 result = sw.compile_memories("user-42")
 print(f"Compiled {result.memories_created} memories:")
 for m in result.memories:
     print(f"  [{m.kind}] {m.content} (confidence: {m.confidence})")
+```
+
+**TypeScript:**
+
+```typescript
+const result = await sw.compileMemories("user-42");
+console.log(`Compiled ${result.memories_created} memories:`);
+for (const m of result.memories) {
+  console.log(`  [${m.kind}] ${m.content} (confidence: ${m.confidence})`);
+}
 ```
 
 Compilation is **idempotent** — calling it again only processes new episodes.
@@ -155,6 +214,8 @@ Compilation is **idempotent** — calling it again only processes new episodes.
 ## 6. Retrieve context
 
 The context endpoint assembles a ranked, token-bounded bundle for your AI task:
+
+**Python:**
 
 ```python
 ctx = sw.get_context(
@@ -170,6 +231,22 @@ print()
 print(ctx.assembled_context)  # Ready to inject into an LLM prompt
 ```
 
+**TypeScript:**
+
+```typescript
+const ctx = await sw.getContext({
+  subject_id: "user-42",
+  task: "Help the user with their billing question",
+  max_tokens: 2000,
+});
+
+console.log(`Token estimate: ${ctx.token_estimate}`);
+console.log(`Facts: ${ctx.facts.length}`);
+console.log(`Procedures: ${ctx.procedures.length}`);
+console.log();
+console.log(ctx.assembled_context); // Ready to inject into an LLM prompt
+```
+
 The `assembled_context` string is ready to paste into any LLM system prompt. Statewave ranks memories by:
 - **Kind priority** — facts > procedures > summaries > raw episodes
 - **Recency** — recent memories score higher
@@ -182,10 +259,20 @@ The `assembled_context` string is ready to paste into any LLM system prompt. Sta
 
 See everything Statewave knows about a subject:
 
+**Python:**
+
 ```python
 timeline = sw.get_timeline("user-42")
 print(f"Episodes: {len(timeline.episodes)}")
 print(f"Memories: {len(timeline.memories)}")
+```
+
+**TypeScript:**
+
+```typescript
+const timeline = await sw.getTimeline("user-42");
+console.log(`Episodes: ${timeline.episodes.length}`);
+console.log(`Memories: ${timeline.memories.length}`);
 ```
 
 ---
@@ -194,10 +281,21 @@ print(f"Memories: {len(timeline.memories)}")
 
 Find specific memories by kind or text:
 
+**Python:**
+
 ```python
 results = sw.search_memories("user-42", kind="profile_fact")
 for m in results.memories:
     print(f"  {m.content}")
+```
+
+**TypeScript:**
+
+```typescript
+const results = await sw.searchMemories({ subject_id: "user-42", kind: "profile_fact" });
+for (const m of results.memories) {
+  console.log(`  ${m.content}`);
+}
 ```
 
 ---
@@ -206,9 +304,18 @@ for m in results.memories:
 
 Remove all data for a subject (GDPR, data governance):
 
+**Python:**
+
 ```python
 result = sw.delete_subject("user-42")
 print(f"Deleted {result.episodes_deleted} episodes, {result.memories_deleted} memories")
+```
+
+**TypeScript:**
+
+```typescript
+const result = await sw.deleteSubject("user-42");
+console.log(`Deleted ${result.episodes_deleted} episodes, ${result.memories_deleted} memories`);
 ```
 
 ---
