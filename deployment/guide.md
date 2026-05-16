@@ -81,16 +81,18 @@ cd statewave
 python -m venv .venv && source .venv/bin/activate
 pip install -e ".[dev,llm]"
 
-# Start Postgres (or use docker compose up db -d for just the database)
-# Ensure pgvector extension is installed:
-#   CREATE EXTENSION IF NOT EXISTS vector;
-# Create the `statewave` user and database: 
+# Start Postgres (or use docker compose up db -d for just the database).
+# As a Postgres superuser, create the role and database, then install the
+# pgvector extension into that database. CREATE EXTENSION requires a
+# superuser; the statewave app role itself does not need elevated rights:
 #   CREATE ROLE statewave WITH LOGIN PASSWORD 'statewave';
 #   CREATE DATABASE statewave OWNER statewave;
-#   ALTER ROLE statewave WITH SUPERUSER;
+#   \c statewave
+#   CREATE EXTENSION IF NOT EXISTS vector;
 
 # Set connection string
-# Windows users: `set STATEWAVE_DATABASE_URL=postgresql+asyncpg://statewave:statewave@localhost:5432/statewave`
+# Windows (powershell): `$env:STATEWAVE_DATABASE_URL = "postgresql+asyncpg://statewave:statewave@localhost:5432/statewave"`
+# Windows (cmd):        `set STATEWAVE_DATABASE_URL=postgresql+asyncpg://statewave:statewave@localhost:5432/statewave`
 export STATEWAVE_DATABASE_URL=postgresql+asyncpg://statewave:statewave@localhost:5432/statewave
 
 # Run migrations
