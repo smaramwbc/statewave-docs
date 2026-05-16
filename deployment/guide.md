@@ -76,14 +76,21 @@ git clone https://github.com/smaramwbc/statewave.git
 cd statewave
 
 # Create and activate venv
+# Windows users (powershell): `python -m venv .venv ; .\.venv\Scripts\Activate.ps1` 
+# Windows users (cmd): `python -m venv .venv && .venv\Scripts\activate.bat`
 python -m venv .venv && source .venv/bin/activate
-pip install -e ".[dev]"
+pip install -e ".[dev,llm]"
 
 # Start Postgres (or use docker compose up db -d for just the database)
 # Ensure pgvector extension is installed:
 #   CREATE EXTENSION IF NOT EXISTS vector;
+# Create the `statewave` user and database: 
+#   CREATE ROLE statewave WITH LOGIN PASSWORD 'statewave';
+#   CREATE DATABASE statewave OWNER statewave;
+#   ALTER ROLE statewave WITH SUPERUSER;
 
 # Set connection string
+# Windows users: `set STATEWAVE_DATABASE_URL=postgresql+asyncpg://statewave:statewave@localhost:5432/statewave`
 export STATEWAVE_DATABASE_URL=postgresql+asyncpg://statewave:statewave@localhost:5432/statewave
 
 # Run migrations
