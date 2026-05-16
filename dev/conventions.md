@@ -44,12 +44,33 @@ All repos have GitHub Actions CI workflows:
 - Python SDK (`statewave`): lint + tests on push/PR
 - TypeScript SDK (`@statewavedev/sdk`): build + tests on push/PR
 
-## SDK versions
+## Versioning
 
-| SDK | Version | Key features |
-|-----|---------|-------------|
-| `statewave` (Python) | 0.7.x | Sync + async clients, typed exceptions, auth, tenant, semantic search, batch ingestion, subject listing |
-| `@statewavedev/sdk` (TypeScript) | 0.7.x | Typed errors, auth, tenant, semantic search, batch ingestion, subject listing, ESM |
+Each package is versioned **independently, per semver, per repo**. There is no
+single workspace version that every package must match:
+
+- The Python SDK (`statewave`, PyPI), the TypeScript SDK (`@statewavedev/sdk`,
+  npm), and the server release on their own cadences. A TS-only change bumps
+  only the TS SDK; it does not force a Python or server release.
+- The cross-repo **compatibility axis is the `/v1` API contract** — any SDK
+  that speaks `/v1` works against any server that serves `/v1`. That guarantee
+  lives in [the API contract](../api/v1-contract.md), not in matching version
+  numbers. SDK ↔ server compatibility never depends on equal version strings.
+- `statewave/pyproject.toml` is the **server / reference-implementation
+  version**. It backs only the server repo's own status surfaces and the
+  conceptual-doc banners ("the system as implemented at server vX.Y").
+- Tooling: `tools/check-versions.py` (run as a release gate in `statewave`
+  `.github/workflows/release.yml`) verifies that server/contract self-reference
+  *only*. It never asserts SDK-package-number equality — independent SDK
+  versions are reported, never failed. `tools/bump-version.py` propagates a
+  *server* bump to server surfaces; SDK packages are bumped in their own repos.
+
+SDK feature surface (current version is whatever each registry last published):
+
+| SDK | Key features |
+|-----|--------------|
+| `statewave` (Python) | Sync + async clients, typed exceptions, auth, tenant, semantic search, batch ingestion, subject listing, receipts + label / policy methods |
+| `@statewavedev/sdk` (TypeScript) | Typed errors, auth, tenant, semantic search, batch ingestion, subject listing, ESM, receipts + label / policy methods |
 
 ## Configuration
 
@@ -60,4 +81,5 @@ All server settings via `STATEWAVE_` prefixed env vars or `.env` file. See [API 
 - Conventional commits preferred
 - One logical change per commit
 - PRs should reference the target repo clearly
-- Version tags: `v0.X.Y` on each repo
+- Version tags: each repo tags its **own independent** `vX.Y.Z` when *it*
+  releases; there is no synchronized workspace-wide tag (see Versioning above)

@@ -1,19 +1,26 @@
 #!/usr/bin/env python3
-"""Verify every known version reference in the workspace matches the truth.
+"""Verify the server / reference-impl version references stay self-consistent.
 
-Truth is statewave/pyproject.toml. Mechanical surfaces (SDK pyprojects,
-package.json, doc status lines, table rows) must match. Editorial surfaces
-(status blurbs, feature blurbs) are reported but never fail the check —
-they need a human to confirm the prose still makes sense.
+Packages version independently per repo; the cross-repo compatibility axis is
+the `/v1` API contract, not a shared number (see smaramwbc/statewave#106 and
+the model description in _targets.py). This check therefore validates only:
+
+  - mechanical surfaces — the server repo's own self-references and the
+    conceptual-doc banners that describe "the system at server vX.Y". These
+    track TRUTH (statewave/pyproject.toml = server version) and MUST match.
+  - editorial surfaces — version-stamped prose; reported, never failed.
+  - independent surfaces — SDK rows / per-SDK status lines that version on
+    their own cadence. Reported for human confirmation, never failed. NOT
+    expected to equal TRUTH — that independence is intentional.
 
 Exits:
     0 — all mechanical surfaces match truth
-    1 — at least one drifted, or a configured target's pattern no longer
-        matches (means TARGETS in _targets.py is stale)
+    1 — at least one mechanical surface drifted, or a configured target's
+        pattern no longer matches (means TARGETS in _targets.py is stale)
 
 Wire into CI as a release-blocker on the statewave/ release-tag workflow:
 
-    - name: Verify workspace version consistency
+    - name: Verify server/contract version self-consistency
       run: python statewave-docs/tools/check-versions.py
 """
 
@@ -45,6 +52,7 @@ def main() -> None:
 
     drift = []
     editorial = []
+    independent = []
     missing = []
 
     for key, rel, pattern, _, kind in TARGETS:
@@ -56,12 +64,15 @@ def main() -> None:
         if not m:
             missing.append((key, rel, "pattern not found"))
             continue
-        current = m.group(1) if kind != "mechanical_resub" else m.group(2)
-        expected = truth_minor if kind == "mechanical_minor" else truth
+        current = m.group(2) if kind == "mechanical_resub" else m.group(1)
         if kind == "editorial":
             editorial.append((key, rel, current))
-        elif current != expected:
-            drift.append((key, rel, current, expected))
+        elif kind == "independent":
+            independent.append((key, rel, current))
+        else:
+            expected = truth_minor if kind == "mechanical_minor" else truth
+            if current != expected:
+                drift.append((key, rel, current, expected))
 
     fail = False
 
@@ -92,10 +103,23 @@ def main() -> None:
             print(f"  {mark} {key}: v{cur}  [{rel}]")
         print()
 
+    if independent:
+        print(
+            f"ℹ {len(independent)} independently-versioned surface(s) — "
+            "each tracks its own package, not truth (this is expected):"
+        )
+        for key, rel, cur in independent:
+            print(f"  · {key}: v{cur}  [{rel}]")
+        print(
+            "  these never fail the check; hand-update them when that "
+            "package releases."
+        )
+        print()
+
     if fail:
         sys.exit(1)
 
-    print(f"✓ all mechanical surfaces match truth (v{truth})")
+    print(f"✓ all mechanical surfaces match truth (server v{truth})")
 
 
 if __name__ == "__main__":

@@ -1,16 +1,23 @@
 #!/usr/bin/env python3
-"""Propagate a new Statewave workspace version everywhere it lives.
+"""Propagate a new SERVER / reference-impl version to surfaces that track it.
 
-Reads the truth from statewave/pyproject.toml and updates every mechanical
-version reference across sibling repos. Editorial surfaces (status blurbs,
-feature blurbs, CHANGELOGs) are flagged for manual review but not touched.
+This bumps only the server repo's own self-references and the conceptual-doc
+banners (the "system at server vX.Y" markers) — the mechanical surfaces that
+track statewave/pyproject.toml. SDK packages version independently per repo
+and are NOT touched here; the cross-repo compatibility axis is the `/v1` API
+contract, not a shared number (see smaramwbc/statewave#106 and _targets.py).
+
+  - mechanical surfaces  → rewritten to the new server version
+  - editorial surfaces   → flagged for manual prose review, not touched
+  - independent surfaces → SDK rows / per-SDK lines; listed, never touched
+                           (hand-update them when that package releases)
 
 Usage:
     python tools/bump-version.py 0.7.3              # dry-run (default)
     python tools/bump-version.py 0.7.3 --apply      # write changes
 
-Before running with --apply: bump statewave/pyproject.toml to the new
-version yourself (it's the truth source the workspace tracks).
+Before running with --apply: bump statewave/pyproject.toml to the new server
+version yourself (it's the truth source the server surfaces track).
 
 Paths are resolved from __file__, so this works from any cwd.
 """
@@ -48,6 +55,7 @@ def bump(new_version: str, apply: bool) -> int:
     print()
 
     editorial = []
+    independent = []
     changed = 0
     issues = 0
 
@@ -67,6 +75,10 @@ def bump(new_version: str, apply: bool) -> int:
 
         if kind == "editorial":
             editorial.append((key, rel, m.group(1)))
+            continue
+
+        if kind == "independent":
+            independent.append((key, rel, m.group(1)))
             continue
 
         if kind == "mechanical":
@@ -125,6 +137,15 @@ def bump(new_version: str, apply: bool) -> int:
             "also remember the CHANGELOGs: statewave-py/CHANGELOG.md and "
             "statewave-ts/CHANGELOG.md need a human-authored entry."
         )
+        print()
+
+    if independent:
+        print(
+            "independently-versioned surfaces — NOT a server bump; update "
+            "each only when that package itself releases:"
+        )
+        for key, rel, cur in independent:
+            print(f"  • {key} (currently v{cur})  [{rel}]")
         print()
 
     if not apply and changed:

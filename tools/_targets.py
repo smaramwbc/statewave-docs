@@ -1,89 +1,63 @@
 """Shared version-target config for bump-version.py and check-versions.py.
 
-Each entry in TARGETS:
+## Versioning model (see smaramwbc/statewave#106)
 
-    (key, relative_path_from_workspace, regex_pattern,
-     replacement_template_or_None, kind)
+Packages are **versioned independently per semver, per repo**. There is no
+single workspace-wide version that every package must match — the Python SDK
+(`statewave` on PyPI), the TypeScript SDK (`@statewavedev/sdk` on npm), and the
+server release on their own cadences.
 
-kind:
+The cross-repo **compatibility axis is the `/v1` API contract**, not a package
+number. Any SDK that speaks `/v1` works against any server that serves `/v1`;
+that guarantee lives in prose in `api/v1-contract.md`, not in matching version
+strings.
+
+`TRUTH_FILE` (statewave/pyproject.toml) is therefore the **server /
+reference-implementation version** — it governs only the server repo's own
+self-referential surfaces (its README status line) and the conceptual-doc
+banners that describe "the system as implemented at server vX.Y". It does
+**not** assert anything about SDK package numbers.
+
+## kind
+
     "mechanical"
-        Pattern's capture group 1 is the current version. Bumper writes
+        Capture group 1 is the current version; it tracks TRUTH exactly.
+        Use only for surfaces that legitimately reference the server /
+        reference-impl version. Bumper writes
         replacement_template.format(ver=new_version) into the matched span.
 
     "mechanical_minor"
-        Same as "mechanical", but the surface only tracks the major.minor
-        of the workspace version (e.g. marketing chips that read "v0.8"
-        and don't carry the patch). Capture group 1 is the current
-        major.minor; replacement_template uses {ver_minor}.
+        Like "mechanical" but the surface tracks only major.minor of TRUTH
+        (conceptual-doc banners that shouldn't churn every patch). Capture
+        group 1 is the current major.minor; replacement uses {ver_minor}.
 
     "mechanical_resub"
-        Pattern uses multiple capture groups. Replacement_template contains
-        \\g<N> backrefs to preserve surrounding text, and {ver} for the new
-        version. Bumper does re.sub(pattern, template_with_ver_subbed, ...).
-        Use this for table rows where the version is sandwiched between
-        per-row text that must be preserved.
+        Pattern uses multiple capture groups. replacement contains \\g<N>
+        backrefs to preserve surrounding text and {ver} for the new version;
+        the version is capture group 2. Use for spans where the version is
+        sandwiched between text that must be preserved.
 
     "editorial"
-        Pattern's capture group 1 is the current version, but the surrounding
-        prose changes per release (status blurbs, feature blurbs). Bumper
-        flags these for manual review; replacement_template is None.
+        Capture group 1 is the current version, but the surrounding prose
+        changes per release (status/feature blurbs). Flagged for manual
+        review; never fails CI; never auto-written. replacement is None.
 
-Truth source for the workspace version is statewave/pyproject.toml.
+    "independent"
+        Surface names a package that versions on its own cadence (an SDK
+        row, a per-SDK status line). Capture group 1 is that package's
+        version. By design it does NOT have to equal TRUTH — it is
+        reported for human confirmation, never fails CI, and is never
+        auto-written by the bumper. Update it by hand when that package
+        releases. replacement is None. This kind exists so the
+        independence is explicit and a future maintainer doesn't
+        "reconcile" it back into a lockstep check.
 """
 
 TRUTH_FILE = "statewave/pyproject.toml"
 TRUTH_PATTERN = r'^version\s*=\s*"(\d+\.\d+\.\d+)"'
 
 TARGETS = [
-    (
-        "py_pyproject",
-        "statewave-py/pyproject.toml",
-        r'^version\s*=\s*"(\d+\.\d+\.\d+)"',
-        'version = "{ver}"',
-        "mechanical",
-    ),
-    (
-        "py_init_version",
-        "statewave-py/statewave/__init__.py",
-        r'__version__\s*=\s*"(\d+\.\d+\.\d+)"',
-        '__version__ = "{ver}"',
-        "mechanical",
-    ),
-    (
-        "ts_package_json",
-        "statewave-ts/package.json",
-        r'"version":\s*"(\d+\.\d+\.\d+)"',
-        '"version": "{ver}"',
-        "mechanical",
-    ),
-    (
-        "docs_product_status",
-        "statewave-docs/product.md",
-        r'in active early development \(v(\d+\.\d+\.\d+)\)',
-        'in active early development (v{ver})',
-        "mechanical",
-    ),
-    (
-        "docs_test_counts_label",
-        "statewave-docs/architecture/repo-map.md",
-        r'## Test counts \(as of v(\d+\.\d+\.\d+)\)',
-        '## Test counts (as of v{ver})',
-        "mechanical",
-    ),
-    (
-        "docs_sdk_row_python",
-        "statewave-docs/architecture/repo-map.md",
-        r'(`statewave` \(Python SDK\)[^|]+\|[^|]+\|\s*)(\d+\.\d+\.\d+)(\s*\|\s*Apache-2\.0)',
-        r'\g<1>{ver}\g<3>',
-        "mechanical_resub",
-    ),
-    (
-        "docs_sdk_row_ts",
-        "statewave-docs/architecture/repo-map.md",
-        r'(`@statewavedev/sdk` \(TypeScript SDK\)[^|]+\|[^|]+\|\s*)(\d+\.\d+\.\d+)(\s*\|\s*Apache-2\.0)',
-        r'\g<1>{ver}\g<3>',
-        "mechanical_resub",
-    ),
+    # --- Server / reference-impl self-references (legitimately track TRUTH) ---
     (
         "core_active_dev",
         "statewave/README.md",
@@ -99,15 +73,14 @@ TARGETS = [
         "mechanical_resub",
     ),
     (
-        "docs_readme_feature_blurb",
-        "statewave-docs/README.md",
-        r'\*\*v(\d+\.\d+\.\d+)\*\* —',
-        None,
-        "editorial",
+        "docs_test_counts_label",
+        "statewave-docs/architecture/repo-map.md",
+        r'## Test counts \(as of v(\d+\.\d+\.\d+)\)',
+        '## Test counts (as of v{ver})',
+        "mechanical",
     ),
-    # Doc-level "Version: **0.X.x**" banners. These track the workspace
-    # major.minor (not the patch) so conceptual docs don't churn every
-    # patch release; the literal ".x" suffix is preserved by the template.
+    # --- Conceptual-doc banners: "the system as implemented at server vX.Y" ---
+    # major.minor only, so conceptual docs don't churn every patch release.
     (
         "docs_banner_overview",
         "statewave-docs/architecture/overview.md",
@@ -135,5 +108,37 @@ TARGETS = [
         r'^Version: \*\*(\d+\.\d+)\.x\*\*',
         'Version: **{ver_minor}.x**',
         "mechanical_minor",
+    ),
+    # --- Editorial: version-stamped prose that needs a human per release ---
+    (
+        "docs_readme_feature_blurb",
+        "statewave-docs/README.md",
+        r'\*\*v(\d+\.\d+\.\d+)\*\* —',
+        None,
+        "editorial",
+    ),
+    # --- Independently-versioned package surfaces (NOT tied to TRUTH) ---
+    # Each package versions on its own cadence; these are reported for
+    # confirmation, never failed, never auto-written. Hand-update on release.
+    (
+        "docs_product_status",
+        "statewave-docs/product.md",
+        r'in active early development \(v(\d+\.\d+\.\d+)\)',
+        None,
+        "independent",
+    ),
+    (
+        "docs_sdk_row_python",
+        "statewave-docs/architecture/repo-map.md",
+        r'`statewave` \(Python SDK\)[^|]+\|[^|]+\|\s*(\d+\.\d+\.\d+)\s*\|\s*Apache-2\.0',
+        None,
+        "independent",
+    ),
+    (
+        "docs_sdk_row_ts",
+        "statewave-docs/architecture/repo-map.md",
+        r'`@statewavedev/sdk` \(TypeScript SDK\)[^|]+\|[^|]+\|\s*(\d+\.\d+\.\d+)\s*\|\s*Apache-2\.0',
+        None,
+        "independent",
     ),
 ]
