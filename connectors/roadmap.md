@@ -69,7 +69,6 @@ Each changes the deployment surface (long-lived stateful connection vs request/r
 - Slack Socket Mode (alternative WebSocket transport)
 - Discord Gateway (stateful WebSocket; heartbeats; sequence numbers)
 - Gmail service account / domain-wide delegation (needs JWT/RS256 signing — adds a crypto dep)
-- Built-in OIDC verification for the Gmail Pub/Sub receiver (today: operators plug a `verifyAuth: (req) => Promise<boolean>` callback if they don't want path-token auth)
 
 ### Other deferred polish (per connector)
 
