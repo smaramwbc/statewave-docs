@@ -50,7 +50,7 @@ Each episode's `idempotency_key` is derived from the file's **path** and **conte
 ## Quickstart
 
 ```bash
-export STATEWAVE_URL=http://localhost:8000
+export STATEWAVE_URL=http://localhost:8100
 export STATEWAVE_API_KEY=...
 
 # Preview

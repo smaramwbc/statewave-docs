@@ -44,7 +44,7 @@ pnpm build
 ## 2. Point the CLI at Statewave
 
 ```bash
-export STATEWAVE_URL=http://localhost:8000
+export STATEWAVE_URL=http://localhost:8100
 export STATEWAVE_API_KEY=...        # only required if your instance enforces auth
 ```
 
