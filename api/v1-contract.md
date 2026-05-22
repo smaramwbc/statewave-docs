@@ -119,8 +119,11 @@ When `STATEWAVE_WEBHOOK_URL` is configured, the server fires async HTTP POST cal
 | Event | Trigger | Payload |
 |-------|---------|---------|
 | `episode.created` | After episode ingestion | `{ "id": "...", "subject_id": "..." }` |
+| `episodes.batch_created` | After batch episode ingestion | `{ "count": N, "subject_ids": ["..."] }` |
 | `memories.compiled` | After memory compilation | `{ "subject_id": "...", "memories_created": N }` |
 | `subject.deleted` | After subject deletion | `{ "subject_id": "...", "episodes_deleted": N, "memories_deleted": N }` |
+| `subject.health_degraded` | Customer health state worsened | `{ "subject_id": "...", "previous_state": "...", "current_state": "...", "score": N, "factors": [...], "generated_at": "..." }` |
+| `subject.health_improved` | Customer health state recovered | `{ "subject_id": "...", "previous_state": "...", "current_state": "...", "score": N, "factors": [...], "generated_at": "..." }` |
 
 Webhook body:
 
@@ -131,6 +134,16 @@ Webhook body:
   "data": { "id": "...", "subject_id": "..." }
 }
 ```
+
+### Event-type filter
+
+By default every event above is delivered to the configured webhook URL. Set `STATEWAVE_WEBHOOK_EVENTS` to a comma-separated allowlist to restrict delivery to specific event types:
+
+```
+STATEWAVE_WEBHOOK_EVENTS=memories.compiled,subject.health_degraded
+```
+
+A filtered-out event is dropped before it is enqueued — it consumes no storage and no delivery attempts. An empty or unset value delivers every event (the default), so the filter is fully backward-compatible. Unknown event types are rejected at startup, so a typo fails fast rather than silently dropping every webhook.
 
 ---
 
@@ -662,6 +675,7 @@ All settings use the `STATEWAVE_` env prefix. A `.env` file is supported.
 | `RATE_LIMIT_STRATEGY` | `distributed` | `distributed` (Postgres) or `memory` (in-process) |
 | `WEBHOOK_URL` | — | Webhook callback URL (empty = disabled) |
 | `WEBHOOK_TIMEOUT` | `5.0` | Webhook timeout (seconds) |
+| `WEBHOOK_EVENTS` | — | Comma-separated event-type allowlist (empty = deliver every event) |
 | `COMPILE_JOB_RETENTION_HOURS` | `168` | Hours to retain completed/failed compile jobs (0 = no cleanup) |
 | `CORS_ORIGINS` | `["*"]` | CORS allowed origins |
 | `REQUIRE_TENANT` | `false` | Require `X-Tenant-ID` — enables real tenant isolation |
