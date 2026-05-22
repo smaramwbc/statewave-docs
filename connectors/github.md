@@ -61,7 +61,7 @@ The GitHub connector reads only `GITHUB_TOKEN`. It does not need (and never read
 ## Quickstart
 
 ```bash
-export STATEWAVE_URL=http://localhost:8000
+export STATEWAVE_URL=http://localhost:8100
 export STATEWAVE_API_KEY=...
 export GITHUB_TOKEN=ghp_...
 

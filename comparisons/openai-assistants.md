@@ -89,7 +89,7 @@ The hard step is identifying the *subject*. Don't make threads your subjects —
 
 ### Migration steps
 
-1. **Stand up Statewave.** Single-Postgres + a container; ~10 minutes via [getting-started.md](../getting-started.md).
+1. **Stand up Statewave.** Single-Postgres + a container; ~5 minutes via [getting-started.md](../getting-started.md).
 2. **For each Assistants thread you want to preserve**, identify its subject (typically the authenticated user — `subject_id = f"user-{user_id}"`).
 3. **Bulk-export thread messages** via the Assistants API while it's still alive.
 4. **Replay each message as a Statewave episode** under the right subject:
