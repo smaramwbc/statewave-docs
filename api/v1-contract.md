@@ -581,6 +581,66 @@ The `handoff_notes` field is a pre-rendered markdown brief optimized for both hu
 
 ---
 
+### GET /v1/memory-templates
+
+List the bundled memory templates — declarative, versioned scaffolds for common information patterns (support handoffs, project decisions, incident summaries, …). The response carries each template's full field schema, so callers can render their own forms from it.
+
+**Response:** `200`
+
+```json
+{
+  "templates": [
+    {
+      "id": "customer-support-handoff",
+      "version": 1,
+      "title": "Customer support handoff",
+      "description": "...",
+      "episode_type": "support.handoff_note",
+      "fields": [
+        { "name": "customer", "type": "string", "required": true, "description": "..." },
+        { "name": "issue", "type": "text", "required": true, "description": "..." }
+      ],
+      "content_template": "Customer support handoff — {customer}.\n\nActive issue: {issue}"
+    }
+  ]
+}
+```
+
+### GET /v1/memory-templates/{template_id}
+
+Fetch one template by id. `404` if there is no such template.
+
+### POST /v1/memory-templates/{template_id}/apply
+
+Validate caller-supplied field values against a template and ingest the resulting episode. The episode flows through the normal compile/context pipeline; the compiler is not involved in templating.
+
+**Request:**
+
+```json
+{
+  "subject_id": "customer:globex",
+  "session_id": "ticket-8842",
+  "values": {
+    "customer": "Globex Corp",
+    "issue": "Duplicate charge on the May invoice"
+  }
+}
+```
+
+| Field | Required | Constraints |
+|-------|----------|-------------|
+| `subject_id` | yes | Non-empty subject id |
+| `values` | no | Map of template field name → string value; validated against the template's field schema |
+| `session_id` | no | Session the episode belongs to |
+
+Validation is strict — an unknown field, a missing required field, or a non-string value is rejected with `422`. `404` if the template does not exist.
+
+**Response:** `201` — the created episode. Its `payload` carries `template_id`, `template_version`, the supplied `fields`, and the deterministically-rendered `content`; `metadata.template` records `{ id, version }` for provenance.
+
+See `docs/memory-templates.md` in the [`statewave`](https://github.com/smaramwbc/statewave) server repo for the template file format and how to add one.
+
+---
+
 ### POST /v1/llm/complete
 
 Internal chat-completion pass-through used by Statewave's own demo / website flows. Accepts a list of chat messages and runs a single completion via the configured LiteLLM provider (`STATEWAVE_LITELLM_MODEL`, etc.).
