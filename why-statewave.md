@@ -151,8 +151,6 @@ bundle = client.get_context("customer-123", "Help with billing question")
 | Production scale (>10k subjects, high throughput) | Not load-tested. Single-node only. |
 | Multi-tenant isolation | App-layer query scoping; no Postgres RLS yet. Not battle-tested at scale. |
 | LLM compiler vs heuristic compiler quality | LLM compiler exists but no comparative eval published. |
-| Comparison against Mem0 or similar products | No head-to-head benchmark against external products. Internal [benchmark](https://github.com/smaramwbc/statewave-examples/tree/main/benchmark-support-agent) compares Statewave vs history stuffing vs naive RAG. |
-| Webhook filters (subscribe to specific event types) | Not yet — all events fire to one URL. |
 | 50-session production-scale benchmark | Not yet run. |
 
 We are honest about these gaps. If any of these are blockers for your use case, Statewave may not be ready for you yet.

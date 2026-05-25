@@ -2,6 +2,51 @@
 
 All notable changes to the Statewave workspace.
 
+## v0.8.1 — Adoption (2026-05-25)
+
+Closes the Adoption half of the v0.8 milestone, on top of the Governance & Audit foundation shipped in v0.8.0. Each item shipped as its own focused PR; the full breakdown lives in [`roadmap.md`](roadmap.md#v08--governance--adoption-) under "Adoption — shipped".
+
+### Added — SDK convenience methods for support endpoints ([statewave-py#15](https://github.com/smaramwbc/statewave-py/pull/15), [statewave-ts#16](https://github.com/smaramwbc/statewave-ts/pull/16))
+
+- `get_health` / `getHealth`, `get_sla` / `getSLA`, `create_handoff` / `createHandoff`, `create_resolution` / `createResolution`, `list_resolutions` / `listResolutions` on **both** the Python `StatewaveClient` (sync + async) and the TypeScript `StatewaveClient`.
+- Same auth, tenant-scoping, retry/backoff, and structured error handling as the rest of each client — these methods route through the existing shared request path.
+- Wrap support-agent endpoints the server has exposed since v0.6, so callers no longer need raw HTTP alongside the SDK.
+- Released as `statewave` **0.10.0** on PyPI and `@statewavedev/sdk` **0.10.0** on npm (version-aligned across SDKs).
+
+### Added — webhook event-type filter ([statewave#150](https://github.com/smaramwbc/statewave/pull/150) · docs [statewave-docs#39](https://github.com/smaramwbc/statewave-docs/pull/39))
+
+- `STATEWAVE_WEBHOOK_EVENTS` (comma-separated) — an event-type allowlist applied at the global webhook URL. Filtered-out events are dropped before they reach the delivery queue (zero storage, zero delivery attempts).
+- Unknown event types fail the server at startup, so a typo can't silently drop every webhook. Validation against the canonical event vocabulary in `server/core/webhook_events.py`.
+- Fully backward-compatible: empty / unset filter delivers every event. No DB migration.
+
+### Added — memory templates for common patterns ([statewave#152](https://github.com/smaramwbc/statewave/pull/152) · docs [statewave-docs#41](https://github.com/smaramwbc/statewave-docs/pull/41))
+
+- Declarative, versioned scaffolds for recurring information patterns. Five bundled templates ship today: `customer-support-handoff`, `user-preference`, `project-decision`, `incident-summary`, `account-onboarding` (server `server/templates/*.yaml`).
+- Read-only API exposes every template's full field schema for inspection: `GET /v1/memory-templates`, `GET /v1/memory-templates/{template_id}`.
+- `POST /v1/memory-templates/{template_id}/apply` validates caller-supplied field values against the template, deterministically renders the content, and ingests an ordinary episode with `template_id` / `template_version` recorded in both `payload` and `metadata.template` for provenance.
+- Pure data — no code runs inside a template; rendering is plain string substitution. Adding a template is dropping a YAML file in `server/templates/`. The compiler is unchanged. Reference: [`docs/memory-templates.md`](https://github.com/smaramwbc/statewave/blob/main/docs/memory-templates.md).
+
+### Added — framework integration examples ([statewave-examples#12](https://github.com/smaramwbc/statewave-examples/pull/12))
+
+- Three runnable quickstarts under [`statewave-examples`](https://github.com/smaramwbc/statewave-examples): `langchain-quickstart/`, `crewai-quickstart/`, `autogen-quickstart/`. Each ships an `adapter.py`, a runnable demo, a mock-based smoke test (no LLM, no Statewave server needed), and a README.
+- **Dependency strategy:** zero framework deps in the core Statewave SDKs. Adapter code lives inside each example; framework versions pinned only in the example READMEs. SDK releases don't chase framework version churn.
+- Adapter shapes: `StatewaveMemory(BaseMemory)` for LangChain; pure-function helpers (`build_task_description` + `record_crew_output`, `build_system_message` + `update_system_message` + `record_turn`) for CrewAI and AutoGen — both dependency-free of their own framework so smoke tests run without those installs.
+
+### Added — head-to-head benchmark vs Mem0 / Zep ([statewave-bench#14](https://github.com/smaramwbc/statewave-bench/pull/14))
+
+- First **complete equal-budget sweep** across the public [LoCoMo](https://github.com/snap-research/LoCoMo) dataset: 4 token tiers (512 / 1024 / 2048 / 4096) × 5 systems (statewave, mem0, zep, naive, no_memory) × 10 conversations × 1,986 questions/system, single consistent run.
+- Publication-safety harness — `swb report` refuses headline rankings without 100% scored coverage, the same question set across systems, no `judge_failed` rows, measured input tokens reported beside every score, and a standing vendor-correction invitation.
+- Headline (excl. adversarial mean per-question score): statewave **0.393 / 0.384 / 0.404 / 0.416** across the four budgets; mem0 0.154 / 0.269 / 0.283 / 0.273; zep 0.035 / 0.041 / 0.048 / 0.046. Full per-tier results in [`RESULTS.md`](https://github.com/smaramwbc/statewave-bench/blob/main/RESULTS.md) on `statewave-bench` `main`.
+
+### Added — design partner onboarding package ([statewave-docs#42](https://github.com/smaramwbc/statewave-docs/pull/42))
+
+- New [`design-partners.md`](design-partners.md): a single-page guide covering overview + 30/60/90-day relationship shape, who Statewave is for (strong + weak fit), a 30-minute setup path, recommended first use cases, data/privacy expectations, support and feedback loop, evaluation checklist (functional, performance, governance, operational), success criteria with benchmark reference numbers, and a 9-entry FAQ. Linked from `README.md` and `SUPPORT.md`.
+
+### Roadmap consistency ([statewave-connectors#66](https://github.com/smaramwbc/statewave-connectors/pull/66) · [statewave-docs#38](https://github.com/smaramwbc/statewave-docs/pull/38) · [statewave-docs#43](https://github.com/smaramwbc/statewave-docs/pull/43))
+
+- Connectors-repo roadmap brought into agreement with the canonical `statewave-docs` roadmap: Tier 3 operator/cloud productization wave (v0.12.0–v0.17.0) recorded in the "State of the world" callout; the stale "Built-in OIDC verification for Gmail Pub/Sub" entry (shipped in `connectors` v0.15.0) removed from the Queued list in both copies.
+- `roadmap.md` ticks every Adoption checkbox with PR citations, flips the `← CURRENT` marker from v0.8 to v0.9, and renames `Adoption — in progress` to `Adoption — shipped`.
+
 ## v0.8.0 — Governance & Audit (2026-05-14)
 
 This release adds the governance layer that turns Statewave from "structured memory with provenance" into "structured memory with emitted, queryable, policy-governed accountability." Three components:
