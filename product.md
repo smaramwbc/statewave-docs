@@ -86,6 +86,9 @@ Statewave is in active early development (v0.9.0). We document these honestly:
 | `GET / PATCH /admin/tenants/{id}/config` | Per-tenant config — receipts emission, retention, policy_mode, caller-identity gate |
 | `POST /admin/policy/bundles` | Upload (and optionally activate) a YAML policy bundle |
 | `POST /admin/policy/activate` | Switch active bundle for a scope |
+| `GET /v1/memory-templates` | List bundled memory templates (declarative scaffolds for recurring patterns) |
+| `GET /v1/memory-templates/{id}` | Fetch a single memory template — fields, types, content scaffold |
+| `POST /v1/memory-templates/{id}/apply` | Validate field values against a template and ingest the resulting episode |
 
 ## SDKs
 

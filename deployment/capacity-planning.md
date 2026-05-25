@@ -43,7 +43,7 @@ If all three are healthy, the problem is most likely **outside Statewave** — y
 | `pool_timeout` errors in API logs | Connection pool exhausted: too few SQLAlchemy connections, **or** DB `max_connections` too low for replicas | Raise SQLAlchemy `pool_size`/`max_overflow`; confirm `replicas × (pool_size + max_overflow) < db.max_connections` (with margin) |
 | `distributed_rate_limit_db_error` warnings | Postgres connection slots saturated by per-request rate-limit checks | See [Troubleshooting STATEWAVE-TS-001](troubleshooting.md); switch to in-memory rate limit if running a single instance |
 | Sustained DB CPU > 70% | Working set doesn't fit in RAM, vacuum is lagging, or HNSW search is paging | Tune autovacuum + `work_mem`; raise DB RAM before raising cores |
-| Webhook DLQ growing | Receiver erroring or rate-limited; or subscriber too slow | Check the receiver's error rate and 5xx; scale subscribers; webhook event filters are on the v0.8 [roadmap](../roadmap.md) |
+| Webhook DLQ growing | Receiver erroring or rate-limited; or subscriber too slow | Check the receiver's error rate and 5xx; scale subscribers; or set `STATEWAVE_WEBHOOK_EVENTS` to an allowlist so only the event types the subscriber consumes are enqueued ([event-type filter](../api/v1-contract.md#event-type-filter)) |
 | API instances healthy but UX feels degraded | Latency floor is the embedding provider or your agent's own LLM | Trace one end-to-end request; verify `/v1/context` is not the long pole |
 | `/readyz` reports queue degraded after upgrade | Orphaned in-flight compile jobs from old replica | Wait 30 min for self-recovery, or follow the reset path in [migrations.md](migrations.md) |
 

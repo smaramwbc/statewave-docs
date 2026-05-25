@@ -200,7 +200,7 @@ This is exactly what `docker-compose.yml` ships and what the demo `fly.toml` run
 **Signs you should upgrade further (or change topology):**
 
 - DB CPU saturated even after tuning → split read traffic to a replica; consider sharding by tenant if a single primary cannot keep up.
-- Webhook DLQ growing → scale subscribers or add filtering (filters are on the v0.8 roadmap).
+- Webhook DLQ growing → scale subscribers, or restrict delivery via `STATEWAVE_WEBHOOK_EVENTS` so only the event types the subscriber consumes are enqueued ([event-type filter](../api/v1-contract.md#event-type-filter)).
 - Latency floor is the embedding provider → move to a self-hosted endpoint or a faster model.
 
 ---
