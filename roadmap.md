@@ -87,7 +87,7 @@ Statewave is purpose-built for **support-agent workflows** — the first use cas
 
 ---
 
-## v0.8 — Governance & Adoption ← CURRENT
+## v0.8 — Governance & Adoption ✅
 
 **Goal:** Make Statewave deployable in compliance-grade settings (regulated industries, multi-tenant SaaS) and make adoption trivial for teams integrating it into existing stacks.
 
@@ -99,19 +99,19 @@ Statewave is purpose-built for **support-agent workflows** — the first use cas
 - [x] **Per-tenant configuration endpoint** — `GET / PATCH /admin/tenants/{tenant_id}/config` for receipts emission policy, retention, policy_mode, caller-identity gating. PATCH-shape merge (only touches supplied keys, preserves the rest), enum/bound validation at the API boundary, optimistic concurrency via `expected_version`. Makes `policy_mode: enforce` and `require_caller_identity: true` reachable via API without a SQL shell — the gap caught in the enforce-mode prod smoke.
 - [x] **Cross-tenant policy bundle uniqueness** ([#79](https://github.com/smaramwbc/statewave/issues/79)) — `policy_bundles` keyed on `(tenant_id, bundle_hash)` composite uniqueness (PG15+ `NULLS NOT DISTINCT`). Two tenants installing the IDENTICAL YAML produce two independently-resolvable rows. Pre-fix the second tenant's upload silently re-bound the first's row.
 
-### Adoption — in progress
+### Adoption — shipped
 
-- [ ] SDK convenience methods for support endpoints (health, SLA, handoff, resolutions)
-- [ ] Framework integrations (LangChain, CrewAI, AutoGen)
-- [ ] Webhook event filters (subscribe to specific event types)
-- [ ] Memory templates for common patterns
-- [ ] Design partner onboarding package
-- [ ] Head-to-head benchmark against Mem0 / Zep
+- [x] **SDK convenience methods for support endpoints** — ergonomic wrappers on both `statewave-py` and `@statewavedev/sdk` for `/v1/subjects/{id}/health`, `/v1/subjects/{id}/sla`, `/v1/handoff`, and resolution create/list. Same auth, tenant-scoping, and retry as the rest of the client; HTTP wire contract unchanged. Sync + async on the Python side. Shipped in `statewave-py` 0.10.0 and `@statewavedev/sdk` 0.10.0 (statewave-py#15, statewave-ts#16).
+- [x] **Framework integrations (LangChain, CrewAI, AutoGen)** — three runnable quickstart examples in [`statewave-examples`](https://github.com/smaramwbc/statewave-examples) (`langchain-quickstart/`, `crewai-quickstart/`, `autogen-quickstart/`). Each ships a small adapter (`StatewaveMemory(BaseMemory)` for LangChain; pure-function helpers for CrewAI and AutoGen), a runnable demo, and mock-based smoke tests. Dependency strategy: **zero framework deps in the core SDKs** — adapters live inside each example, framework versions pinned only in the example READMEs, so SDK releases don't chase framework churn (statewave-examples#12).
+- [x] **Webhook event filters** — `STATEWAVE_WEBHOOK_EVENTS` (comma-separated) is an event-type allowlist on the global webhook URL. Filtered-out events are dropped before they reach the delivery queue. Unknown event types fail the server at startup, so a typo can't silently drop every webhook. Fully backward-compatible: empty filter delivers every event (statewave#150).
+- [x] **Memory templates for common patterns** — declarative, versioned scaffolds for recurring information patterns. Five bundled templates ship today (customer support handoff, user preference, project decision log, incident summary, account onboarding); `GET /v1/memory-templates` is fully inspectable, `POST /v1/memory-templates/{id}/apply` validates field values and ingests an ordinary episode with `template_id` / `template_version` recorded in `metadata.template`. Pure data — no code runs inside a template; rendering is deterministic string substitution. See [`docs/memory-templates.md`](https://github.com/smaramwbc/statewave/blob/main/docs/memory-templates.md) in the server repo (statewave#152).
+- [x] **Design partner onboarding package** — a single-page guide in [`design-partners.md`](design-partners.md) covering overview, who Statewave is for, a 30-minute setup path, recommended first use cases, data/privacy expectations, the support and feedback loop, an evaluation checklist (functional, performance, governance, operational), 30 / 60 / 90-day success criteria with benchmark reference numbers, and a 9-entry FAQ. Linked from `README.md` and `SUPPORT.md` (statewave-docs#42).
+- [x] **Head-to-head benchmark against Mem0 / Zep** — complete equal-budget sweep on the public [LoCoMo](https://github.com/snap-research/LoCoMo) dataset across **four token tiers (512 / 1024 / 2048 / 4096)**, **5 systems** (statewave, mem0, zep, naive, no_memory), 10 conversations, 1,986 questions/system. Publication-safety harness — `swb report` refuses headline rankings without 100% coverage, same question set across systems, no judge_failed rows, measured input tokens shown beside every score, vendor-correction standing invitation. **Statewave wins every tier and every category.** Full methodology + per-tier results live in [`RESULTS.md`](https://github.com/smaramwbc/statewave-bench/blob/main/RESULTS.md) on `statewave-bench` `main` (statewave-bench#14).
 - [x] **Connector ecosystem — fully shipped** ✅ Modular packages for GitHub, Markdown/ADRs, MCP, Slack, Discord, Zendesk, Intercom, Freshdesk, Notion, Gmail, n8n, Zapier. v0.6.0 added cursor-based delta sync (Zendesk Incremental Tickets Export, Gmail History API) and Notion database scoping. **Tier 2 push receivers shipped (v0.7.0–v0.11.0)** — every connector with a meaningful push surface in its source system now has a real-time receiver alongside its pull connector: Slack DM/MPIM dispatch (`slack.dm.*`, `slack.mpim.*`), Freshdesk webhook, Zendesk webhook, Intercom webhook, and Gmail Cloud Pub/Sub push. `statewave-connectors listen <connector>` is the unified daemon; the same `(Request) => Promise<Response>` factory mounts on Vercel / Cloudflare / Express identically across the lineup. **Tier 3 operator/cloud productization shipped (v0.12.0–v0.17.0)** — TOML config file (multi-instance), hosted runner (`statewave-connectors run`), persistent state adapters (file / Postgres / Redis), built-in OIDC verification for Gmail Pub/Sub, auth-gated Prometheus `/metrics`, and deployment recipes (Docker / Compose / Helm / Fly / Railway). See [Connectors → Roadmap](connectors/roadmap.md) for the full release timeline and what's queued next (long-running daemon shapes — Slack Socket Mode, Discord Gateway, Gmail service-account auth).
 
 ---
 
-## v0.9 — Replay, Signing, & Auto-Labeling (planned)
+## v0.9 — Replay, Signing, & Auto-Labeling ← CURRENT
 
 Building on the v0.8 governance foundation:
 
