@@ -2,6 +2,10 @@
 
 Welcome to Statewave! Here's how to get help.
 
+## 🤝 Design partner program
+
+Adopting Statewave on a real workload and want a direct line, priority bug triage, and a voice in the roadmap? See the **[design partner onboarding guide](./design-partners.md)** for the 30-minute setup path, the 30 / 60 / 90-day shape of the relationship, the evaluation checklist, and the FAQ.
+
 ## 📖 Documentation
 
 Start with the documentation:

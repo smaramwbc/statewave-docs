@@ -22,6 +22,7 @@ This repo contains the architecture docs, product specs, API contracts, and deve
 - **[Getting Started](getting-started.md)** ← start here
 - [What is Statewave?](product.md)
 - [Why Statewave?](why-statewave.md) — technical comparison for support-agent workflows
+- **[Design partner onboarding](design-partners.md)** — 30-minute setup, evaluation checklist, success criteria, FAQ — for teams adopting Statewave early
 - [Use Cases map](https://statewave.ai/use-cases) — categorized inventory of what you can build (support, coding, workspace, account, voice, agent infrastructure, connectors, frontier ideas)
 - **[Connectors](connectors/index.md)** — feed real-world events (GitHub, Markdown/ADRs, MCP, and more) into Statewave as normalized episodes
 - [Subject Design](subject-design.md) — the architectural treatment of subjects (entity granularity, tenancy, modelling)
