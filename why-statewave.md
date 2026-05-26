@@ -159,7 +159,6 @@ We are honest about these gaps. If any of these are blockers for your use case, 
 
 ## Current limitations
 
-- PostgreSQL required (no alternative backends)
 - Single-node only (no clustering)
 - No built-in auth provider (validates keys you configure, doesn't issue them)
 - No streaming (context returned as complete JSON)

@@ -66,7 +66,7 @@ Statewave is purpose-built for **support-agent workflows** — the first use cas
 
 ---
 
-## v0.7 — Operator & Cloud Experience
+## v0.7 — Operator & Cloud Experience ✅
 
 **Goal:** Make Statewave trustworthy to operate at scale. An operator should be able to deploy, monitor, upgrade, and scale Statewave without surprises.
 
@@ -111,16 +111,36 @@ Statewave is purpose-built for **support-agent workflows** — the first use cas
 
 ---
 
-## v0.9 — Replay, Signing, & Auto-Labeling ← CURRENT
+## v0.9 — Replay, Signing, & Auto-Labeling ✅
 
-Building on the v0.8 governance foundation:
+Building on the v0.8 governance foundation. Shipped 2026-05-26:
 
-- [ ] **Receipt-driven replay** — new receipt `mode: as_of_replay` lets `/v1/replay` re-run assembly against historical state (using receipt's recorded selected entries + bundle hash) and emit a "what would have happened" receipt for time-travel debugging.
-- [ ] **HMAC signing for receipts** — the `receipt_signature` column reserved in v0.8 lights up with a tenant-key-signed digest of the canonical receipt body. Lets compliance reviewers verify a receipt wasn't tampered with after the fact.
-- [ ] **Scheduled retention-purge worker** — reads `tenant_configs.receipt_retention_days` and tombstones expired receipts. Surface shipped in v0.8; worker is the implementation.
-- [ ] **Compiler/connector heuristic auto-labeling** — opt-in regex/LLM detection of PII, financial identifiers, etc. during memory compilation. Surfaces as `suggested_labels` (separate from authoritative operator-supplied `sensitivity_labels`) so false positives never silently filter memories.
-- [ ] **Visual policy editor** — operator-friendly form on the admin app to build rule sets without writing YAML by hand (YAML still ships as the canonical artifact for git review).
-- [ ] **Cross-region data residency** — `region` column reserved on receipts in v0.8 lights up with per-tenant region pinning so EU-only tenants can guarantee assembly artifacts stay in EU storage.
+- [x] **Scheduled retention-purge worker** ([#156](https://github.com/smaramwbc/statewave/issues/156) · [#162](https://github.com/smaramwbc/statewave/pull/162)) — hourly worker reads `tenant_configs.config.receipt_retention_days` and tombstones expired receipts. Soft-delete only; rows persist for forensic lookup. Partial index keeps it cheap. Migration 0020.
+- [x] **HMAC signing for receipts** ([#157](https://github.com/smaramwbc/statewave/issues/157) · [#163](https://github.com/smaramwbc/statewave/pull/163)) — `hmac-sha256-canonical-v1` over the canonical body. Operator-provided keys via `STATEWAVE_RECEIPT_SIGNING_KEYS`, never persisted to DB. Per-tenant active key via `tenant_configs.config.receipt_signing_key_id`. `GET /v1/receipts/{id}/verify` with `{valid, key_id, algorithm, reason}` semantics and constant-time compare. Pre-v0.9 receipts verify cleanly as `no_signature`. Migration 0021.
+- [x] **Compiler heuristic auto-labeling** ([#158](https://github.com/smaramwbc/statewave/issues/158) · [#164](https://github.com/smaramwbc/statewave/pull/164)) — opt-in `STATEWAVE_AUTO_LABELING_ENABLED`. Detectors stamp advisory `suggested_labels`, strictly separate from authoritative `sensitivity_labels`. v0.9 first wave: `pii.email`, `pii.phone`, `financial.card` (Luhn), `secret.token`. Migration 0022 (GIN-indexed).
+- [x] **Receipt-driven replay** ([#159](https://github.com/smaramwbc/statewave/issues/159) · [#165](https://github.com/smaramwbc/statewave/pull/165)) — every v0.9+ receipt embeds the active bundle's YAML (`policy_snapshot`). `POST /v1/receipts/{id}/replay` re-runs against current memories with the original policy and returns a structural diff envelope. Mode `as_of_replay`, child receipts link to the parent. Semantic: *current code + original policy*. Migration 0023.
+- [x] **Operator promote endpoint + admin UI** ([#160](https://github.com/smaramwbc/statewave/issues/160) · server [#166](https://github.com/smaramwbc/statewave/pull/166), admin [statewave-admin#89](https://github.com/smaramwbc/statewave-admin/pull/89)) — `POST /admin/memories/{id}/promote-labels` is review-only, with audit-trail entries on `memory.metadata.label_promotions`. Admin app `/suggested-labels` page + receipt-detail replay button rendering the diff envelope inline.
+- [x] **Per-tenant data residency** ([#161](https://github.com/smaramwbc/statewave/issues/161) · [#167](https://github.com/smaramwbc/statewave/pull/167)) — per-region deployment + metadata-pinned tenants. `STATEWAVE_REGION` + `tenant_configs.config.region`. Hard application-layer enforcement on `/v1/` AND `/admin/` (total isolation). HTTP 403 `residency.mismatch` on conflict. Receipts stamp `region` for end-to-end audit. Code + config + tests + ops runbook shipped; no second region deployed yet.
+
+### Deferred to v0.10
+
+- [ ] **Visual policy editor** — admin-app YAML-free form for building rule sets. Listed in the original v0.9 plan but deferred to keep the v0.9 release focused on audit + replay + residency.
+- [ ] **Admin identity** — so `promoted_by` and future operator-action audit fields populate with the operator's id, not `null`. Lays groundwork for richer admin-side audit trails.
+- [ ] **Bulk label promotion** across many memories. v0.9 is one-row-per-call.
+- [ ] **Federated cross-region audit search** — explicit follow-up to #161; never as implicit cross-region access.
+- [ ] **Memory snapshots for byte-for-byte replay** — v0.9 ships *current code + original policy*; true historical reproduction needs memory snapshots. The data model is designed to absorb this without a schema break.
+
+---
+
+## v0.10 — Next milestone (scope TBD)
+
+Currently in stabilization for v0.9 — release notes, docs, and broader rollout — before a new milestone is opened. The shape of v0.10 will be informed by:
+
+- The deferred items above (admin identity is the natural lead since it unblocks several others).
+- Design-partner feedback on the v0.9 audit + replay + residency surfaces.
+- Operator-quality-of-life items from the v0.9 ops runbooks once they get real-world use.
+
+Not committing to a list yet; calling this section out explicitly so deferred items have a visible home.
 
 ---
 

@@ -40,7 +40,8 @@ happen*. They split as follows:
 | Concern | Layer | Field |
 |---|---|---|
 | Which memories were selected? | receipt | `selected_entries` |
-| What labels did they carry? | policy → receipt | `selected_entries[].sensitivity_labels` (planned v2) |
+| What labels did they carry? | memory | `memories.sensitivity_labels` (queryable; not yet inlined on `selected_entries`) |
+| What labels were suggested but not yet promoted? | memory | `memories.suggested_labels` (v0.9 — advisory only, policy ignores) |
 | Which rules fired? | policy → receipt | `policy.filters_applied` |
 | Which rules ran but didn't fire? | policy → receipt | `policy.filters_skipped` |
 | What policy was in effect? | policy → receipt | `policy.policy_bundle_hash` |
@@ -225,17 +226,17 @@ const bundle = await c.getContext({
 });
 ```
 
-## What's out of scope for v1
+## Shipped after v0.8
 
-- Visual policy editor in the admin app — v1 surfaces YAML upload +
-  bundle list + activate; authoring stays in YAML in git.
-- Compiler / connector heuristic auto-labeling (PII detection, etc.).
-  v1 is operator-supplied only. Auto-labeling is a v2 follow-up
-  because heuristic mislabeling is a footgun that erodes trust faster
-  than no labels.
+- **Heuristic auto-labeling** ([#158](https://github.com/smaramwbc/statewave/issues/158)) — v0.9 added an opt-in pipeline that stamps advisory `suggested_labels` on memories at compile time (PII email/phone, financial card with Luhn, secret tokens). The policy evaluator **does not read** this column; promotion into authoritative `sensitivity_labels` is an explicit operator action via the admin app. See [`docs/auto-labeling.md`](https://github.com/smaramwbc/statewave/blob/main/docs/auto-labeling.md). The "v1 is operator-supplied only" stance still applies to the authoritative column.
+- **Operator review + promote workflow** ([#160](https://github.com/smaramwbc/statewave/issues/160)) — v0.9 added `POST /admin/memories/{id}/promote-labels` (review-only; ad-hoc writes refused) plus a `/suggested-labels` page in the admin app. Promotions are audit-trailed on `memory.metadata.label_promotions`.
+
+## Still out of scope
+
+- **Visual policy editor in the admin app** — v0.9 surfaces YAML upload + bundle list + activate; authoring stays in YAML in git. Deferred from the original v0.9 plan to v0.10 to keep the v0.9 release focused on the audit + replay + residency story.
 - Cross-tenant policy sharing.
 - Regex predicates (`caller_id_pattern`, `memory_content_pattern`).
-- Explicit `allow` rules — v1 uses default-allow + `deny`/`redact`.
+- Explicit `allow` rules — uses default-allow + `deny`/`redact`.
 - Per-rule audit metadata (last-fired timestamp, hit counts).
 - Human-approval workflows for memory-promotion gating.
 

@@ -53,14 +53,15 @@ future assembly surface is added it goes through the same gate.
 ## Receipt schema
 
 Receipts use a **strict-superset** shape with a `mode` discriminator.
-Every field is always present; optional ones are nullable. v1 ships
-one mode (`"retrieval"`). Future modes (`as_of_replay`, `eval_run`)
-can extend without a schema break.
+Every field is always present; optional ones are nullable. v0.8 added
+`"retrieval"` (covers both `/v1/context` and `/v1/handoff` emissions);
+v0.9 added `"as_of_replay"` (emitted by [`POST /v1/receipts/{id}/replay`](https://github.com/smaramwbc/statewave/blob/main/docs/replay.md)). Future modes (`eval_run`) can extend
+without a schema break.
 
 ```yaml
 receipt_id:            # ULID — addressable, chainable
-parent_receipt_id:     # nullable ULID — chain multi-step tasks
-mode:                  # "retrieval" in v1
+parent_receipt_id:     # nullable ULID — set on as_of_replay receipts pointing at the parent
+mode:                  # "retrieval" | "as_of_replay"
 query_id:              # caller-supplied or null
 task_id:               # caller-supplied or null
 tenant_id:
@@ -101,8 +102,11 @@ output:
   canonicalization_version:   # bump if canonicalization rules change
   token_estimate:
 
-region:                # populated when tenant config sets a region
-receipt_signature:     # reserved for v2 HMAC tamper-evidence
+region:                            # set from STATEWAVE_REGION in multi-region mode (v0.9)
+receipt_signature:                  # HMAC-SHA256 over the canonical body (v0.9, nullable for unsigned)
+receipt_signature_key_id:           # operator key id used to sign (v0.9, nullable for unsigned)
+receipt_signature_algorithm:        # e.g. "hmac-sha256-canonical-v1" (v0.9, nullable for unsigned)
+policy_snapshot:                    # embedded policy YAML + hash + captured_at (v0.9, nullable for pre-v0.9 receipts)
 ```
 
 ## What the failure modes look like
@@ -184,19 +188,21 @@ returned. The response carries `receipt_id: null, receipt_emitted:
 false` and a structured log records the failure. Receipts are an
 audit artifact; they must not break agent serving.
 
-## What's coming in v2
+## What v0.9 added
 
-- HMAC signing of receipt bodies (`receipt_signature` column already
-  reserved).
-- Scheduled retention-purge worker reading
-  `tenant_configs.config.receipt_retention_days`.
+- **HMAC signing** ([#157](https://github.com/smaramwbc/statewave/issues/157)) — body signed with `hmac-sha256-canonical-v1` under tenant-scoped operator-provided keys. `GET /v1/receipts/{id}/verify` returns `{valid: true | false | null, key_id, algorithm, reason}` with constant-time compare. Pre-v0.9 receipts verify cleanly as `no_signature`.
+- **Scheduled retention worker** ([#156](https://github.com/smaramwbc/statewave/issues/156)) — hourly tombstones receipts past `tenant_configs.config.receipt_retention_days`. Soft-delete; rows persist for forensic lookup.
+- **Receipt-driven replay** ([#159](https://github.com/smaramwbc/statewave/issues/159)) — `policy_snapshot` embeds the active bundle's YAML on every receipt; `POST /v1/receipts/{id}/replay` re-runs the retrieval against current memories with the original policy and returns a structural diff envelope. Reference: [`docs/replay.md`](https://github.com/smaramwbc/statewave/blob/main/docs/replay.md).
+- **Auto-labeling** ([#158](https://github.com/smaramwbc/statewave/issues/158)) — heuristic detectors stamp advisory `suggested_labels` (kept separate from authoritative `sensitivity_labels`). Operator review + explicit promotion via the admin app ([#160](https://github.com/smaramwbc/statewave/issues/160)).
+- **Residency** ([#161](https://github.com/smaramwbc/statewave/issues/161)) — `STATEWAVE_REGION` + `tenant_configs.config.region` enforced at the application layer; receipts stamp the local region for end-to-end audit.
+
+## Still out of scope
+
 - Review-time redaction UI in the admin app.
-- Receipt-driven replay (`as_of_replay` mode) for time-travel
-  debugging.
-- Compiler/connector heuristic auto-labeling to populate
-  `sensitivity_labels` without operator effort (the
-  [policy layer](./sensitivity-labels.md) it feeds shipped in v1
-  with operator-only labeling).
+- Cross-tenant / cross-region federated audit search (see [`docs/residency.md`](https://github.com/smaramwbc/statewave/blob/main/docs/residency.md) for the explicit-not-implicit stance).
+- KMS / Vault-backed signing (v0.9 reads keys from env / secret-manager mount; the architecture is compatible with swapping the key resolver behind the same `receipt_signing_keys` settings field).
+- Asymmetric signatures (the `algorithm` field reserves space for `ed25519-canonical-v1` etc.; v0.9 ships HMAC only).
+- Byte-for-byte historical replay (memory snapshots). v0.9 ships *current code + original policy*; the data model leaves room for memory snapshots without a schema break.
 
 ## See also
 

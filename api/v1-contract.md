@@ -389,6 +389,72 @@ another tenant's id space.
 
 ---
 
+### GET /v1/receipts/{receipt_id}/verify  (v0.9)
+
+Verify the HMAC signature on a stored receipt. Tenant-scoped — same
+404 semantic as the detail endpoint.
+
+**Response:** `200`
+
+```json
+{
+  "valid": true,                           // true | false | null
+  "key_id": "key-2026-01",                 // operator key id used to sign
+  "algorithm": "hmac-sha256-canonical-v1", // algorithm + canonical-form version
+  "reason": "ok"                           // ok | signature_mismatch | key_unavailable
+                                           //   | no_signature | unsupported_algorithm
+}
+```
+
+`valid: null` is for the cases where the verdict cannot be
+determined — `no_signature` (pre-v0.9 receipt or tenant didn't
+opt in), `key_unavailable` (the key id rotated out of operator
+config), `unsupported_algorithm` (a forward-compat scenario where
+this binary doesn't implement the algorithm). `valid: false` is
+reserved for "we checked the math and the signature doesn't cover
+the body." Comparison is constant-time. The signing key bytes never
+appear in the response.
+
+---
+
+### POST /v1/receipts/{receipt_id}/replay  (v0.9)
+
+Re-run the original retrieval against the **current** memory state
+using the **original** policy bundle captured in the receipt's
+`policy_snapshot`. Emits a new receipt with `mode="as_of_replay"`
+and `parent_receipt_id` pointing at the source. Returns a structural
+diff envelope.
+
+**Response:** `200`
+
+```json
+{
+  "original_receipt_id": "01ARZ3NDEKTSV4RRFFQ69G5FAV",
+  "replay_receipt_id":   "01ARZ3NDEKTSV4RRFFQ69G5FAW",
+  "diff": {
+    "context_hash":     { "original": "…", "replay": "…", "changed": true },
+    "selected_entries": { "added": [ … ], "removed": [ … ], "common": 3 },
+    "filters_applied":  { "added": [ … ], "removed": [ … ] }
+  }
+}
+```
+
+Refusal codes (`422` with the standard `error.code` envelope):
+
+| `error.code`                            | When |
+|-----------------------------------------|------|
+| `unreplayable.missing_policy_snapshot`  | Pre-v0.9 receipt — no snapshot was captured at emission. |
+| `unreplayable.nested_replay`            | The receipt is itself a replay. v0.9 ships one level only; replay the parent. |
+| `unreplayable.invalid_snapshot`         | The snapshot YAML failed to parse (corruption or tampering). |
+
+`404` for unknown / cross-tenant. The original receipt is **never**
+modified — replay only appends a new linked row. See
+[the replay design doc](https://github.com/smaramwbc/statewave/blob/main/docs/replay.md)
+for the semantic rationale (*current code + original policy*) and
+the operator workflow.
+
+---
+
 ### GET /v1/receipts
 
 List receipts for a subject, newest first.

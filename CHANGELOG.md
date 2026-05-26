@@ -2,6 +2,67 @@
 
 All notable changes to the Statewave workspace.
 
+## v0.9.0 — Replay, Signing, Auto-Labeling & Residency (2026-05-26)
+
+Closes the Replay, Signing & Auto-Labeling milestone plus the cross-region residency surface, building on the v0.8 governance foundation. Each item shipped as its own focused PR; the breakdown lives in [`roadmap.md`](roadmap.md#v09--replay-signing--auto-labeling-).
+
+### Added — scheduled retention-purge worker ([statewave#156](https://github.com/smaramwbc/statewave/issues/156) · [#162](https://github.com/smaramwbc/statewave/pull/162))
+
+- Implements the worker for the surface v0.8 reserved (`tenant_configs.config.receipt_retention_days`). The hourly `_cleanup_loop` walks tenants with a positive integer retention and issues one tenant-scoped `UPDATE` per tenant transitioning `status='active'` receipts older than `now() - retention_days` into `status='tombstoned'`.
+- Soft delete: rows persist for forensic lookup; the partial index `ix_receipts_active_tenant_created ON (tenant_id, created_at) WHERE status='active'` keeps the worker cheap on large tables.
+- Idempotent and tenant-isolated: re-running against the same DB state is a no-op; misconfiguring tenant A cannot tombstone tenant B's receipts.
+- Migration 0020 adds `receipts.status` (server default `'active'`) and `receipts.tombstoned_at`. Reversible.
+
+### Added — HMAC-signed receipts with tenant-scoped key ids ([statewave#157](https://github.com/smaramwbc/statewave/issues/157) · [#163](https://github.com/smaramwbc/statewave/pull/163))
+
+- Algorithm `hmac-sha256-canonical-v1` over the canonical v1 form of the receipt body. Algorithm + canonicalization version baked into a single string so future migrations (RFC 8785 JCS, asymmetric signing) land as new algorithm tags without a schema break.
+- Operator-provided keys via `STATEWAVE_RECEIPT_SIGNING_KEYS` (JSON map of `key_id -> base64-key`, minimum 32 bytes each). **Never persisted to the database**; the field is `Field(repr=False)` so a stray `print(settings)` cannot leak it.
+- Per-tenant active key id via `tenant_configs.config.receipt_signing_key_id`. Rotation: add a new `key_id` alongside the old, update the tenant pointer; old receipts still verify until the operator removes the old key from config (then they return `valid: null, reason: "key_unavailable"`, never a 500).
+- `GET /v1/receipts/{id}/verify` returns `{valid: true | false | null, key_id, algorithm, reason}` with constant-time comparison (`hmac.compare_digest`). Pre-v0.9 unsigned receipts verify cleanly as `{valid: null, reason: "no_signature"}` — fully backwards-compatible.
+- Failure modes: invalid signing config at boot **fails startup**; runtime signing failures emit unsigned with a structured warning. Assembly is never blocked by audit infra. Tests include a caplog assertion that no key bytes ever appear in logs.
+- Migration 0021 adds `receipts.receipt_signature_key_id` + `receipts.receipt_signature_algorithm` (both nullable). The `receipt_signature` column from v0.8 lights up. Reversible.
+
+### Added — heuristic auto-labeling pipeline ([statewave#158](https://github.com/smaramwbc/statewave/issues/158) · [#164](https://github.com/smaramwbc/statewave/pull/164))
+
+- New `memories.suggested_labels TEXT[]` column (migration 0022, GIN-indexed) holds advisory detector hints, **kept strictly separate from the authoritative `sensitivity_labels`** the policy evaluator reads. A noisy detector cannot tighten policy on real traffic; promotion into the authoritative column is a deliberate, audited operator action.
+- v0.9 first-wave detectors: `pii.email` (RFC-5322-ish), `pii.phone` (E.164 + grouped national), `financial.card` (Luhn-validated 13–19 digit run), `secret.token` (AWS / GitHub / OpenAI / Google / Slack prefixes + bearer JWT). Precision-first by design — false positives surface noisy admin rows; false promotions require an operator click.
+- Off by default. Opt-in via `STATEWAVE_AUTO_LABELING_ENABLED=true`. Both compilers (heuristic, llm) run the pipeline after MemoryRow construction. Detector failures are isolated — a buggy detector cannot break ingest; others still fire and the failure logs with the memory id.
+- Review surface: `GET /admin/memories/with-suggested-labels` filters via the GIN index, supports tenant / subject / specific-label filters, and returns the detector catalogue inline. Available regardless of the feature flag so an operator can flip it off and still triage legacy suggestions.
+- Reference: [`docs/auto-labeling.md`](https://github.com/smaramwbc/statewave/blob/main/docs/auto-labeling.md) — schema, examples, what the pipeline explicitly does **not** do, how to add a detector.
+
+### Added — receipt replay with embedded policy snapshot ([statewave#159](https://github.com/smaramwbc/statewave/issues/159) · [#165](https://github.com/smaramwbc/statewave/pull/165), handoff symmetry follow-up locally)
+
+- Every v0.9+ receipt embeds the active policy bundle's YAML (`policy_snapshot.bundle_yaml`) and hash inside the signed body and into a denormalised `receipts.policy_snapshot` column for fast indexing (migration 0023). A null inner pair records "no policy was active" (replayable, no-policy fallback). A NULL column records "pre-v0.9 receipt" (not replayable).
+- `POST /v1/receipts/{id}/replay` (+ `POST /admin/receipts/{id}/replay` shim for the admin proxy) re-runs the original retrieval against **current memories** using the **original policy bundle** from the snapshot. Emits a new `mode="as_of_replay"` receipt with `parent_receipt_id` set to the source. The original is never modified.
+- Returns a structural diff envelope: `context_hash.{original, replay, changed}`, `selected_entries.{added, removed, common}` (keyed by memory_id / episode_id so re-ranking is `common`, not add+remove), `filters_applied.{added, removed}`.
+- Refusal codes (HTTP 422, standard error envelope): `unreplayable.missing_policy_snapshot` (pre-v0.9), `unreplayable.nested_replay` (replay-of-replay rejected; the audit trail is recoverable by walking `parent_receipt_id`), `unreplayable.invalid_snapshot` (YAML failed to parse).
+- Semantic shipped: **current code + original policy**. Replay is *not* byte-for-byte reproduction; the diff envelope separates "the rules changed" from "the data changed" in incident reviews. Memory snapshots for true byte-for-byte replay are deferred — the data model leaves room without a schema break. Reference: [`docs/replay.md`](https://github.com/smaramwbc/statewave/blob/main/docs/replay.md).
+- Handoff symmetry: `/v1/handoff` receipts also carry the snapshot and are replayable through the same endpoint.
+
+### Added — operator promote endpoint + admin UI ([statewave#160](https://github.com/smaramwbc/statewave/issues/160) · server [#166](https://github.com/smaramwbc/statewave/pull/166), admin [statewave-admin#89](https://github.com/smaramwbc/statewave-admin/pull/89))
+
+- `POST /admin/memories/{memory_id}/promote-labels` is the explicit commit action that moves a subset of a memory's `suggested_labels` into authoritative `sensitivity_labels`. **Review-only**: every label in the request body MUST currently be on the memory's suggested list — ad-hoc writes via this endpoint are refused with HTTP 422 `promote_labels.not_suggested`.
+- Merge semantics: promoted labels are appended to `sensitivity_labels` (deduped + sorted, pre-existing tenant-set labels preserved) and removed from `suggested_labels` so the review queue never re-surfaces them.
+- Audit trail: each promotion appends an entry to `memory.metadata.label_promotions` (`{labels, promoted_at, promoted_by: null}`). Append-only, never overwritten. `promoted_by` is `null` in v0.9 — admin identity is a separate work item; when it lands, the column populates without an audit-schema break.
+- Admin app surfaces: new `/suggested-labels` route (sidebar entry) with the review queue + per-row promote action; receipt detail modal grows a `Replay this receipt` button that calls the new replay shim and renders the diff envelope inline. Pre-v0.9 receipts show an explanatory line instead of the button.
+
+### Added — per-tenant residency with hard application-layer enforcement ([statewave#161](https://github.com/smaramwbc/statewave/issues/161) · [#167](https://github.com/smaramwbc/statewave/pull/167))
+
+- Model: per-region deployment + metadata-pinned tenants. `STATEWAVE_REGION` declares which region this server process is running in; `tenant_configs.config.region` pins a tenant to a region. The application is the source of truth for "is this request allowed here?" — DNS, anycast, and load balancers can misroute requests; the application layer is the single point that knows definitively.
+- `ResidencyMiddleware` enforces on every tenant-scoped request (`/v1/` AND `/admin/` — total isolation per the v0.9 design decision). Mismatch returns HTTP 403 + `error.code = residency.mismatch`. The response carries the tenant's pinned region (operator-set, safe to surface) but **never** the local server's region (would leak topology to a caller probing the boundary).
+- Single-region deployments (`STATEWAVE_REGION` unset) pay zero cost — the middleware short-circuits before any DB work. DB blip during a residency check fails OPEN with a structured warning so a transient connection failure doesn't take down every tenant-scoped request.
+- Admin-patch safety: pinning a tenant to a region this server doesn't serve would immediately lock the tenant out. The PATCH endpoint refuses with HTTP 422 `residency.invalid_pin` unless `force_region_pin: true` is supplied (for scripted bulk-config migrations run from a single-region orchestrator).
+- Receipts emitted in multi-region mode now stamp `settings.region` on the `receipts.region` column the v0.8 schema reserved. Combined with HMAC (#157), the policy snapshot (#159), and replay (#159), residency closes the end-to-end audit story: *where* was this decision made, *with what rules*, *was the body tampered with*, *would current code make the same call*.
+- v0.9 ships **code + config model + enforcement tests + ops runbook only** — no actual second region is deployed by this PR. Reference: [`docs/residency.md`](https://github.com/smaramwbc/statewave/blob/main/docs/residency.md) — full ops runbook for spinning up a second region (provision regional infra, smoke-test in single-region mode, migrate data, pin tenants in both regions, verify cutover).
+
+### Deferred to v0.10
+
+- **Visual policy editor** — admin-app YAML-free form for building rule sets. Listed in the v0.9 roadmap; pushed to v0.10 to keep the v0.9 release focused on the audit + replay + residency story.
+- **Admin identity** so promote / future operator-action endpoints can fill `promoted_by`.
+- **Bulk promotion** across many memories. v0.9 is one-row-per-call; bulk lands when UI usage justifies it.
+- **Federated cross-region audit search** — explicit follow-up to #161, never as implicit cross-region access.
+- **Memory snapshots** for true byte-for-byte replay. The data model leaves room for it without a schema break.
+
 ## v0.8.1 — Adoption (2026-05-25)
 
 Closes the Adoption half of the v0.8 milestone, on top of the Governance & Audit foundation shipped in v0.8.0. Each item shipped as its own focused PR; the full breakdown lives in [`roadmap.md`](roadmap.md#v08--governance--adoption-) under "Adoption — shipped".
