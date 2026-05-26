@@ -59,7 +59,7 @@ statewave/
   tests/          # Unit + integration tests
 ```
 
-## Test counts (as of v0.9.0)
+## Test counts (as of v0.9.2)
 
 | Project | Tests | Framework |
 |---|---|---|
