@@ -2,7 +2,32 @@
 
 All notable changes to the Statewave workspace.
 
-## v0.9.0 — Replay, Signing, Auto-Labeling & Residency (2026-05-26)
+## v0.9.2 — Version-consistency & SDK-readiness patch (2026-05-26)
+
+Small stabilization patch on top of the canonical v0.9 governance release ([v0.9.1](https://github.com/smaramwbc/statewave/releases/tag/v0.9.1)). **No new backend features, no API changes, no schema migrations.** This patch closes a small set of stabilization items uncovered during the post-v0.9.1 readiness audit; each item lands as its own focused PR.
+
+### Changed — server version metadata aligns with the published tag ([statewave#171](https://github.com/smaramwbc/statewave/pull/171))
+
+- `pyproject.toml` bumped from `0.9.0` to `0.9.2` so `pip show statewave` reports a version that matches the GitHub release. Previously, both the `v0.9.0` (stub, superseded) and `v0.9.1` (canonical) tags reported `0.9.0` from pip metadata. No code, behaviour, or API changes.
+
+### Coordinated SDK + polish PRs landing in this patch
+
+The remaining v0.9.2 items land as separate focused PRs against their respective repos. Final PR numbers will be filled in when each lands; the v0.9.2 GitHub release notes serve as the consolidated index.
+
+- **`statewave-py` v0.10.1** (closes [#169](https://github.com/smaramwbc/statewave/issues/169)) — adds `verify_receipt(receipt_id)` and `replay_receipt(receipt_id)` to both `StatewaveClient` (sync) and `AsyncStatewaveClient` (async), with typed Pydantic return models (`ReceiptVerifyResult`, `ReceiptReplayResult`) and a dedicated `StatewaveUnreplayableError(reason)` for HTTP 422 refusal codes (`missing_policy_snapshot` / `nested_replay` / `invalid_snapshot`). README governance section refreshed from `(v0.8)` to `(v0.8+)`. PyPI `Development Status` bumped from Alpha to Beta.
+- **`statewave-ts` v0.10.1** (closes [#170](https://github.com/smaramwbc/statewave/issues/170)) — adds `verifyReceipt(receiptId)` and `replayReceipt(receiptId)` to `StatewaveClient`. The `Receipt` interface gains the v0.9 governance fields (`policySnapshot`, `receiptSignatureAlgorithm`, plus `region` if missing) and a discriminated `StatewaveUnreplayableError` mirrors the Python error type. Version-aligned with `statewave-py` v0.10.1.
+- **statewave-examples** — `try-it.sh` referenced `pip install statewave-py` (the GitHub repo name) instead of the published package name `statewave`. Corrected.
+- **statewave-web** — three stale v0.9-era strings refreshed: ProductPage auto-labeling description (`"planned"` → `"shipped"`), `llms-full.txt` Governance version tag (`v0.8` → `v0.8+`), proof-figure counts where re-counted locally against current main. **No broader proof-figure sweep in this patch.**
+
+Customers calling `/v1/receipts/{id}/verify` and `/v1/receipts/{id}/replay` from raw HTTP can now use the typed client surface; semantics and refusal codes are unchanged from the [v0.9.1 server release](https://github.com/smaramwbc/statewave/releases/tag/v0.9.1).
+
+### Corrected — changelog heading attribution
+
+The previous CHANGELOG entry was filed under "v0.9.0" but described work that actually shipped under tag `v0.9.1` (`v0.9.0` was a stub tag at pre-v0.9 code, [now marked superseded](https://github.com/smaramwbc/statewave/releases/tag/v0.9.0)). The heading below has been corrected to "v0.9.1" to match the canonical tag. No content changed; only the heading and the heading anchor are different.
+
+---
+
+## v0.9.1 — Replay, Signing, Auto-Labeling & Residency (2026-05-26)
 
 Closes the Replay, Signing & Auto-Labeling milestone plus the cross-region residency surface, building on the v0.8 governance foundation. Each item shipped as its own focused PR; the breakdown lives in [`roadmap.md`](roadmap.md#v09--replay-signing--auto-labeling-).
 
