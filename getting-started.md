@@ -38,6 +38,11 @@ That is the whole setup. `docker compose up -d` pulls the images, starts
 Postgres + the API, and runs migrations automatically on first boot. The very
 first start can take a minute or two while the images download.
 
+> **Returning user?** If you have run Statewave before, run `docker compose pull`
+> before `docker compose up -d` to refresh cached images. `up -d` alone reuses
+> whatever is already cached locally, so a host that pulled `:latest` weeks ago
+> stays on that older image until you ask for a refresh.
+
 > **No API key is needed for this guide.** The copied `.env` leaves the LLM
 > key blank, so Statewave starts in **demo mode** — a local regex compiler and
 > hash-based embeddings, with no external calls. Every step below works in
@@ -132,6 +137,7 @@ working Statewave server. Everything below is optional.
 | Ollama: `host.docker.internal` does not resolve (Linux) | On Linux without Docker Desktop, add `extra_hosts: ["host.docker.internal:host-gateway"]` to the `api` service in `docker-compose.yml`, or point `STATEWAVE_LITELLM_API_BASE` at your host's LAN IP. |
 | `422 validation_error` | The request body is missing a required field — `subject_id`, `source`, `type`, and `payload` are all required on `/v1/episodes`. |
 | `401 missing_api_key` | The server has `STATEWAVE_API_KEY` set. Send it as an `X-API-Key` header, or unset it in `.env` for open local dev. |
+| Server starts but seems to be missing a feature you read about in newer docs | You may be on a stale cached image. Run `docker compose pull` then `docker compose up -d` to refresh to the current `:latest`. `up -d` alone does not pull if there's already a cached image on the host. |
 
 **Reset everything.** To wipe all containers and data and start clean:
 
