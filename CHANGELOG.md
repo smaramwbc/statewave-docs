@@ -2,6 +2,36 @@
 
 All notable changes to the Statewave workspace.
 
+## v0.9.4 — Release-candidate lap before v1.0 (2026-05-27)
+
+The release-candidate lap before the 2026-06-16 v1.0 tag. Validation-led: an end-to-end smoke against the published image, one in-stream fix for the only material smoke finding, the approved SDK ergonomics patch (`session_id` on `create_episode`), a launch-doc-freeze audit, and the v1.0 readiness checklist that the maintainer signs off on for the tag.
+
+Full close-out — every merged PR, every dropped item, every guardrail honoured — lives in [`release-notes/v0.9.4-launch-readiness.md`](release-notes/v0.9.4-launch-readiness.md). The v1.0 sign-off artifact is [`release-notes/v1.0-readiness-checklist.md`](release-notes/v1.0-readiness-checklist.md).
+
+### Added — `sensitivity_labels` + `suggested_labels` on subject-scoped admin memory listing ([statewave#177](https://github.com/smaramwbc/statewave/pull/177))
+
+The only material finding from the v0.9.4 smoke: `GET /admin/subjects/{id}/memories` returned 10 fields per memory but omitted both label arrays, fragmenting the "open subject → view memories → see labels" admin flow. Two new fields on `MemoryListItem`, populated on every row. Purely additive — no migration, no breaking move, no behaviour change on any existing field. The policy evaluator reads only `sensitivity_labels`; surfacing the field on a read-only listing route cannot affect policy decisions. +2 integration tests proving the listing surfaces both arrays before and after promotion.
+
+### Added — `session_id` accepted on `create_episode` in both SDKs ([statewave#174](https://github.com/smaramwbc/statewave/issues/174))
+
+- **`statewave` Python SDK v0.10.2** ([statewave-py#18](https://github.com/smaramwbc/statewave-py/pull/18)): `session_id: str | None = None` keyword-only argument on both `StatewaveClient.create_episode` and `AsyncStatewaveClient.create_episode`. Field omitted from the JSON body when `None`. +4 tests. Full suite: 77 passed (was 73).
+- **`@statewavedev/sdk` TypeScript SDK v0.10.2** ([statewave-ts#19](https://github.com/smaramwbc/statewave-ts/pull/19)): `sessionId` was already in `CreateEpisodeParams` since v0.10.0 but was being silently dropped before serialization on the wire — real bug for TypeScript users. Fix forwards it through `createEpisode` and per-item through `createEpisodesBatch`. +3 tests. Full suite: 50 passed (was 47).
+
+### Documentation — final pre-v1.0 smoke + launch-doc-freeze audit
+
+- [statewave-docs#55](https://github.com/smaramwbc/statewave-docs/pull/55) — [`release-notes/v0.9.4-smoke.md`](release-notes/v0.9.4-smoke.md): 11 of 11 scenarios PASS against the published `:latest`. Same shape as the v0.9.2 smoke. One in-stream finding (#177 above), one deferred ([statewave#178](https://github.com/smaramwbc/statewave/issues/178) — public `GET /v1/version` endpoint, v0.10.x post-v1.0).
+- [statewave-docs#56](https://github.com/smaramwbc/statewave-docs/pull/56) — Reworded "Single-node only" framing across 5 surfaces (`product.md`, `why-statewave.md` ×2, `comparisons/mem0.md`, v0.9.3 close-out) to the precise truth: "Single-Postgres only — multi-replica API supported and verified since v0.8 (Fly multi-machine + Helm HPA); cross-region / multi-Postgres clustering not yet shipped." Also caught up `architecture/repo-map.md` SDK cells post-v0.10.2 (Python `0.10.1 → 0.10.2`, TS `0.10.1 → 0.10.2`, test counts `73 → 77` and `47 → 50`).
+- [statewave-web#106](https://github.com/smaramwbc/statewave-web/pull/106) — Re-anchored `Audit & governance` section's lead paragraph from "v0.8 ships the governance layer" to a v0.9-extended framing (HMAC-signed receipts, replay, detector-suggested labels opt-in via `STATEWAVE_AUTO_LABELING_ENABLED`, per-region residency pinning). One paragraph, +2 lines net, no new components.
+
+### Documentation — v1.0 readiness checklist
+
+- [statewave-docs#57](https://github.com/smaramwbc/statewave-docs/pull/57) — [`release-notes/v1.0-readiness-checklist.md`](release-notes/v1.0-readiness-checklist.md): the single artifact for v1.0 tag sign-off. Seven approved go/no-go questions, each backed by a source artefact. Explicit claim boundary ("first stable public developer release"; no GA / production-ready / production-hardened / battle-tested / enterprise-ready / hardened). Sign-off rubric at the foot.
+
+### Tracked — not in v0.9.4
+
+- [statewave#176](https://github.com/smaramwbc/statewave/issues/176) — Python SDK governance helpers (`list_suggested_labels`, `promote_suggested_labels`, typed `PolicyDecision`). **Deferred to v0.10.3 post-v1.0 fast-follow** (target ~2026-07-15). Auto-labeling is opt-in; default v1.0 user does not hit this.
+- [statewave#178](https://github.com/smaramwbc/statewave/issues/178) — Public `GET /v1/version` endpoint. **Deferred to v0.10.x.** Documented workaround (Docker tag / pip metadata).
+
 ## v0.9.3 — Launch-readiness validation (2026-05-27)
 
 Validation-led stabilization patch on top of [v0.9.2](#v092--version-consistency--sdk-readiness-patch-2026-05-26). **No new backend features, no SDK implementation, no admin identity changes.** The goal was to verify that every documented onboarding path actually works against the published artifacts, and to catch up documentation drift before 2026-06-16. Full close-out — including dropped items and v1.0-carry risks — lives in [`release-notes/v0.9.3-launch-readiness.md`](release-notes/v0.9.3-launch-readiness.md).
