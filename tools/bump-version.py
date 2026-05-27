@@ -19,6 +19,11 @@ Usage:
 Before running with --apply: bump statewave/pyproject.toml to the new server
 version yourself (it's the truth source the server surfaces track).
 
+This script is **step 2** of the release checklist. The full release flow —
+including the rule that pyproject and mirrors must land in the SAME commit
+before tagging — is in tools/RELEASE-CHECKLIST.md. Read it before cutting
+a release. The v0.9.2 lesson is captured there so we don't repeat it.
+
 Paths are resolved from __file__, so this works from any cwd.
 """
 

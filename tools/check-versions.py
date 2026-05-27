@@ -22,6 +22,11 @@ Wire into CI as a release-blocker on the statewave/ release-tag workflow:
 
     - name: Verify server/contract version self-consistency
       run: python statewave-docs/tools/check-versions.py
+
+When this script fails on a tag push, the canonical recovery is documented
+in tools/RELEASE-CHECKLIST.md (see "What went wrong on v0.9.2" — published
+tags are immutable; cut an additive patch with the missing mirrors instead
+of force-moving the tag).
 """
 
 from __future__ import annotations
