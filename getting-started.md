@@ -42,7 +42,7 @@ first start can take a minute or two while the images download.
 > before `docker compose up -d` to refresh cached images. `up -d` alone reuses
 > whatever is already cached locally, so a host that pulled `:latest` weeks ago
 > stays on that older image until you ask for a refresh.
-
+>
 > **No API key is needed for this guide.** The copied `.env` leaves the LLM
 > key blank, so Statewave starts in **demo mode** — a local regex compiler and
 > hash-based embeddings, with no external calls. Every step below works in
