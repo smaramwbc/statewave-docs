@@ -6,11 +6,11 @@ Version: **0.9.x**
 
 | Project | Purpose | Version | License |
 |---|---|---|---|
-| Server | Core server — API, domain model, DB, services, deployment | 0.8.0 | Apache-2.0 |
-| `statewave` (Python SDK) | Sync + async clients, typed exceptions, auth, batch, receipts + label / policy methods | 0.9.0 | Apache-2.0 |
-| `@statewavedev/sdk` (TypeScript SDK) | Typed errors, auth, batch, ESM, receipts + label / policy methods | 0.9.0 | Apache-2.0 |
+| Server | Core server — API, domain model, DB, services, deployment | 0.9.2 | Apache-2.0 |
+| `statewave` (Python SDK) | Sync + async clients, typed exceptions, auth, batch, receipts + label / policy methods | 0.10.1 | Apache-2.0 |
+| `@statewavedev/sdk` (TypeScript SDK) | Typed errors, auth, batch, ESM, receipts + label / policy methods | 0.10.1 | Apache-2.0 |
 | Examples | Runnable demos, evals, benchmarks | — | Apache-2.0 |
-| `@statewavedev/connectors-*` | Connector ecosystem — 13 modular packages (Core, CLI, MCP server, GitHub, Markdown, Slack, Discord, n8n, Zapier, Zendesk, Intercom, Freshdesk, Notion, Gmail) feeding real-world events into Statewave as normalized episodes. Latest release wave: v0.17.0 (Tier 3 operator/cloud productization — config file, hosted runner, persistent state, OIDC, metrics, deployment recipes). | latest wave v0.17.0 | Apache-2.0 |
+| `@statewavedev/connectors-*` | Connector ecosystem — 11 source connectors (GitHub, Markdown, Slack, Discord, n8n, Zapier, Zendesk, Intercom, Freshdesk, Notion, Gmail) feeding real-world events into Statewave as normalized episodes, plus shared Core, CLI, Config, MCP-server, IDE-core, and Runner packages. Latest release wave: v0.17.0 (Tier 3 operator/cloud productization — config file, hosted runner, persistent state, OIDC, metrics, deployment recipes). | latest wave v0.17.0 | Apache-2.0 |
 | Docs | Architecture, specs, ADRs, coordination (no runtime code) | — | Apache-2.0 |
 | Website | Marketing website + embedded comparison demo (statewave.ai) | — | Apache-2.0 |
 | Admin | Operator console — system health, jobs, usage (read-only) | — | Apache-2.0 |
@@ -66,7 +66,7 @@ statewave/
 | Server | 869 | pytest + pytest-asyncio |
 | `statewave` (Python SDK) | 73 | pytest |
 | `@statewavedev/sdk` (TypeScript SDK) | 47 | vitest |
-| `@statewavedev/connectors-*` | 498 | vitest |
+| `@statewavedev/connectors-*` | 606 | vitest |
 | Examples | 3 eval suites (56 assertions), 2 benchmarks | pytest |
 
 ## Available examples
