@@ -2,6 +2,43 @@
 
 All notable changes to the Statewave workspace.
 
+## v0.9.3 — Launch-readiness validation (2026-05-27)
+
+Validation-led stabilization patch on top of [v0.9.2](#v092--version-consistency--sdk-readiness-patch-2026-05-26). **No new backend features, no SDK implementation, no admin identity changes.** The goal was to verify that every documented onboarding path actually works against the published artifacts, and to catch up documentation drift before 2026-06-16. Full close-out — including dropped items and v1.0-carry risks — lives in [`release-notes/v0.9.3-launch-readiness.md`](release-notes/v0.9.3-launch-readiness.md).
+
+### Added — `receipt_signing_key_id` on `TenantConfigPatch` ([statewave#173](https://github.com/smaramwbc/statewave/pull/173))
+
+- `TenantConfigPatch` now exposes `receipt_signing_key_id` (the same surface stored in `tenant_configs.config.receipt_signing_key_id`) and rejects unknown fields via `model_config = {"extra": "forbid"}`. Closes the in-stream finding caught by the v0.9.2 smoke that left HMAC-signed-receipt enablement reachable only via raw SQL.
+- +6 integration tests including an end-to-end "PATCH then sign a receipt" path that uses no SQL — proves the surface is wired through to `services/receipts.py`.
+- `region` was rechecked and confirmed already-working: the PATCH surface existed with 4 passing integration tests, so no duplicate code was written.
+
+### Documentation — explicit prerequisites + correct framework pins ([statewave-examples#15](https://github.com/smaramwbc/statewave-examples/pull/15))
+
+- `langchain-quickstart/README.md` now pins `langchain>=0.3,<1` and `langchain-openai<1`. LangChain 1.x removed `BaseMemory` (and the `langchain.memory` namespace) which the adapter extends — unpinned, the README's install line resolves to `langchain==1.4.0` and the example fails on `import`.
+- `autogen-quickstart/README.md` now pins `pyautogen==0.2.*`. Unpinned `pyautogen` resolves to a 0.10.x package with a different (non-`autogen.*`) import surface.
+- `crewai-quickstart/README.md` keeps `crewai` unpinned (installs cleanly on 1.14.5).
+- All three framework quickstarts now explicitly say `docker compose up -d` brings up **Postgres 16 + pgvector + the API together**.
+
+### Documentation — connector skim ([statewave-docs#53](https://github.com/smaramwbc/statewave-docs/pull/53))
+
+- `architecture/repo-map.md` connector row no longer says "13 modular packages" (then listed 14); now lists **11 source connectors plus shared Core, CLI, Config, MCP-server, IDE-core, and Runner packages** — matching the actual 18-package monorepo.
+- Connector test count `498 → 606` (counted from source via `find packages -name '*.test.ts' | xargs grep -hcE '^\s*(it|test)\('`).
+- Stale `independent` version cells in the same table refreshed: Server `0.8.0 → 0.9.2`, Python SDK `0.9.0 → 0.10.1`, TypeScript SDK `0.9.0 → 0.10.1` (these rows are deliberately hand-updated per [the release checklist](tools/RELEASE-CHECKLIST.md); v0.9.3 catches up two SDK waves of drift).
+
+### Documentation — proof-figure sweep + onboarding polish
+
+A single "advanced eval assertions" figure moved `55 → 56` across every mirror that quoted it. All counts recomputed from source; nothing moved up without evidence. Surfaces touched:
+
+- [statewave#175](https://github.com/smaramwbc/statewave/pull/175), [statewave-examples#14](https://github.com/smaramwbc/statewave-examples/pull/14), [statewave-launch#23](https://github.com/smaramwbc/statewave-launch/pull/23): one-line README / posts updates.
+- [statewave-docs#51](https://github.com/smaramwbc/statewave-docs/pull/51): per-repo test counts in `architecture/repo-map.md`, `dev/conventions.md`, plus assertion-count mirrors in `architecture/overview.md`, `roadmap.md`, `why-statewave.md`. Also a factual fix to a historical CHANGELOG entry (v0.6.1 workflow-benchmark `9/9` → `8/8` to match the actually-published figure).
+- [statewave-docs#50](https://github.com/smaramwbc/statewave-docs/pull/50): "Returning user?" `docker compose pull` callout + stale-image troubleshooting row in `getting-started.md`.
+- [statewave-docs#52](https://github.com/smaramwbc/statewave-docs/pull/52): MD028 lint fix on the two `getting-started.md` callouts from #50 (merged into one blockquote with a `>` continuation).
+
+### Tracked — not in v0.9.3
+
+- [statewave#174](https://github.com/smaramwbc/statewave/issues/174) — Python SDK `create_episode(..., session_id=...)` gap. Target v0.10.2.
+- [statewave#176](https://github.com/smaramwbc/statewave/issues/176) — Python SDK governance helpers (`list_suggested_labels`, `promote_suggested_labels`, typed `PolicyDecision` on receipts). Blocked the optional governance-quickstart example. Target v0.10.2.
+
 ## v0.9.2 — Version-consistency & SDK-readiness patch (2026-05-26)
 
 Small stabilization patch on top of the canonical v0.9 governance release ([v0.9.1](https://github.com/smaramwbc/statewave/releases/tag/v0.9.1)). **No new backend features, no API changes, no schema migrations.** This patch closes a small set of stabilization items uncovered during the post-v0.9.1 readiness audit; each item lands as its own focused PR.
