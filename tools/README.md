@@ -107,3 +107,19 @@ python statewave-docs/tools/check-versions.py
 
 — it should still pass (no drift introduced) and the new target should
 appear in the editorial section if `kind="editorial"`.
+
+## Version-history bodies (`HISTORY_BODIES`)
+
+Some conceptual docs carry a "Version history" body alongside their
+banner — e.g. `architecture/overview.md`. The banner check would happily
+pass with the banner at v0.9.x while the body's newest entry stopped at
+v0.8, which is exactly what happened on the v0.9 release.
+
+`HISTORY_BODIES` in `_targets.py` is a separate list of
+`(key, path, heading_template)` entries. At check time the template is
+formatted with the truth's `{ver_minor}` and the file must contain that
+heading somewhere. The bumper never auto-writes these — release-note prose
+is human-authored — but `bump-version.py` flags the gap and
+`check-versions.py` fails the release-tag workflow until the heading is
+added. Add a new doc here whenever you create a new
+banner-plus-version-history surface.

@@ -36,7 +36,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from _targets import TARGETS, TRUTH_FILE, TRUTH_PATTERN  # noqa: E402
+from _targets import HISTORY_BODIES, TARGETS, TRUTH_FILE, TRUTH_PATTERN  # noqa: E402
 
 WORKSPACE = Path(__file__).resolve().parent.parent.parent
 
@@ -98,6 +98,33 @@ def main() -> None:
             print(f"  {key}: v{cur} ≠ v{exp}  [{rel}]")
         print()
         print(f"  fix: python tools/bump-version.py {truth} --apply")
+        print()
+        fail = True
+
+    body_drift = []
+    for key, rel, template in HISTORY_BODIES:
+        path = WORKSPACE / rel
+        if not path.exists():
+            missing.append((key, rel, "file not found"))
+            fail = True
+            continue
+        expected = re.compile(template.format(ver_minor=truth_minor), re.MULTILINE)
+        if not expected.search(path.read_text()):
+            body_drift.append((key, rel, truth_minor))
+
+    if body_drift:
+        print(
+            f"✗ {len(body_drift)} version-history body lags the banner "
+            f"(missing a v{truth_minor} heading):"
+        )
+        for key, rel, minor in body_drift:
+            print(f"  {key}: no `### v{minor}` heading found  [{rel}]")
+        print()
+        print(
+            "  fix: add a v{minor} entry to the doc's version-history "
+            "section (mirror roadmap.md). The bumper does not auto-write "
+            "these — release notes are human-authored.".format(minor=truth_minor)
+        )
         print()
         fail = True
 

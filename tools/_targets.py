@@ -56,6 +56,27 @@ banners that describe "the system as implemented at server vX.Y". It does
 TRUTH_FILE = "statewave/pyproject.toml"
 TRUTH_PATTERN = r'^version\s*=\s*"(\d+\.\d+\.\d+)"'
 
+# Conceptual-doc bodies whose own "Version history" section MUST contain a
+# heading for the current major.minor. The banner at the top of these docs is
+# already covered by a "mechanical_minor" entry in TARGETS, but the banner can
+# drift past the body silently (overview.md v0.9 incident, 2026-05-27): the
+# banner said 0.9.x while the version-history body stopped at v0.8. Each entry
+# is (key, path, heading_template). At check time the template is formatted
+# with the truth's {ver_minor}; if the resulting regex doesn't match anywhere
+# in the file, the doc's body has fallen behind.
+#
+# The bumper never auto-writes these — each release's body needs human-authored
+# prose summarizing what shipped (mirroring roadmap.md for that minor). Adding
+# a doc here just means "fail CI if this body forgets to grow a v{minor}
+# heading after the banner moves."
+HISTORY_BODIES = [
+    (
+        "docs_history_overview",
+        "statewave-docs/architecture/overview.md",
+        r'^### v{ver_minor}\b',
+    ),
+]
+
 TARGETS = [
     # --- Server / reference-impl self-references (legitimately track TRUTH) ---
     (

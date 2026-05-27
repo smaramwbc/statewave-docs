@@ -35,7 +35,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from _targets import TARGETS, TRUTH_FILE, TRUTH_PATTERN  # noqa: E402
+from _targets import HISTORY_BODIES, TARGETS, TRUTH_FILE, TRUTH_PATTERN  # noqa: E402
 
 WORKSPACE = Path(__file__).resolve().parent.parent.parent
 
@@ -151,6 +151,31 @@ def bump(new_version: str, apply: bool) -> int:
         )
         for key, rel, cur in independent:
             print(f"  • {key} (currently v{cur})  [{rel}]")
+        print()
+
+    body_gaps = []
+    for key, rel, template in HISTORY_BODIES:
+        path = WORKSPACE / rel
+        if not path.exists():
+            print(f"  ⚠ {key}: file not found at {rel}")
+            issues += 1
+            continue
+        expected = re.compile(template.format(ver_minor=ver_minor), re.MULTILINE)
+        if not expected.search(path.read_text()):
+            body_gaps.append((key, rel))
+
+    if body_gaps:
+        print(
+            f"version-history bodies missing a v{ver_minor} heading — "
+            "write the entry manually (mirror roadmap.md):"
+        )
+        for key, rel in body_gaps:
+            print(f"  • {key}  [{rel}]")
+        print()
+        print(
+            "  these are NOT auto-written. check-versions.py will fail in "
+            "CI until each body grows the heading."
+        )
         print()
 
     if not apply and changed:
