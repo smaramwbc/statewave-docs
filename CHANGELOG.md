@@ -232,7 +232,7 @@ This release adds the governance layer that turns Statewave from "structured mem
 
 ### Proof layer
 - 3 eval suites: context quality (7 tests, 14 assertions), handoff (7 tests, 16 assertions), advanced (7 tests, 24 assertions)
-- 2 benchmarks: context recall + workflow comparison (Statewave 9/9 vs Naive 2/9)
+- 2 benchmarks: context recall + workflow comparison (Statewave 8/8 vs Naive 2/8)
 - 232 unit tests passing
 
 ### Changed

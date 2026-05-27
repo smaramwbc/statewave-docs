@@ -138,7 +138,7 @@ Ordered newest first. See [roadmap.md](../roadmap.md) for the canonical list of 
 - Repeat-issue detection (prior resolution surfacing)
 - Proactive health alerts (webhooks on state transitions)
 - SLA tracking (response time, resolution time, breach flags)
-- Proof layer: 3 eval suites (55 assertions), 2 benchmarks (8/8 vs 2/8 stateless)
+- Proof layer: 3 eval suites (56 assertions), 2 benchmarks (8/8 vs 2/8 stateless)
 
 ### v0.5 — Reliability & Trust
 - True multi-tenant isolation (tenant_id on all tables, query-scoped)

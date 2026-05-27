@@ -63,11 +63,11 @@ statewave/
 
 | Project | Tests | Framework |
 |---|---|---|
-| Server | 680 | pytest + pytest-asyncio |
-| `statewave` (Python SDK) | 34 | pytest |
-| `@statewavedev/sdk` (TypeScript SDK) | 23 | vitest |
+| Server | 869 | pytest + pytest-asyncio |
+| `statewave` (Python SDK) | 73 | pytest |
+| `@statewavedev/sdk` (TypeScript SDK) | 47 | vitest |
 | `@statewavedev/connectors-*` | 498 | vitest |
-| Examples | 3 eval suites (55 assertions), 2 benchmarks | pytest |
+| Examples | 3 eval suites (56 assertions), 2 benchmarks | pytest |
 
 ## Available examples
 
@@ -77,7 +77,7 @@ statewave/
 | `support-agent-python` | Python | 2-session support agent with ranked context and provenance |
 | `support-agent-llm` | Python | Full LLM loop — Statewave context → LLM → side-by-side response |
 | `coding-agent-python` | Python | Coding assistant with project context recall across sessions |
-| `eval-support-agent` | Python | Context quality eval (7 tests, 14 assertions) |
+| `eval-support-agent` | Python | Context quality eval (7 tests, 15 assertions) |
 | `benchmark-support-agent` | Python | Statewave vs history stuffing vs RAG comparison |
 
 All examples support `STATEWAVE_API_KEY` and `STATEWAVE_URL` environment variables.
