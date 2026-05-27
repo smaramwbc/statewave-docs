@@ -29,7 +29,7 @@ Validation-led stabilization patch on top of [v0.9.2](#v092--version-consistency
 
 A single "advanced eval assertions" figure moved `55 → 56` across every mirror that quoted it. All counts recomputed from source; nothing moved up without evidence. Surfaces touched:
 
-- [statewave#175](https://github.com/smaramwbc/statewave/pull/175), [statewave-examples#14](https://github.com/smaramwbc/statewave-examples/pull/14), [statewave-launch#23](https://github.com/smaramwbc/statewave-launch/pull/23): one-line README / posts updates.
+- [statewave#175](https://github.com/smaramwbc/statewave/pull/175), [statewave-examples#14](https://github.com/smaramwbc/statewave-examples/pull/14), and `statewave-launch#23` (private repo): one-line README / posts updates.
 - [statewave-docs#51](https://github.com/smaramwbc/statewave-docs/pull/51): per-repo test counts in `architecture/repo-map.md`, `dev/conventions.md`, plus assertion-count mirrors in `architecture/overview.md`, `roadmap.md`, `why-statewave.md`. Also a factual fix to a historical CHANGELOG entry (v0.6.1 workflow-benchmark `9/9` → `8/8` to match the actually-published figure).
 - [statewave-docs#50](https://github.com/smaramwbc/statewave-docs/pull/50): "Returning user?" `docker compose pull` callout + stale-image troubleshooting row in `getting-started.md`.
 - [statewave-docs#52](https://github.com/smaramwbc/statewave-docs/pull/52): MD028 lint fix on the two `getting-started.md` callouts from #50 (merged into one blockquote with a `>` continuation).
