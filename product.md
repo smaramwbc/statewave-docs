@@ -51,7 +51,7 @@ Statewave is in active early development (v0.9.0). We document these honestly:
 |-----------|--------|--------|
 | Multi-tenant is app-layer only | Real query-level isolation, no Postgres RLS yet | Future: row-level security |
 | Rate limiting is per-IP only | No per-tenant or per-API-key limits yet | Future: per-tenant limits |
-| Single-node only | No horizontal scaling | Future: scaling guide |
+| Single-Postgres only | Multi-replica API deployments supported and verified since v0.8 (Fly multi-machine + Helm HPA); cross-region / multi-Postgres clustering not yet shipped | Future: clustering guide |
 | Admin console is early | Dashboards plus policy/tenant-config management; no memory editing or advanced ops | Active development |
 
 **What works well today:**

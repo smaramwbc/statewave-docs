@@ -122,7 +122,7 @@ Statewave does not match Mem0 on every axis. If any of these are blockers, facto
 - **No hosted SaaS.** You run it. Cost of ops is yours.
 - **No managed compliance plane.** SOC 2 / HIPAA / etc. are your responsibility. Statewave gives you the technical controls (delete-by-subject, no required outbound calls in heuristic mode); you supply the audit programme.
 - **No graph-of-entities first-class concept.** Statewave is typed-memory, not a knowledge graph. If you need relational reasoning across entities (e.g. "find every account Sarah is connected to"), you'd build that on top.
-- **Single-node only today.** Horizontal scaling is roadmap, not shipped. Statewave is honest about this — see the *Current limitations* section in [why-statewave.md](../why-statewave.md).
+- **Single-Postgres only today.** Multi-replica API deployments are supported and verified since v0.8 (Fly multi-machine + Helm HPA); cross-region / multi-Postgres clustering is roadmap, not shipped. See the *Current limitations* section in [why-statewave.md](../why-statewave.md).
 
 ---
 
