@@ -86,6 +86,7 @@ curl -X POST http://localhost:8100/v1/episodes \
       {"role": "user", "content": "My name is Alice and I work at Globex Corp."}
     ]}
   }'
+# → {"id":"ecacebed-8c69-44d5-86f1-97746bdd4cd2","subject_id":"user-1","source":"chat","type":"conversation","payload":{"messages":[{"role":"user","content":"My name is Alice and I work at Globex Corp."}]},...}
 ```
 
 A **subject** is any entity you track — a user, account, agent, or repo. Here
@@ -111,6 +112,7 @@ Ask Statewave to assemble context for a task:
 curl -X POST http://localhost:8100/v1/context \
   -H "Content-Type: application/json" \
   -d '{"subject_id": "user-1", "task": "Who is this user?", "max_tokens": 500}'
+# → {"subject_id":"user-1","task":"Who is this user?","facts":[...]}
 ```
 
 The response's `assembled_context` field is a ready-to-use string for an LLM
