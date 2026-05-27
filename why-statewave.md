@@ -148,7 +148,7 @@ bundle = client.get_context("customer-123", "Help with billing question")
 
 | Area | Status |
 |------|--------|
-| Production scale (>10k subjects, high throughput) | Not load-tested. Single-node only. |
+| Production scale (>10k subjects, high throughput) | Not load-tested at this scale. Multi-replica API supported and verified since v0.8 (Fly multi-machine + Helm HPA); single-Postgres only, no cross-region clustering. |
 | Multi-tenant isolation | App-layer query scoping; no Postgres RLS yet. Not battle-tested at scale. |
 | LLM compiler vs heuristic compiler quality | LLM compiler exists but no comparative eval published. |
 | 50-session production-scale benchmark | Not yet run. |
@@ -159,7 +159,7 @@ We are honest about these gaps. If any of these are blockers for your use case, 
 
 ## Current limitations
 
-- Single-node only (no clustering)
+- Single-Postgres only — multi-replica API deployments are supported and verified since v0.8, but cross-region / multi-Postgres clustering is not supported yet
 - No built-in auth provider (validates keys you configure, doesn't issue them)
 - No streaming (context returned as complete JSON)
 - Operator admin console is early — dashboards plus policy and per-tenant config management; no memory editing or advanced ops yet
