@@ -62,7 +62,7 @@ Turn Jira Cloud issues and (opt-in) comments into **project memory** under `proj
 
 ### Database (preview)
 
-Ingest **selected external rows** from a relational database into Statewave memory. One package, four dialects — **PostgreSQL, MySQL, MariaDB, MSSQL**. Read-only, allowlisted table or operator `SELECT`, selected columns, required `--max-rows`, `${ENV}` secrets, no schema-wide dump, no mutation queries, no binary ingestion. This is a **source connector**, not a Statewave storage backend — Statewave's own storage remains PostgreSQL + pgvector. `database.row`. PostgreSQL / MySQL / MariaDB are live-verified; MSSQL live validation is tracked in [statewave#190](https://github.com/smaramwbc/statewave/issues/190). → [`@statewavedev/connectors-database` README](https://github.com/smaramwbc/statewave-connectors/blob/main/packages/database/README.md)
+Ingest **selected external rows** from a relational database into Statewave memory. One package, four dialects — **PostgreSQL, MySQL, MariaDB, MSSQL**. Read-only, allowlisted table or operator `SELECT`, selected columns, required `--max-rows`, `${ENV}` secrets, no schema-wide dump, no mutation queries, no binary ingestion. This is a **source connector**, not a Statewave storage backend — Statewave's own storage remains PostgreSQL + pgvector. `database.row`. All four dialects — PostgreSQL, MySQL, MariaDB, and MSSQL — are live-verified (MSSQL has no per-session read-only flag, so use a least-privilege read-only login). → [`@statewavedev/connectors-database` README](https://github.com/smaramwbc/statewave-connectors/blob/main/packages/database/README.md)
 
 ## Modular by design
 
