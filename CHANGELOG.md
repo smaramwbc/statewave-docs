@@ -147,9 +147,9 @@ Closes the Replay, Signing & Auto-Labeling milestone plus the cross-region resid
 - Receipts emitted in multi-region mode now stamp `settings.region` on the `receipts.region` column the v0.8 schema reserved. Combined with HMAC (#157), the policy snapshot (#159), and replay (#159), residency closes the end-to-end audit story: *where* was this decision made, *with what rules*, *was the body tampered with*, *would current code make the same call*.
 - v0.9 ships **code + config model + enforcement tests + ops runbook only** — no actual second region is deployed by this PR. Reference: [`docs/residency.md`](https://github.com/smaramwbc/statewave/blob/main/docs/residency.md) — full ops runbook for spinning up a second region (provision regional infra, smoke-test in single-region mode, migrate data, pin tenants in both regions, verify cutover).
 
-### Deferred to v0.10
+### Deferred beyond v0.9
 
-- **Visual policy editor** — admin-app YAML-free form for building rule sets. Listed in the v0.9 roadmap; pushed to v0.10 to keep the v0.9 release focused on the audit + replay + residency story.
+- **Visual policy editor** — admin-app YAML-free form for building rule sets. Listed in the v0.9 roadmap; pushed to a later release to keep the v0.9 release focused on the audit + replay + residency story.
 - **Admin identity** so promote / future operator-action endpoints can fill `promoted_by`.
 - **Bulk promotion** across many memories. v0.9 is one-row-per-call; bulk lands when UI usage justifies it.
 - **Federated cross-region audit search** — explicit follow-up to #161, never as implicit cross-region access.
