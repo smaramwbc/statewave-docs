@@ -103,7 +103,7 @@ Pick a tier by **workload shape**. The boundaries below are guidance, not contra
 | **1. Local / Development** | One developer, ad-hoc traffic | Single container; bundled Postgres via `docker compose` | Heuristic (default) | Bundled |
 | **2. Small Production** | Single product, ≤ a few hundred subjects, low sustained traffic | Single API container; managed Postgres | Heuristic, or LLM with hosted provider | Managed (Neon / Supabase / RDS) |
 | **3. Growing Production** | Multiple workloads or thousands of subjects, regular compilation | API replicas behind a reverse proxy; managed or dedicated Postgres | Usually LLM with hosted provider | Dedicated; HNSW working set in RAM |
-| **4. Enterprise / Heavy Load** | Many tenants and/or many thousands of subjects, frequent compilation, high sustained traffic | API replicas behind a load balancer; dedicated Postgres ± read replica; observability; optional self-hosted model sidecar | Anything; sized per the model layer | Hardened — backups, monitoring, vacuum tuning, possible read replica |
+| **4. Enterprise / Heavy Load** | Many tenants and/or many thousands of subjects, frequent compilation, high sustained traffic | API replicas behind a load balancer; dedicated Postgres ± read replica; observability; optional self-hosted model sidecar | Anything; sized per the model layer | Backups, monitoring, vacuum tuning, possible read replica |
 
 ---
 
