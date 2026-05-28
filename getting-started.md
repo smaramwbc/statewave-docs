@@ -150,8 +150,9 @@ docker compose down -v
 The `-v` flag also deletes the Postgres volume, so every episode and memory is
 removed. Then run `docker compose up -d` again for a fresh server.
 
-For production-side issues, see
-[deployment troubleshooting](deployment/troubleshooting.md).
+For a fuller walk-through of these first-run issues (Symptom → Cause → Fix),
+see the [troubleshooting page](troubleshooting.md). For production-side issues,
+see [deployment troubleshooting](deployment/troubleshooting.md).
 
 ---
 
