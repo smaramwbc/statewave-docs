@@ -9,7 +9,7 @@ Version: **0.9.x**
 
 ## Authentication
 
-When `STATEWAVE_API_KEY` is configured, all requests (except `/healthz`, `/readyz`, `/docs`, `/redoc`, `/openapi.json`) must include a valid API key.
+When `STATEWAVE_API_KEY` is configured, all requests (except `/healthz`, `/readyz`, `/v1/version`, `/docs`, `/redoc`, `/openapi.json`) must include a valid API key.
 
 **Header:** `X-API-Key: <your-key>`
 
@@ -153,6 +153,7 @@ A filtered-out event is dropped before it is enqueued — it consumes no storage
 |--------|------|-------------|
 | GET | `/healthz` | Liveness — returns `{"status": "ok"}` |
 | GET | `/readyz` | Readiness — checks DB, returns `{"status": "ready"}` |
+| GET | `/v1/version` | Version discovery — public/unauthenticated, returns `{"version": "…", "api_contract": "v1"}` |
 
 ---
 
