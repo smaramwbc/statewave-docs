@@ -31,8 +31,8 @@ Version: **0.9.x**
 
 - **pytest** for Python repos (server + SDK), `asyncio_mode = "auto"`
 - **vitest** for TypeScript SDK
-- Server: ~939 tests (unit + integration; integration requires Postgres)
-- Python SDK: 77 tests
+- Server: ~876 tests (unit + integration; integration requires Postgres)
+- Python SDK: 80 tests
 - TypeScript SDK: 50 tests
 - Integration tests use a separate test database via `conftest.py` with `NullPool`
 - New features should include unit tests; integration tests for data-path changes
