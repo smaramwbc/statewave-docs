@@ -2,7 +2,7 @@
 
 The Statewave MCP server exposes Statewave memory to any [MCP](https://modelcontextprotocol.io/)-compatible client — coding assistants, agent frameworks, IDE extensions, custom agents. It is intentionally **vendor-neutral**: there are no client-specific assumptions, no model-provider assumptions, no hosted dependencies.
 
-> **Status:** Phase 1 ships the canonical tool surface and the `statewave-connectors mcp start` entry point. The transport (stdio / HTTP) wiring lands in a follow-up release. You can already inspect the tool surface programmatically via `listTools()` from `@statewavedev/mcp-server`. Track progress on the [connectors roadmap](roadmap.md).
+> **Status:** Available on npm — `@statewavedev/mcp-server`. Ships the canonical tool surface, the `statewave-connectors mcp start` entry point, and the **stdio** JSON-RPC 2.0 transport; an HTTP transport is a planned follow-up. Inspect the tool surface programmatically via `listTools()`. Track progress on the [connectors roadmap](roadmap.md).
 
 ## Why this exists
 

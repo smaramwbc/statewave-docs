@@ -2,7 +2,7 @@
 
 Turn a folder of Markdown files — including ADRs, RFCs, and architecture notes — into **decision and project memory** so an agent can answer *"what did we decide about authentication?"* by recalling the actual decision documents instead of regenerating an opinion.
 
-> **Status:** Phase 1. Available in the [statewave-connectors](https://github.com/smaramwbc/statewave-connectors) repo. Planned npm package: `@statewavedev/connectors-markdown`.
+> **Status:** Available on npm — `@statewavedev/connectors-markdown`. Source in the [statewave-connectors](https://github.com/smaramwbc/statewave-connectors) repo.
 
 ## What it ingests
 

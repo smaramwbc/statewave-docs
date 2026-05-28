@@ -2,7 +2,7 @@
 
 Turn a GitHub repository's history into **repo memory** so an agent can answer questions like *"what's the state of issue #42?"* or *"what did we decide about caching last quarter?"* — without you stuffing raw GitHub history into the prompt.
 
-> **Status:** Phase 1. Available in the [statewave-connectors](https://github.com/smaramwbc/statewave-connectors) repo. Planned npm package: `@statewavedev/connectors-github`.
+> **Status:** Available on npm — `@statewavedev/connectors-github`. Source in the [statewave-connectors](https://github.com/smaramwbc/statewave-connectors) repo.
 
 ## What it ingests
 
