@@ -240,7 +240,29 @@ Then run `docker compose up -d` again to pick up the change. Statewave routes
 every call through [LiteLLM](https://github.com/BerriAI/litellm), so switching
 providers is just a different model id.
 
-For **Ollama**, local embedding dimensions, and the full provider matrix, see
+To use **Ollama** (local LLM, no key), edit `.env`:
+
+```bash
+STATEWAVE_COMPILER_TYPE=llm
+STATEWAVE_LITELLM_MODEL=ollama/llama3
+STATEWAVE_LITELLM_API_BASE=http://host.docker.internal:11434   # API container → host Ollama
+```
+
+The `ollama/` model prefix tells Statewave the provider is local, so no API
+key is expected. One networking gotcha: `host.docker.internal` resolves
+automatically on **Docker Desktop** (macOS/Windows), but **not** on Linux with
+Docker Engine. There, add this to the `api` service in `docker-compose.yml`:
+
+```yaml
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+```
+
+(or point `STATEWAVE_LITELLM_API_BASE` at your host's LAN IP instead). Make
+sure the model is pulled first — `ollama pull llama3` — then run
+`docker compose up -d` again.
+
+For local embedding dimensions and the full provider matrix, see
 **[LLM and embedding provider configuration](deployment/guide.md#llm-and-embedding-provider-configuration)**.
 
 > **Confirm a key was picked up:** run `curl http://localhost:8100/readyz`. When
