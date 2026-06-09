@@ -1,6 +1,6 @@
 # Architecture Overview
 
-Version: **0.9.x**
+Version: **1.0.x**
 
 Statewave is an **open-source memory runtime for AI agents**. It compiles raw events into ranked, token-bounded context bundles with full provenance — so your AI stops forgetting across sessions. Self-hosted on Postgres, no vendor lock-in.
 
@@ -111,6 +111,14 @@ In addition to the core signals above, support-agent workloads apply session, ur
 ## Version history
 
 Ordered newest first. See [roadmap.md](../roadmap.md) for the canonical list of shipped items per release.
+
+### v1.0 — first stable public developer release
+- **Stable `/v1` API contract** — the `/v1/*` surface and the v0.9 governance layer (HMAC-signed receipts, receipt-driven replay, sensitivity labels + declarative policy, opt-in detector-suggested labels, per-region residency) are now stable for developer use under a self-hosted model. Backward-compatible additions only from here; carried-forward limitations stay documented in [why-statewave.md](../why-statewave.md).
+- **Both SDKs to v1.0.0** — `statewave` (PyPI) and `@statewavedev/sdk` (npm) cut their first stable releases alongside the server, typed surfaces matching the REST contract, semver-stable from 1.0.0 forward.
+- **Python SDK governance helpers** ([#176](https://github.com/smaramwbc/statewave/issues/176)) — `list_suggested_labels()` / `promote_suggested_labels()` wrap the v0.9 suggested-label review surface (sync + async, typed result models).
+- **Public version-discovery endpoint** ([#178](https://github.com/smaramwbc/statewave/issues/178)) — unauthenticated `GET /v1/version` reports the running server version.
+- **`session_id` on `create_episode`** ([#174](https://github.com/smaramwbc/statewave/issues/174)) — both SDKs forward the optional session pin on the wire.
+- **Webhook delivery stats + tenant scoping** — optional tenant filter on event-status queries and per-tenant delivery statistics; permanent 4xx deliveries dead-letter instead of retrying.
 
 ### v0.9 — Replay, Signing, & Auto-Labeling
 - **Scheduled retention-purge worker** ([#156](https://github.com/smaramwbc/statewave/issues/156)) — hourly worker reads `tenant_configs.config.receipt_retention_days` and tombstones expired receipts. Soft-delete only; rows persist for forensic lookup. Closes the loop on the retention surface v0.8 reserved. Migration 0020.
