@@ -2,6 +2,25 @@
 
 All notable changes to the Statewave workspace.
 
+## v1.0.0 — first stable public developer release (2026-06-09)
+
+The first stable public developer release of the open-source memory runtime. The `/v1/*` API contract and the v0.9 governance surfaces (HMAC-signed receipts, receipt-driven replay, sensitivity labels with declarative policy, opt-in detector-suggested labels, per-region residency) are now stable for developer use under a self-hosted deployment model. Carried-forward limitations remain documented honestly in [`why-statewave.md`](why-statewave.md); the full sign-off trail is [`release-notes/v1.0-launch.md`](release-notes/v1.0-launch.md) and [`release-notes/v1.0-readiness-checklist.md`](release-notes/v1.0-readiness-checklist.md).
+
+Not "GA", not "production-ready", not "battle-tested", not "enterprise-ready" — *first stable public developer release*.
+
+### Server — `statewave` v1.0.0
+
+- **Public version-discovery endpoint** ([statewave#178](https://github.com/smaramwbc/statewave/issues/178)) — unauthenticated `GET /v1/version`.
+- **Webhook delivery stats + tenant scoping** — optional tenant filter on event-status queries plus per-tenant delivery statistics; permanent 4xx deliveries dead-letter instead of retrying indefinitely.
+- A lap of correctness fixes since v0.9.2: tenant-scoping on admin/receipts/conflicts/compile-jobs surfaces, constant-time API-key compare, backup memory-id conflict guard, embedding input-order preservation, snapshot `occurred_at` preservation, newest-first recent-context ranking, and per-`(tenant, subject)` health-cache isolation.
+
+### SDKs — first stable releases
+
+- **`statewave` Python SDK v1.0.0** — governance helpers `list_suggested_labels()` / `promote_suggested_labels()` ([statewave#176](https://github.com/smaramwbc/statewave/issues/176)) and `session_id` on `create_episode` ([statewave#174](https://github.com/smaramwbc/statewave/issues/174)). Folds in the never-published 0.10.2 prep.
+- **`@statewavedev/sdk` TypeScript SDK v1.0.0** — `sessionId` now reaches the wire on `createEpisode` / `createEpisodesBatch` ([statewave#174](https://github.com/smaramwbc/statewave/issues/174)). Folds in the never-published 0.10.2 prep.
+
+Both SDKs are semver-stable from 1.0.0 forward, with typed surfaces matching the `/v1` REST contract.
+
 ## v0.9.4 — Release-candidate lap before v1.0 (2026-05-27)
 
 The release-candidate lap before the 2026-06-16 v1.0 tag. Validation-led: an end-to-end smoke against the published image, one in-stream fix for the only material smoke finding, the approved SDK ergonomics patch (`session_id` on `create_episode`), a launch-doc-freeze audit, and the v1.0 readiness checklist that the maintainer signs off on for the tag.

@@ -144,7 +144,7 @@ TARGETS = [
     (
         "docs_product_status",
         "statewave-docs/product.md",
-        r'in active early development \(v(\d+\.\d+\.\d+)\)',
+        r'first stable public developer release \(v(\d+\.\d+\.\d+)\)',
         None,
         "independent",
     ),
