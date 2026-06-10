@@ -21,17 +21,26 @@ python statewave-docs/tools/bump-version.py 0.7.3
 python statewave-docs/tools/bump-version.py 0.7.3 --apply
 ```
 
-### What it touches
+### What it touches (auto-written)
 
-| Surface | Where |
-|---|---|
-| Python SDK `version` field | `statewave-py/pyproject.toml` |
-| Python SDK `__version__` | `statewave-py/statewave/__init__.py` |
-| TypeScript SDK `version` field | `statewave-ts/package.json` |
-| Core README "active development" sentence | `statewave/README.md` |
-| Docs "active early development" status | `statewave-docs/product.md` |
-| Test-counts label | `statewave-docs/architecture/repo-map.md` |
-| SDK table rows (Python + TS) | `statewave-docs/architecture/repo-map.md` |
+These are the surfaces that legitimately track the server / reference-impl
+version, so the bumper writes them. SDK packages version **independently**
+(per `statewave#106`) and are NOT in this set.
+
+| Surface | Where | Kind |
+|---|---|---|
+| Core README "active development" sentence | `statewave/README.md` | `mechanical` |
+| Core README "actively developed" status blurb | `statewave/README.md` | `mechanical_resub` |
+| Test-counts label | `statewave-docs/architecture/repo-map.md` | `mechanical` |
+| Conceptual-doc banner (`Version: **X.Y.x**`) | `architecture/overview.md`, `architecture/repo-map.md`, `api/v1-contract.md`, `dev/conventions.md` | `mechanical_minor` |
+
+### Reported but never auto-written (you handle manually)
+
+| Surface | Where | Kind |
+|---|---|---|
+| Docs README feature blurb | `statewave-docs/README.md` | `editorial` |
+| `product.md` "first stable public developer release (vX.Y.Z)" status | `statewave-docs/product.md` | `independent` |
+| SDK table rows (Python + TS) | `statewave-docs/architecture/repo-map.md` | `independent` |
 
 ### What it does NOT touch (you handle manually)
 
@@ -90,6 +99,10 @@ entry to `TARGETS`:
 
 - **`"mechanical"`** — pattern's group 1 is the version; replacement is
   `template.format(ver=new_version)`.
+- **`"mechanical_minor"`** — like `mechanical` but the surface tracks only
+  `major.minor` of the truth (conceptual-doc banners that shouldn't churn
+  every patch). Group 1 is the current `major.minor`; replacement uses
+  `{ver_minor}`.
 - **`"mechanical_resub"`** — pattern has multiple capture groups
   (typically for table rows or other contexts where the version is
   sandwiched between text that must be preserved). Replacement uses
@@ -98,6 +111,10 @@ entry to `TARGETS`:
 - **`"editorial"`** — pattern's group 1 is the current version, but the
   surrounding prose changes per release. The bumper flags the surface
   for manual review; the checker reports it but doesn't fail.
+- **`"independent"`** — pattern's group 1 names a package that versions on
+  its own cadence (an SDK row, a per-SDK status line). It does NOT have to
+  equal the truth: reported for confirmation, never failed, never
+  auto-written. Hand-update on that package's release.
 
 After adding a target, sanity-check with:
 

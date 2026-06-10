@@ -122,6 +122,19 @@ Building on the v0.8 governance foundation. Shipped 2026-05-26:
 - [x] **Operator promote endpoint + admin UI** ([#160](https://github.com/smaramwbc/statewave/issues/160) · server [#166](https://github.com/smaramwbc/statewave/pull/166), admin [statewave-admin#89](https://github.com/smaramwbc/statewave-admin/pull/89)) — `POST /admin/memories/{id}/promote-labels` is review-only, with audit-trail entries on `memory.metadata.label_promotions`. Admin app `/suggested-labels` page + receipt-detail replay button rendering the diff envelope inline.
 - [x] **Per-tenant data residency** ([#161](https://github.com/smaramwbc/statewave/issues/161) · [#167](https://github.com/smaramwbc/statewave/pull/167)) — per-region deployment + metadata-pinned tenants. `STATEWAVE_REGION` + `tenant_configs.config.region`. Hard application-layer enforcement on `/v1/` AND `/admin/` (total isolation). HTTP 403 `residency.mismatch` on conflict. Receipts stamp `region` for end-to-end audit. Code + config + tests + ops runbook shipped; no second region deployed yet.
 
+---
+
+## v1.0 — First stable public developer release ✅
+
+Shipped 2026-06-09 — the first stable public developer release (see [release notes](release-notes/v1.0-launch.md)).
+
+- [x] **Stable `/v1` API contract** — the `/v1/*` surface and the v0.9 governance layer (HMAC-signed receipts, receipt-driven replay, sensitivity labels + declarative policy, opt-in detector-suggested labels, per-region residency) are now stable for developer use under a self-hosted model. Backward-compatible additions only from here; carried-forward limitations stay documented in [why-statewave.md](why-statewave.md).
+- [x] **Both SDKs to v1.0.0** — `statewave` (PyPI) and `@statewavedev/sdk` (npm) cut their first stable releases alongside the server; typed surfaces matching the REST contract, semver-stable from 1.0.0 forward.
+- [x] **Python SDK governance helpers** ([#176](https://github.com/smaramwbc/statewave/issues/176)) — `list_suggested_labels()` / `promote_suggested_labels()` wrap the v0.9 suggested-label review surface (sync + async, typed result models).
+- [x] **Public version-discovery endpoint** ([#178](https://github.com/smaramwbc/statewave/issues/178)) — unauthenticated `GET /v1/version` reports the running server version.
+- [x] **`session_id` on `create_episode`** ([#174](https://github.com/smaramwbc/statewave/issues/174)) — both SDKs forward the optional session pin on the wire.
+- [x] **Webhook delivery stats + tenant scoping** — optional tenant filter on event-status queries and per-tenant delivery statistics; permanent 4xx deliveries dead-letter instead of retrying.
+
 ### Deferred beyond v1.0
 
 - [ ] **Visual policy editor** — admin-app YAML-free form for building rule sets. Listed in the original v0.9 plan but deferred to keep the v0.9 release focused on audit + replay + residency.
@@ -134,7 +147,7 @@ Building on the v0.8 governance foundation. Shipped 2026-05-26:
 
 ## Post-v1.0 roadmap (scope TBD)
 
-Currently stabilizing for the v1.0 launch — release notes, docs, and broader rollout. The shape of the post-v1.0 roadmap will be informed by:
+v1.0.0 shipped on 2026-06-09 — the first stable public developer release (see [release notes](release-notes/v1.0-launch.md)). The shape of the post-v1.0 roadmap will be informed by:
 
 - The deferred items above (admin identity is the natural lead since it unblocks several others).
 - Design-partner feedback on the v0.9 audit + replay + residency surfaces.

@@ -1,6 +1,6 @@
 # ADR-002: Heuristic memory compilation for v1
 
-**Status:** Accepted  
+**Status:** Accepted — partially superseded by [ADR-004](004-v03-advanced-features.md): the pluggable interface delivered the LLM-backed compiler in v0.3; heuristic compilation remains the default/demo-mode path. ("v1" in this ADR refers to the initial product loop, not the v1.0.0 release.)  
 **Date:** 2026-04-24
 
 ## Context

@@ -125,7 +125,7 @@ The cleanup loop activates if **any** of these are configured: snapshots, compil
 
 ## What TTL does NOT do (yet)
 
-- **Hard-delete.** Tombstoned rows persist. Storage reclamation is a separate operator knob; v0.8+ may add `STATEWAVE_TOMBSTONE_PURGE_DAYS` to delete tombstoned rows older than a grace window. Until then, large deployments with aggressive TTLs should plan for steady storage growth.
+- **Hard-delete.** Tombstoned rows persist. Storage reclamation is a separate operator knob; a future release may add `STATEWAVE_TOMBSTONE_PURGE_DAYS` to delete tombstoned rows older than a grace window. Until then, large deployments with aggressive TTLs should plan for steady storage growth.
 - **Per-subject TTLs.** "Memories under subject `customer:acme` expire after 7 days; everywhere else after 90." This is the policy layer's job ([#50](https://github.com/smaramwbc/statewave/issues/50)) — TTL deliberately stays coarse so the simple primitive composes cleanly when policies arrive.
 - **Per-tenant TTLs.** Same as per-subject — policy layer.
 - **Sliding-window expiry.** TTL is computed from `valid_from` (= the source episode's timestamp), not from "last access". A memory that's heavily used and a memory that's never read both expire at the same time. If you need usage-based retention, that's a separate roadmap item.

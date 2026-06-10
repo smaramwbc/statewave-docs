@@ -181,7 +181,7 @@ This is exactly what `docker-compose.yml` ships and what the demo `fly.toml` run
 |-----------|----------------|-------|
 | Statewave API | ≥ 3 replicas behind a load balancer, 2 vCPU / 2–4 GB each | Scale replicas with concurrent request volume. |
 | PostgreSQL primary | 8+ vCPU, 32+ GB RAM, 500 GB+ NVMe SSD | Tune `shared_buffers`, `work_mem`, `maintenance_work_mem`, autovacuum. Pin a maintenance window. |
-| PostgreSQL read replica | Optional but high-leverage | `/v1/context` is read-heavy; a replica offloads ranking/search from the primary. **Statewave does not yet route reads to a replica** — see [roadmap](../roadmap.md) v0.7 horizontal-scaling guide. Today, useful for ad-hoc analytics + safety. |
+| PostgreSQL read replica | Optional but high-leverage | `/v1/context` is read-heavy; a replica offloads ranking/search from the primary. **Statewave does not yet route reads to a replica** — see the [Horizontal Scaling Guide](horizontal-scaling.md). Today, useful for ad-hoc analytics + safety. |
 | Connection pool | Sized to DB `max_connections` with margin for migrations and admin tools | At this size, use a connection pooler (PgBouncer / managed pooler) in **transaction** mode in front of the DB. |
 | Compile concurrency | Raise effective concurrency by adding API replicas; the per-process cap of 4 in-flight LLM calls is intentional | Negotiate provider quotas in proportion. |
 | Self-hosted model sidecar | Optional — only if privacy or cost demand it | This is where GPUs live. **Sized separately from the Statewave API.** Examples: a single A10/A100 box for vLLM serving a 7B–70B model, or a smaller TEI/Ollama deployment for embeddings. See the [Privacy & Data Flow](../architecture/privacy-and-data-flow.md) configuration matrix. |

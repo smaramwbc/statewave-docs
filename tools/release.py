@@ -5,8 +5,9 @@ One command, three responsibilities — none of them remote without `--apply`:
 
   1. Bump the truth source (statewave/pyproject.toml) to the target version.
   2. Run bump-version.py to propagate the version into every mechanical
-     surface across the workspace (SDK pyprojects, package.json, docs
-     status lines, repo-map table rows, statewave-web homepage chip, …).
+     surface across the workspace (server README status lines, the
+     repo-map test-counts label, and the conceptual-doc banners — SDK
+     packages version independently and are not touched; see _targets.py).
   3. Run check-versions.py to confirm everything aligned.
 
 Then it *prints* — but does not run — the exact `git tag -a … && git push

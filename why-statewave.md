@@ -180,7 +180,7 @@ We are honest about these gaps. If any of these are blockers for your use case, 
 - Teams that need a hosted SaaS (Statewave is self-hosted infrastructure)
 - Teams that just need a vector database (use pgvector/Pinecone/Weaviate directly)
 - Teams building chatbots with no multi-session requirement
-- Teams that need horizontal scaling today (not yet supported)
+- Teams that need cross-region clustering or multi-Postgres scale-out today (multi-replica API deployments are supported; cross-region clustering is not)
 - Teams looking for a complete agent framework (Statewave is a memory/context layer, not an orchestrator)
 
 ---
