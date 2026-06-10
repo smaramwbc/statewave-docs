@@ -1,6 +1,6 @@
 # Design partner onboarding
 
-A focused guide for teams adopting Statewave early — what to set up, what to evaluate, and how we work together while the runtime is still shaping its public surface.
+A focused guide for teams adopting Statewave early — what to set up, what to evaluate, and how we work together as the post-v1.0 roadmap takes shape.
 
 > Statewave is open-source, Apache-2.0, and self-hosted. The design-partner relationship is **not** a commercial contract — it's a working agreement to evaluate Statewave on a real workload, file precise feedback, and shape what lands next in exchange for direct support and a voice in the roadmap.
 
@@ -15,7 +15,7 @@ Statewave is the memory runtime for AI agents. It turns a stream of raw events (
 - A direct support channel (Slack Connect, Discord, or email — agreed at kickoff) on top of the public issue tracker.
 - Priority on bug reports against the version you're running.
 - Early access to features behind the next minor release; an opt-in path to try them on your data.
-- Real influence on the v0.9+ roadmap — every shipped item since `v0.6` has at least one design-partner request behind it.
+- Real influence on the post-v1.0 roadmap — every shipped item since `v0.6` has at least one design-partner request behind it.
 
 ### What we ask in return
 
@@ -63,7 +63,7 @@ This brings up Postgres (pgvector) + the API. Migrations run automatically on co
 ### Minute 10–20 — install the SDK and ingest
 
 ```bash
-pip install "statewave>=0.10.0"     # Python; or `npm i @statewavedev/sdk` for TS
+pip install "statewave>=1.0.0"     # Python; or `npm i @statewavedev/sdk` for TS
 ```
 
 ```python
@@ -259,13 +259,13 @@ Yes — quickstart examples for each are in [`statewave-examples`](https://githu
 Statewave is Apache-2.0 — the runtime, SDKs, examples, and benchmarks are free to use, modify, and self-host. Your costs are infrastructure (Postgres + a CPU-only API process; no GPU) and any LLM / embedding provider you choose. Commercial / enterprise inquiries route to [licensing@statewave.ai](mailto:licensing@statewave.ai), not to the design-partner program.
 
 **How stable is the API?**
-Statewave is pre-1.0. Minor versions (v0.6 → v0.7) may carry breaking changes; we call them out explicitly in [`statewave-docs/CHANGELOG.md`](https://github.com/smaramwbc/statewave-docs/blob/main/CHANGELOG.md) and each SDK's CHANGELOG. The HTTP wire contract is more conservative than the SDK surfaces — server upgrades are usually drop-in for existing SDK callers. The TypeScript SDK switched to a camelCase surface in v0.9.0; that was the most disruptive change so far. As a design partner, you'll see proposed breaking changes for comment before they land.
+Statewave is at v1.0.0 — the first stable public developer release. The `/v1` HTTP wire contract is stable, and from 1.0.0 forward the server and both SDKs follow semver with backward-compatible additions only in minor releases. Historically, pre-1.0 minors could carry breaking changes (the TypeScript SDK's camelCase switch in v0.9.0 was the most disruptive); changes were always called out in [`statewave-docs/CHANGELOG.md`](https://github.com/smaramwbc/statewave-docs/blob/main/CHANGELOG.md) and each SDK's CHANGELOG. As a design partner, you'll see proposed breaking changes for comment before they land.
 
 **Can I run Statewave on Kubernetes?**
 Yes — there's an in-tree Helm chart at [`helm/statewave/`](https://github.com/smaramwbc/statewave/tree/main/helm/statewave), plus a deployment guide at [`deployment/kubernetes.md`](deployment/kubernetes.md). Operators bring a pgvector-capable Postgres; the chart deploys the API as a stateless Deployment with schema migrations as a pre-install / pre-upgrade Job.
 
 **What about the connector ecosystem?**
-Twelve connectors ship today — GitHub, Markdown/ADRs, MCP, Slack, Discord, Zendesk, Intercom, Freshdesk, Notion, Gmail, n8n, Zapier — covering pull, push (Tier 2 webhook receivers), and a hosted runner (`statewave-connectors run`). Full list + roadmap: [Connectors → Roadmap](connectors/roadmap.md).
+Fourteen connectors ship today — GitHub, Markdown/ADRs, MCP, Slack, Discord, Zendesk, Intercom, Freshdesk, Notion, Gmail, n8n, Zapier, plus the preview Jira and database (PostgreSQL / MySQL / MariaDB / MSSQL) source connectors — covering pull, push (Tier 2 webhook receivers), and a hosted runner (`statewave-connectors run`). Full list + roadmap: [Connectors → Roadmap](connectors/roadmap.md).
 
 ---
 

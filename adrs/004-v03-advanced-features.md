@@ -2,6 +2,7 @@
 
 **Status:** Accepted
 **Date:** 2026-04-24
+**Status note (2026-06):** historical record of v0.3 decisions. Since superseded: rate limiting is distributed Postgres-backed (v0.5); multi-tenant isolation is real app-layer query scoping with tenant_id columns (v0.5); webhook delivery gained retries and permanent-4xx dead-lettering (through v1.0). Body preserved as written.
 
 ## Context
 

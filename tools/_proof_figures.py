@@ -22,10 +22,10 @@ figures track the test/eval/benchmark reality and move on their own cadence.
 
 ## What is intentionally NOT failed by the checker
 
-- **Launch copy** (`statewave-launch/posts/*.md`) — pre-written for the
-  unreleased v1.0; it says `v1.0.0` / `8/8` on purpose. A naive "fix" that
-  rewrites it to the current package version would destroy the launch
-  messaging. Do not add launch posts as `mechanical`.
+- **Launch copy** (launch posts, maintained outside this repo) — written
+  ahead of the v1.0 release (shipped 2026-06-09); it says `v1.0.0` / `8/8`
+  on purpose. A naive "fix" that rewrites it to the current package version
+  would destroy the launch messaging. Do not add launch posts as `mechanical`.
 - **Release notes / CHANGELOG** (`statewave-docs/release-notes/*.md`,
   `**/CHANGELOG.md`) — point-in-time snapshots. The figure that was true at
   v0.6.1 should stay as written; that is history, not drift.

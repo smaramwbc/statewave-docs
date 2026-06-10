@@ -10,7 +10,7 @@ Statewave Roadmap: what should we prioritize?
 
 ## Body
 
-The current roadmap is published in [statewave-docs/roadmap.md](https://github.com/smaramwbc/statewave-docs/blob/main/roadmap.md). v0.7 is in flight (operator + cloud experience), and v0.8 (adoption & ecosystem) is next.
+The current roadmap is published in [statewave-docs/roadmap.md](https://github.com/smaramwbc/statewave-docs/blob/main/roadmap.md). v1.0.0 — the first stable public developer release — shipped 2026-06-09; this thread gathers input on what comes next.
 
 This thread is for **prioritization input** — which of the candidate areas below would unblock the most value for *your* use case, and what's missing from the list.
 

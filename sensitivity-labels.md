@@ -233,7 +233,7 @@ const bundle = await c.getContext({
 
 ## Still out of scope
 
-- **Visual policy editor in the admin app** — v0.9 surfaces YAML upload + bundle list + activate; authoring stays in YAML in git. Deferred from the original v0.9 plan to v0.10 to keep the v0.9 release focused on the audit + replay + residency story.
+- **Visual policy editor in the admin app** — v0.9 surfaces YAML upload + bundle list + activate; authoring stays in YAML in git. Deferred beyond v1.0 (see [roadmap](roadmap.md)) — originally planned for v0.9, kept out to keep the v0.9 release focused on the audit + replay + residency story.
 - Cross-tenant policy sharing.
 - Regex predicates (`caller_id_pattern`, `memory_content_pattern`).
 - Explicit `allow` rules — uses default-allow + `deny`/`redact`.

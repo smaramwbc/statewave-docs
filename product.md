@@ -78,6 +78,9 @@ Statewave is at its first stable public developer release (v1.0.0). We document 
 | `webhook: subject.health_improved` | Fires when health state recovers (at_risk→watch, watch→healthy) |
 | `GET /v1/receipts/{id}` | Fetch one state-assembly receipt by ULID |
 | `GET /v1/receipts` | List receipts for a subject (cursor-paginated) |
+| `GET /v1/receipts/{id}/verify` | Verify a receipt's HMAC signature |
+| `POST /v1/receipts/{id}/replay` | Re-run a receipt against current memories with its original policy |
+| `GET /v1/version` | Public, unauthenticated server version discovery |
 | `PATCH /v1/memories/{id}/labels` | Set per-memory sensitivity labels |
 | `GET /v1/timeline` | View subject timeline |
 | `GET /v1/subjects` | List subjects with counts |

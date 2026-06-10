@@ -10,7 +10,7 @@ Version: **1.0.x**
 | `statewave` (Python SDK) | Sync + async clients, typed exceptions, auth, batch, receipts + label / policy methods | 1.0.0 | Apache-2.0 |
 | `@statewavedev/sdk` (TypeScript SDK) | Typed errors, auth, batch, ESM, receipts + label / policy methods | 1.0.0 | Apache-2.0 |
 | Examples | Runnable demos, evals, benchmarks | — | Apache-2.0 |
-| `@statewavedev/connectors-*` | Connector ecosystem — 11 source connectors (GitHub, Markdown, Slack, Discord, n8n, Zapier, Zendesk, Intercom, Freshdesk, Notion, Gmail) feeding real-world events into Statewave as normalized episodes, plus shared Core, CLI, Config, MCP-server, IDE-core, and Runner packages. Latest release wave: v0.17.0 (Tier 3 operator/cloud productization — config file, hosted runner, persistent state, OIDC, metrics, deployment recipes). | latest wave v0.17.0 | Apache-2.0 |
+| `@statewavedev/connectors-*` | Connector ecosystem — 13 source connectors (GitHub, Markdown, Slack, Discord, n8n, Zapier, Zendesk, Intercom, Freshdesk, Notion, Gmail, plus the preview Jira and database connectors) feeding real-world events into Statewave as normalized episodes, plus shared Core, CLI, Config, MCP-server, IDE-core, and Runner packages. Latest release wave: v0.22.0 (Jira webhook receiver + transitions/sprint + Server/Data Center preview, database schema-metadata mode). | latest wave v0.22.0 | Apache-2.0 |
 | Docs | Architecture, specs, ADRs, coordination (no runtime code) | — | Apache-2.0 |
 | Website | Marketing website + embedded comparison demo (statewave.ai) | — | Apache-2.0 |
 | Admin | Operator console — system health, jobs, usage (read-only) | — | Apache-2.0 |
@@ -55,7 +55,7 @@ statewave/
       webhooks.py   # Event hook delivery
       receipts.py   # State-assembly receipt — emission decision, ULID, canonicalization, write
       policy.py     # Sensitivity-label policy — YAML bundle loader, evaluator, decision projection
-  alembic/        # DB migrations (latest: 0019_per_tenant_bundles)
+  alembic/        # DB migrations (latest: 0024_health_cache_tenant_iso)
   tests/          # Unit + integration tests
 ```
 
