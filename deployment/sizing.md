@@ -219,7 +219,7 @@ The Tier 2 default. Fly / Railway / Render / a small VM, plus Neon / Supabase / 
 Tier 3. Replicas are stateless; the rate limiter is Postgres-backed and shared correctly across them. The reverse proxy terminates TLS and lets you pin timeouts (Statewave's `/v1/context` can be longer than typical HTTP traffic). Horizontal scaling is **supported by design but not load-tested** — measure your own workload and report findings if you push past prior boundaries. See the [Horizontal Scaling Guide](horizontal-scaling.md) for the multi-instance runbook (connection-budget math, what coordinates correctly across replicas, common mistakes).
 
 ### D. API replicas + dedicated Postgres + read replica + observability
-Tier 4 baseline. Add a connection pooler (PgBouncer or your managed equivalent) once total connections × replicas approach the DB's `max_connections`. Use a read replica today as a safety net and for analytics; native replica routing for `/v1/context` is on the roadmap. See the [Horizontal Scaling Guide](horizontal-scaling.md) for the PgBouncer transaction-mode guidance and the connection-budget formula.
+Tier 4 baseline. Add a connection pooler (PgBouncer or your managed equivalent) once total connections × replicas approach the DB's `max_connections`. Use a read replica today as a same-region safety net and for analytics; native replica routing for `/v1/context` is not included in Statewave v1.0 and is not currently committed to a release. See the [Horizontal Scaling Guide](horizontal-scaling.md) for the PgBouncer transaction-mode guidance and the connection-budget formula.
 
 ### E. Topology D + self-hosted model sidecar
 Tier 4 optional layer. The model server (vLLM / TGI / Ollama / TEI) sits beside the Statewave deployment. Statewave talks to it via LiteLLM as if it were any other provider. **GPU sizing belongs to this server, not the API tier.** Treat it as its own product with its own runbook — model warm-up time, batch size, KV cache memory, request queue depth.
@@ -239,7 +239,7 @@ A few cross-cutting notes:
 | `/v1/context` p95 too high | Confirm pgvector HNSW fits in DB RAM. If not, raise DB RAM. If yes, confirm query embeddings are cached (repeat tasks should be fast). |
 | Compile backlog growing | Add a Statewave API replica (raises effective LLM concurrency); negotiate provider quota. |
 | 429s from your LLM provider | Provider quota — talk to the provider, or move to a self-hosted model. |
-| DB CPU > 70% sustained | Tune autovacuum + `work_mem`; consider a read replica for analytics today, native read routing later. |
+| DB CPU > 70% sustained | Tune autovacuum + `work_mem`; consider a read replica for analytics today. Native read-replica routing is not in v1.0. |
 | `pool_timeout` errors in API logs | Raise SQLAlchemy `pool_size`/`max_overflow` (currently defaults to `5 + 10`); ensure DB `max_connections` accommodates `replicas × pool`. |
 | Webhook DLQ accumulating | Scale the subscriber; check the receiver's error rate. |
 

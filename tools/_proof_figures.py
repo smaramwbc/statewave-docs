@@ -55,12 +55,12 @@ from __future__ import annotations
 # to avoid the repo .env leaking real providers into pytest.
 FIGURES: dict[str, dict[str, str]] = {
     "server_tests_total": {
-        "value": "876",
+        "value": "944",
         "source": "cd statewave && pytest tests --collect-only -q | tail -1",
-        "note": "All server tests: 660 unit + 213 integration + 3 smoke.",
+        "note": "All server tests: 708 unit + 233 integration + 3 smoke (recomputed 2026-06-10).",
     },
     "server_tests_unit": {
-        "value": "660",
+        "value": "708",
         "source": (
             "cd statewave && pytest --collect-only -q "
             "--ignore=tests/integration --ignore=tests/smoke tests | tail -1"
