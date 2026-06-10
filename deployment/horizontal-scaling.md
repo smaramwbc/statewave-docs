@@ -40,7 +40,7 @@ You do **not** need to add Redis, a job broker, a leader election layer, or any 
 Be explicit about the constraints. None of these block horizontal scaling, but each shapes how you configure it.
 
 ### Read replicas are not auto-routed
-Statewave does not currently route read traffic to a Postgres read replica. All API queries — including the read-heavy `/v1/context` semantic-search path — go to the primary. A read replica is still useful at Tier 4 for **safety** (failover target) and **analytics** (run heavy ad-hoc queries off the primary), but it does **not** offload `/v1/context`. Native replica routing is on the [roadmap](../roadmap.md).
+Statewave does not currently route read traffic to a Postgres read replica. All API queries — including the read-heavy `/v1/context` semantic-search path — go to the primary. A read replica is still useful at Tier 4 for **safety** (same-region failover target) and **analytics** (run heavy ad-hoc queries off the primary), but it does **not** offload `/v1/context`. Native replica routing is not included in Statewave v1.0 and is not currently committed to a release.
 
 ### In-process LLM concurrency cap is per-replica
 The cap of **4 in-flight LLM-compile calls per Statewave process** is intentional politeness against your provider. With `R` replicas, your effective concurrency is `4 × R`. This **multiplies, not consolidates** — make sure your provider quota covers `4 × R` concurrent calls before you scale out, or you will replace "Statewave is the bottleneck" with "the provider is the bottleneck" and `429`s.
@@ -138,15 +138,13 @@ Tier 4 baseline. Adds a connection pooler and a read replica.
 - Compile-job throughput is `4 × R` — at `R=5` that's 20 concurrent LLM calls. Provider quota arithmetic, not Statewave arithmetic.
 - A failed read-replica failover does **not** affect the API path today (it is not in the read path). It does affect analytics and DR posture.
 
-### Topology H3 (future): Native read-replica routing
+### Topology H3 (not in v1.0): Native read-replica routing
 
-Documented here so you can plan around it. **Not implemented today.** Once `/v1/context` and other read-heavy endpoints can be routed to a replica:
+Documented here so you can reason about the trade-offs. **Not included in Statewave v1.0 and not currently committed to a release.** Were `/v1/context` and other read-heavy endpoints able to route to a replica:
 
-- DB primary CPU drops materially for read-heavy workloads.
-- Replica lag becomes a Statewave concern (today it isn't, because reads don't go there). Bounded staleness on `/v1/context` semantic search is acceptable; we will document the bound when we ship it.
-- Connection-budget math will gain a "replica pool" line — plan for `replicas × pool` against **both** primary and replica.
-
-Track progress on the [roadmap](../roadmap.md).
+- DB primary CPU would drop materially for read-heavy workloads.
+- Replica lag would become a Statewave concern (today it isn't, because reads don't go there).
+- Connection-budget math would gain a "replica pool" line — plan for `replicas × pool` against **both** primary and replica.
 
 ---
 
@@ -220,4 +218,4 @@ The guidance on this page derives from the system's design points — Postgres-b
 - [Kubernetes Deployment](kubernetes.md) — running the multi-instance topologies on k8s via the in-tree Helm chart
 - [Migration & Upgrade Runbook](migrations.md) — schema migrations under multi-instance deploys
 - [Deployment Troubleshooting](troubleshooting.md) — specific incident runbooks
-- [Roadmap](../roadmap.md) — native read-replica routing
+- [Roadmap](../roadmap.md) — what's shipped per release
