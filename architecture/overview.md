@@ -1,6 +1,6 @@
 # Architecture Overview
 
-Version: **1.0.x**
+Version: **1.1.x**
 
 Statewave is an **open-source memory runtime for AI agents**. It compiles raw events into ranked, token-bounded context bundles with full provenance — so your AI stops forgetting across sessions. Self-hosted on Postgres, no vendor lock-in.
 
@@ -111,6 +111,11 @@ In addition to the core signals above, support-agent workloads apply session, ur
 ## Version history
 
 Ordered newest first. See [roadmap.md](../roadmap.md) for the canonical list of shipped items per release.
+
+### v1.1 — idempotent ingest & reasoning-model compilation
+- **Idempotent episode ingest** ([#240](https://github.com/smaramwbc/statewave/pull/240)) — `POST /v1/episodes` honours a client-supplied `idempotency_key`: re-ingesting an episode with the same key (re-running a connector seed, retrying a request) returns the existing episode instead of inserting a duplicate. Backed by a partial unique index on `(tenant_id, subject_id, idempotency_key)` (migration 0025, `NULLS NOT DISTINCT`); keyless episodes are never de-duplicated. Both SDKs expose the optional key on `create_episode` / `createEpisode`.
+- **Reasoning-model compilation** ([#240](https://github.com/smaramwbc/statewave/pull/240)) — the LLM compiler's output budget is now a configurable ceiling (`STATEWAVE_LITELLM_COMPILE_MAX_TOKENS`, default 16000) floored per call, so reasoning models (which spend budget on hidden reasoning tokens before the JSON) no longer truncate into invalid output. The readiness ping tolerates the same output-limit signal.
+- **NUL-byte sanitization** ([#240](https://github.com/smaramwbc/statewave/pull/240)) — compiled memory text strips NUL (U+0000), which Postgres text columns reject, so a single stray byte in generated content can no longer fail a whole compile batch.
 
 ### v1.0 — first stable public developer release
 - **Stable `/v1` API contract** — the `/v1/*` surface and the v0.9 governance layer (HMAC-signed receipts, receipt-driven replay, sensitivity labels + declarative policy, opt-in detector-suggested labels, per-region residency) are now stable for developer use under a self-hosted model. Backward-compatible additions only from here; carried-forward limitations stay documented in [why-statewave.md](../why-statewave.md).

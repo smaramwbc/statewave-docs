@@ -1,6 +1,6 @@
 # Repo Map
 
-Version: **1.0.x**
+Version: **1.1.x**
 
 ## Ecosystem
 
@@ -59,7 +59,7 @@ statewave/
   tests/          # Unit + integration tests
 ```
 
-## Test counts (as of v1.0.0)
+## Test counts (as of v1.1.0)
 
 | Project | Tests | Framework |
 |---|---|---|

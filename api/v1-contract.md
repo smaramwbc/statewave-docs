@@ -1,7 +1,7 @@
 # Statewave API v1 Contract
 
 Base URL: `http://localhost:8100`
-Version: **1.0.x**
+Version: **1.1.x**
 
 > **Pre-built ingestion paths:** [Statewave Connectors](../connectors/index.md) wrap this contract for common sources — GitHub, Markdown/ADRs, MCP, and more — so you don't have to hand-build episode payloads from each source.
 
