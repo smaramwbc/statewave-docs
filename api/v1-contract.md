@@ -152,7 +152,9 @@ A filtered-out event is dropped before it is enqueued — it consumes no storage
 | Method | Path | Description |
 |--------|------|-------------|
 | GET | `/healthz` | Liveness — returns `{"status": "ok"}` |
+| GET | `/health` | Liveness (alias for `/healthz`, `include_in_schema=false`) |
 | GET | `/readyz` | Readiness — checks DB, returns `{"status": "ready"}` |
+| GET | `/ready` | Readiness (alias for `/readyz`, `include_in_schema=false`) |
 | GET | `/v1/version` | Version discovery — public/unauthenticated, returns `{"version": "…", "api_contract": "v1"}` |
 
 ---
@@ -205,6 +207,45 @@ Create an immutable episode (append-only).
 ```
 
 **Webhook:** `episode.created`
+
+---
+
+### POST /v1/episodes/batch
+
+Ingest up to 100 episodes in a single request. Each episode in the array follows the same shape as `POST /v1/episodes`. Idempotency keys are honoured per-item — an item whose key already exists returns the existing episode without inserting a duplicate.
+
+**Request:**
+
+```json
+{
+  "episodes": [
+    {
+      "subject_id": "user-42",
+      "source": "chat",
+      "type": "conversation",
+      "payload": { "messages": [{"role": "user", "content": "Hello"}] },
+      "metadata": {},
+      "provenance": {},
+      "idempotency_key": "msg-001"
+    }
+  ]
+}
+```
+
+`idempotency_key` is optional per item. `session_id` and `occurred_at` are also accepted per item (same fields as the single-episode endpoint).
+
+**Response:** `201`
+
+```json
+{
+  "episodes_created": 1,
+  "episodes": [ ...EpisodeResponse ]
+}
+```
+
+Validation failures for any item return `422` before any row is written.
+
+**Webhook:** `episodes.batch_created` — `{ "count": N, "subject_ids": ["..."] }`
 
 ---
 
@@ -528,6 +569,34 @@ Delete all data for a subject (episodes + memories). Permanent and irreversible.
 
 ---
 
+### GET /v1/subjects
+
+List all known subjects for the tenant with episode and memory counts.
+
+**Query params:**
+
+| Param | Default | Description |
+|-------|---------|-------------|
+| `limit` | `50` | Max results (1–200) |
+| `offset` | `0` | Pagination offset |
+
+**Response:** `200`
+
+```json
+{
+  "subjects": [
+    {
+      "subject_id": "user-42",
+      "episode_count": 12,
+      "memory_count": 5
+    }
+  ],
+  "total": 1
+}
+```
+
+---
+
 ### GET /v1/subjects/{subject_id}/health
 
 Compute customer health score with explainable factors.
@@ -774,8 +843,119 @@ This endpoint is intentionally narrow:
 | `POST` | `/admin/import` | Import a previously exported subject document |
 | `GET` | `/admin/webhooks/stats` | Webhook delivery statistics |
 | `GET` | `/admin/webhooks/{event_id}` | Single webhook event status |
+| `GET` | `/admin/tenants/{tenant_id}/config` | Read a tenant's configuration document |
+| `PATCH` | `/admin/tenants/{tenant_id}/config` | Partial-update a tenant's configuration document |
+| `POST` | `/admin/memories/{memory_id}/promote-labels` | Promote suggested labels into authoritative sensitivity labels (v0.9) |
+| `GET` | `/ops/migrations` | Live introspection of database migration state |
 
 See [backup/restore docs](../dev/backup-restore.md) for export/import usage guide.
+
+---
+
+### GET /admin/tenants/{tenant_id}/config
+
+Returns the configuration document for a tenant. Returns `200` with `config: {}`, `version: 0` when the tenant has no row yet — that is the default state on a fresh install, not an error.
+
+**Response:** `200`
+
+```json
+{
+  "tenant_id": "acme",
+  "config": {
+    "receipts": "on_request",
+    "receipt_retention_days": 90,
+    "policy_mode": "log_only",
+    "require_caller_identity": false,
+    "region": null,
+    "receipt_signing_key_id": null
+  },
+  "version": 3,
+  "created_at": "2026-04-01T00:00:00Z",
+  "updated_at": "2026-05-01T00:00:00Z"
+}
+```
+
+---
+
+### PATCH /admin/tenants/{tenant_id}/config
+
+Partial update of the tenant config. Only supplied fields are changed; other keys in the existing document are preserved (forward-compat for future knobs). Returns the post-write document so callers can re-render without an extra round-trip.
+
+Unknown field names are rejected with `422` (strict schema). Optimistic concurrency: pass `expected_version` from a prior GET to fail-fast (`409`) on a concurrent write — omit if you are the only writer.
+
+**Request body (all fields optional):**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `receipts` | `"always" \| "on_request" \| "never"` | Receipt emission policy. Default `on_request`. |
+| `receipt_retention_days` | integer (0–36500) | Days to retain receipts. `0` = forever (default). |
+| `policy_mode` | `"log_only" \| "enforce"` | Label policy enforcement. Default `log_only`. |
+| `require_caller_identity` | boolean | Require `caller_id`+`caller_type` on `/v1/context` and `/v1/handoff`. |
+| `region` | string (≤64 chars) | Data-residency pin. `null` = unpinned (runs in any region). |
+| `receipt_signing_key_id` | string | Operator key id for HMAC signing new receipts (key bytes live in env, never stored). |
+| `expected_version` | integer | Optimistic-concurrency guard — request is rejected with `409` if current version differs. |
+| `force_region_pin` | boolean | Bypass the same-region safety check when pinning (use from within the target region). |
+
+**Response:** `200` — same shape as GET.
+
+**Errors:**
+- `409` — `expected_version` mismatch (concurrent write detected).
+- `422` — unknown field, invalid enum value, or region-pin safety check blocked.
+
+---
+
+### POST /admin/memories/{memory_id}/promote-labels
+
+Promote a subset of a memory's `suggested_labels` into the authoritative `sensitivity_labels` column (v0.9 #160). This is a **review-only** endpoint — the labels to promote must already be in `suggested_labels`; ad-hoc label writes go through `PATCH /v1/memories/{id}/labels` instead.
+
+Promoted labels are appended to `sensitivity_labels` (deduped + sorted) and **removed** from `suggested_labels` so the review queue does not re-surface them. An audit entry is appended to `memory.metadata.label_promotions` with `{labels, promoted_at, promoted_by: null}`.
+
+**Query params:**
+- `tenant_id` (optional) — defence-in-depth tenant filter.
+
+**Request:**
+
+```json
+{ "labels": ["pii.email", "pii.phone"] }
+```
+
+**Response:** `200`
+
+```json
+{
+  "memory_id": "550e8400-...",
+  "sensitivity_labels": ["pii.email", "pii.phone"],
+  "suggested_labels": []
+}
+```
+
+**Errors:**
+- `422 promote_labels.empty` — `labels` is an empty list.
+- `422 promote_labels.duplicate_labels` — `labels` contains duplicates.
+- `422 promote_labels.not_suggested` — one or more labels are not currently in `suggested_labels`.
+- `404` — memory not found or cross-tenant.
+
+---
+
+### GET /ops/migrations
+
+Live introspection of database migration state. Useful for verifying that a deployment applied all migrations before switching traffic.
+
+**Response:** `200`
+
+```json
+{
+  "current_revision": "0025_idempotency_key",
+  "expected_head": "0025_idempotency_key",
+  "is_compatible": true,
+  "pending_count": 0,
+  "pending_revisions": [],
+  "error": null,
+  "summary": "Schema is up to date"
+}
+```
+
+`is_compatible: false` indicates the running binary expects a schema the database has not yet migrated to. `pending_revisions` lists the migration IDs that need to run.
 
 ---
 
