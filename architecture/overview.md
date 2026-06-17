@@ -1,6 +1,6 @@
 # Architecture Overview
 
-Version: **1.1.x**
+Version: **1.2.x**
 
 Statewave is an **open-source memory runtime for AI agents**. It compiles raw events into ranked, token-bounded context bundles with full provenance — so your AI stops forgetting across sessions. Self-hosted on Postgres, no vendor lock-in.
 
@@ -111,6 +111,12 @@ In addition to the core signals above, support-agent workloads apply session, ur
 ## Version history
 
 Ordered newest first. See [roadmap.md](../roadmap.md) for the canonical list of shipped items per release.
+
+### v1.2 — admin API, dynamic settings & security hardening
+- **Admin API expansion** — dynamic settings endpoint lets operators hot-reload topology-agnostic configuration without a restart; new production-readiness endpoint surfaces deployment health for orchestrators and load-balancer probes.
+- **Security hardening** — SSRF blocked on webhook URL probe; DNS-rebinding TOCTOU closed so a probe result can no longer be hijacked between validation and use; LIKE metacharacters escaped in admin search and prefix filters to prevent wildcard injection.
+- **Admin UI inspection surface** — retrieval simulator, activity timeline, memory provenance graph, and six new inspection endpoints back the operator console's inspector views.
+- **Starlette 1.3 compatibility** — route-registration tests updated to handle `_IncludedRouter` wrappers introduced in Starlette 1.3 / FastAPI 0.137.
 
 ### v1.1 — idempotent ingest & reasoning-model compilation
 - **Idempotent episode ingest** ([#240](https://github.com/smaramwbc/statewave/pull/240)) — `POST /v1/episodes` honours a client-supplied `idempotency_key`: re-ingesting an episode with the same key (re-running a connector seed, retrying a request) returns the existing episode instead of inserting a duplicate. Backed by a partial unique index on `(tenant_id, subject_id, idempotency_key)` (migration 0025, `NULLS NOT DISTINCT`); keyless episodes are never de-duplicated. Both SDKs expose the optional key on `create_episode` / `createEpisode`.
