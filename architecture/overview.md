@@ -112,6 +112,12 @@ In addition to the core signals above, support-agent workloads apply session, ur
 
 Ordered newest first. See [roadmap.md](../roadmap.md) for the canonical list of shipped items per release.
 
+### v1.3 — hybrid retrieval & compile pipeline
+- **Hybrid retrieval** — `/v1/memories/search` blends pgvector cosine similarity with Postgres BM25 (`ts_rank_cd` over a generated `content_tsvector`), on by default; pass `hybrid=false` for the pure-semantic path. An optional entity-boost lane and an LLM reranker are available, both off by default.
+- **Compile pipeline** — near-duplicate dedup before reconcile, context-aware reconcile with assistant-fact extraction, technical-spec/metric extraction, and full-conversation windowed compile with chunked reconcile improve recall on multi-hop and long-context retrieval.
+- **LLM layer** — provider-aware API-key routing for mixed-vendor deployments, token usage + model returned from `/v1/llm/complete`, and model-aware reasoning-effort / temperature handling.
+- **Non-breaking** — existing deployments are unaffected; migrations 0027/0028 add the BM25 tsvector column and the per-subject entity store.
+
 ### v1.2 — admin API, dynamic settings & security hardening
 - **Admin API expansion** — dynamic settings endpoint lets operators hot-reload topology-agnostic configuration without a restart; new production-readiness endpoint surfaces deployment health for orchestrators and load-balancer probes.
 - **Security hardening** — SSRF blocked on webhook URL probe; DNS-rebinding TOCTOU closed so a probe result can no longer be hijacked between validation and use; LIKE metacharacters escaped in admin search and prefix filters to prevent wildcard injection.
