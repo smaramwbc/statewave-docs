@@ -43,7 +43,9 @@ jobs:
   refresh:
     name: Rebuild statewave-support-docs
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    # Async compile + build-then-swap can take several minutes for a full
+    # pack rebuild (~400 sections); 30 min leaves comfortable headroom.
+    timeout-minutes: 30
 
     steps:
       - name: Check out statewave-docs
