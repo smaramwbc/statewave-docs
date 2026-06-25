@@ -177,7 +177,7 @@ Most of the agent's memory is about the codebase: stack choices, conventions, AD
 
 ```
 account-<id>              # one per account in the pipeline
-sales-team-playbook       # cross-cutting positioning (e.g. "vs Mem0: lead with determinism")
+sales-team-playbook       # cross-cutting positioning (e.g. "lead with determinism vs. alternatives")
 ```
 
 Each account has its own decision-maker, blockers, deal stage, and contact preferences. The playbook subject holds cross-cutting competitive memory and procedural conventions (HIPAA procurement order, AE routing rules) so they don't have to be re-recorded per account.

@@ -11,6 +11,24 @@ This repo contains the architecture docs, product specs, API contracts, and deve
 >
 > 📋 **Issues & feature requests:** [statewave/issues](https://github.com/smaramwbc/statewave/issues) (centralized tracker)
 
+## Install
+
+Fastest — one line to a running server:
+
+```bash
+# macOS / Linux
+npx @statewavedev/statewave
+# or
+curl -fsSL https://www.statewave.ai/install | sh
+```
+
+```powershell
+# Windows (PowerShell)
+irm https://www.statewave.ai/install.ps1 | iex
+```
+
+Prefer to run it yourself? The [Getting Started guide](getting-started.md) walks through the manual `git clone` + `docker compose up -d` path in about 5 minutes.
+
 ## 🎯 Try it
 
 > The interactive comparison demo is embedded directly in the website at **[statewave.ai](https://statewave.ai)** — open the chat widget to see two identical AI agents answer side by side, one stateless and one backed by Statewave.
@@ -70,4 +88,4 @@ GitHub Discussions live on the core repo: **[statewave/discussions](https://gith
 
 ## Current status
 
-**v1.2.0** — admin API expansion, dynamic settings with hot-reload, and security hardening. The `/v1/*` API contract and governance surfaces (HMAC-signed [receipts](receipts.md), receipt-driven replay, per-memory [sensitivity labels](sensitivity-labels.md) + declarative YAML policy, opt-in detector-suggested labels, per-region data residency) remain stable. v1.2 adds a dynamic settings endpoint for topology-agnostic hot-reload, a production-readiness probe, SSRF + DNS-rebinding protection on the webhook URL probe, LIKE metachar escaping in admin search, and six new admin inspection endpoints (retrieval simulator, activity timeline, memory provenance). Both SDKs ship alongside: `statewave` (PyPI) v1.2.0 adds per-call timeout overrides and `CancelledError` propagation; `@statewavedev/sdk` (npm) v1.2.0 adds `AbortSignal` support on all HTTP methods. See [roadmap](roadmap.md) and [CHANGELOG](CHANGELOG.md).
+**v1.3.0** — hybrid retrieval (pgvector + Postgres BM25, on by default with a `hybrid=false` opt-out) and compile-pipeline recall improvements (dedup/reconcile), plus provider-aware LLM key routing. The `/v1/*` API contract and governance surfaces (HMAC-signed [receipts](receipts.md), receipt-driven replay, per-memory [sensitivity labels](sensitivity-labels.md) + declarative YAML policy, opt-in detector-suggested labels, per-region data residency) remain stable, as do the v1.2 additions (dynamic settings endpoint for topology-agnostic hot-reload, a production-readiness probe, SSRF + DNS-rebinding protection on the webhook URL probe, LIKE metachar escaping in admin search, and six admin inspection endpoints). Both SDKs ship alongside: `statewave` (PyPI) v1.2.0 adds per-call timeout overrides and `CancelledError` propagation; `@statewavedev/sdk` (npm) v1.2.0 adds `AbortSignal` support on all HTTP methods. See [roadmap](roadmap.md) and [CHANGELOG](CHANGELOG.md).

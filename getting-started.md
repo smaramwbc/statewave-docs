@@ -25,6 +25,28 @@ and a Postgres database, and runs the database migrations for you.
 You do **not** need Python, Node, an LLM API key, or any SDK to finish this
 guide. Those come later, and every one of them is optional.
 
+### Fastest path — one line to a running server
+
+If you'd rather skip the manual setup, one of these one-liners brings up a
+local Statewave server for you:
+
+```bash
+# macOS / Linux
+npx @statewavedev/statewave
+# or
+curl -fsSL https://www.statewave.ai/install | sh
+```
+
+```powershell
+# Windows (PowerShell)
+irm https://www.statewave.ai/install.ps1 | iex
+```
+
+Once it reports the API is up on `http://localhost:8100`, skip ahead to
+[Step 2 — Verify it is running](#step-2--verify-it-is-running). Prefer to drive
+the setup yourself (and keep a checkout for editing `.env`)? Follow the manual
+Docker Compose path below.
+
 ### Step 1 — Start the server
 
 ```bash

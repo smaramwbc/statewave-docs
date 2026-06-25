@@ -45,7 +45,7 @@ Everything is organised around **subjects** — a user, account, workspace, repo
 
 ## Current limitations
 
-Statewave is at its first stable public developer release (v1.2.0). We document these honestly:
+Statewave is on its first stable public developer release line (v1.3.0). We document these honestly:
 
 | Limitation | Impact | Status |
 |-----------|--------|--------|
