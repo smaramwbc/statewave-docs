@@ -75,7 +75,6 @@ This policy applies to all Statewave repositories:
 - `statewave-web` - Marketing site + embedded demo
 - `statewave-admin` - Admin dashboard
 - `statewave-connectors` - Connector ecosystem
-- `statewave-bench` - Benchmark harness
 
 ## Contact
 

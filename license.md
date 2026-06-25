@@ -34,7 +34,6 @@ Every repository in the Statewave ecosystem is Apache-2.0:
 | [statewave-admin](https://github.com/smaramwbc/statewave-admin) | Apache-2.0 |
 | [statewave-docs](https://github.com/smaramwbc/statewave-docs) | Apache-2.0 |
 | [statewave-examples](https://github.com/smaramwbc/statewave-examples) | Apache-2.0 |
-| [statewave-bench](https://github.com/smaramwbc/statewave-bench) | Apache-2.0 |
 | [statewave-web](https://github.com/smaramwbc/statewave-web) | Apache-2.0 |
 
 ## Trademark

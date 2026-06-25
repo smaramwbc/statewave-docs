@@ -224,17 +224,7 @@ What "working" looks like at each checkpoint.
 - You have a clear answer to "**should we keep this in production indefinitely?**"
 - If **yes:** the relationship rolls into a regular customer cadence; we ask for permission to credit you. If **no:** an exit interview captures the why — the most important artifact in either direction.
 
-Concrete reference numbers from the public benchmark, for shape — your workload will not look exactly like LoCoMo, but it gives a sense of what's achievable:
-
-| At a 1 024-token budget on LoCoMo | Score (excl. adversarial) |
-|---|---:|
-| Statewave | 0.384 |
-| Mem0 | 0.269 |
-| Zep | 0.041 |
-| Naïve last-N | 0.035 |
-| No memory | 0.004 |
-
-Full methodology + per-tier results: [`statewave-bench/RESULTS.md`](https://github.com/smaramwbc/statewave-bench/blob/main/RESULTS.md).
+Concrete, current reference numbers live in the public benchmark suite — see [statewave-memory-benchmarks](https://github.com/smaramwbc/statewave-memory-benchmarks) for methodology and per-system results. Your workload won't look exactly like LoCoMo, but it gives a sense of what's achievable.
 
 ---
 

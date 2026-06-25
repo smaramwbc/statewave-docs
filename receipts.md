@@ -24,7 +24,7 @@ into a single artifact written at the moment of assembly.
 - **Drift detection** — comparing receipts across deployments surfaces
   silent regressions where the same query starts pulling different
   state.
-- **Eval harnesses** — the `statewave-bench` runs benefit from
+- **Eval harnesses** — benchmark runs benefit from
   emitting receipts so the eval transcript can verify ranking decisions
   against a fixture.
 

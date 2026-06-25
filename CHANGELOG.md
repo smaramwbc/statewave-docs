@@ -204,11 +204,11 @@ Closes the Adoption half of the v0.8 milestone, on top of the Governance & Audit
 - **Dependency strategy:** zero framework deps in the core Statewave SDKs. Adapter code lives inside each example; framework versions pinned only in the example READMEs. SDK releases don't chase framework version churn.
 - Adapter shapes: `StatewaveMemory(BaseMemory)` for LangChain; pure-function helpers (`build_task_description` + `record_crew_output`, `build_system_message` + `update_system_message` + `record_turn`) for CrewAI and AutoGen — both dependency-free of their own framework so smoke tests run without those installs.
 
-### Added — head-to-head benchmark vs Mem0 / Zep ([statewave-bench#14](https://github.com/smaramwbc/statewave-bench/pull/14))
+### Added — public LoCoMo memory benchmark
 
-- First **complete equal-budget sweep** across the public [LoCoMo](https://github.com/snap-research/LoCoMo) dataset: 4 token tiers (512 / 1024 / 2048 / 4096) × 5 systems (statewave, mem0, zep, naive, no_memory) × 10 conversations × 1,986 questions/system, single consistent run.
-- Publication-safety harness — `swb report` refuses headline rankings without 100% scored coverage, the same question set across systems, no `judge_failed` rows, measured input tokens reported beside every score, and a standing vendor-correction invitation.
-- Headline (excl. adversarial mean per-question score): statewave **0.393 / 0.384 / 0.404 / 0.416** across the four budgets; mem0 0.154 / 0.269 / 0.283 / 0.273; zep 0.035 / 0.041 / 0.048 / 0.046. Full per-tier results in [`RESULTS.md`](https://github.com/smaramwbc/statewave-bench/blob/main/RESULTS.md) on `statewave-bench` `main`.
+- First **complete equal-budget sweep** across the public [LoCoMo](https://github.com/snap-research/LoCoMo) dataset — four token tiers (512 / 1024 / 2048 / 4096) × 10 conversations × 1,986 questions/system, single consistent run.
+- Publication-safety harness — refuses headline rankings without 100% scored coverage, the same question set across systems, no `judge_failed` rows, and measured input tokens reported beside every score.
+- The benchmark suite is now maintained in [statewave-memory-benchmarks](https://github.com/smaramwbc/statewave-memory-benchmarks) — see it for current methodology and per-system results.
 
 ### Added — design partner onboarding package ([statewave-docs#42](https://github.com/smaramwbc/statewave-docs/pull/42))
 
