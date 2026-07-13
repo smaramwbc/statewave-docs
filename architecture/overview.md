@@ -1,6 +1,6 @@
 # Architecture Overview
 
-Version: **1.3.x**
+Version: **1.4.x**
 
 Statewave is an **open-source memory runtime for AI agents**. It compiles raw events into ranked, token-bounded context bundles with full provenance — so your AI stops forgetting across sessions. Self-hosted on Postgres, no vendor lock-in.
 
@@ -111,6 +111,12 @@ In addition to the core signals above, support-agent workloads apply session, ur
 ## Version history
 
 Ordered newest first. See [roadmap.md](../roadmap.md) for the canonical list of shipped items per release.
+
+### v1.4 — Tenant scoping & operator resilience
+- **Tenant-scoped lookups** — memory provenance, `/v1/context` source-episode fetch, and admin bulk delete now key by `(subject_id, tenant_id)`; global rows use `tenant_id IS NULL` explicitly. Closes cross-tenant leakage windows that the single-tenant repository helpers left open on shared infra.
+- **Admin ops surface** — `POST /admin/jobs/reset-stuck` recovers orphaned running compile jobs; `DELETE /admin/jobs/{id}` closes the gap left by immortal terminal jobs; empty-subject stats return 200 instead of 404 so zero-data subjects don't break dashboards; `DELETE /subjects/{id}` succeeds when a subject has no episodes or memories.
+- **Bootstrap resilience** — support-docs rebuild now runs an async compile with build-then-swap, gated on the compile job's `memories_created` rather than the lagging subjects-list count. A failed rebuild no longer empties the live pack — the exact silent-fail mode called out in the operator runbook.
+- **Non-breaking** — no schema migrations; existing deployments upgrade in place. `search_mode` added to `/v1/memories/search` (opt-in), `subject.deleted` webhook guarded against no-op fires, purge-event coverage extended.
 
 ### v1.3 — hybrid retrieval & compile pipeline
 - **Hybrid retrieval** — `/v1/memories/search` blends pgvector cosine similarity with Postgres BM25 (`ts_rank_cd` over a generated `content_tsvector`), on by default; pass `hybrid=false` for the pure-semantic path. An optional entity-boost lane and an LLM reranker are available, both off by default.
