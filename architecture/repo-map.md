@@ -7,8 +7,8 @@ Version: **1.4.x**
 | Project | Purpose | Version | License |
 |---|---|---|---|
 | Server | Core server — API, domain model, DB, services, deployment | 1.3.0 | Apache-2.0 |
-| `statewave` (Python SDK) | Sync + async clients, typed exceptions, auth, batch, receipts + label / policy methods | 1.2.0 | Apache-2.0 |
-| `@statewavedev/sdk` (TypeScript SDK) | Typed errors, auth, batch, ESM, receipts + label / policy methods | 1.2.0 | Apache-2.0 |
+| `statewave` (Python SDK) | Sync + async clients, typed exceptions, auth, batch, receipts + label / policy methods | 1.4.0 | Apache-2.0 |
+| `@statewavedev/sdk` (TypeScript SDK) | Typed errors, auth, batch, ESM, receipts + label / policy methods | 1.4.0 | Apache-2.0 |
 | Examples | Runnable demos, evals, benchmarks | — | Apache-2.0 |
 | `@statewavedev/connectors-*` | Connector ecosystem — 13 source connectors (GitHub, Markdown, Slack, Discord, n8n, Zapier, Zendesk, Intercom, Freshdesk, Notion, Gmail, plus the preview Jira and database connectors) feeding real-world events into Statewave as normalized episodes, plus shared Core, CLI, Config, MCP-server, IDE-core, and Runner packages. Latest release wave: v0.22.0 (Jira webhook receiver + transitions/sprint + Server/Data Center preview, database schema-metadata mode). | latest wave v0.22.0 | Apache-2.0 |
 | Docs | Architecture, specs, ADRs, coordination (no runtime code) | — | Apache-2.0 |
