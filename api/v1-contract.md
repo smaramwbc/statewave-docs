@@ -108,7 +108,9 @@ All error responses use a consistent structured shape:
 }
 ```
 
-Standard error codes: `validation_error`, `not_found`, `conflict`, `internal_error`, `missing_api_key`, `invalid_api_key`, `rate_limited`, `missing_tenant`.
+Standard error codes: `validation_error`, `not_found`, `conflict`, `internal_error`, `missing_api_key`, `invalid_api_key`, `rate_limited`, `missing_tenant`, `service_unavailable`.
+
+A database outage (unreachable, restarting, connection dropped) returns `503` with code `service_unavailable` and a `Retry-After` header — the request is safe to retry after a short backoff, matching what `/readyz` reports for the same condition. Auth or configuration mistakes and genuine query errors keep their own codes and are not retryable.
 
 ---
 
