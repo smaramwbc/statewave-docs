@@ -547,11 +547,38 @@ label set.
 
 ### GET /v1/timeline
 
-Get full timeline for a subject.
+Get the timeline for a subject: its episodes and compiled memories, each in
+ascending chronological order.
 
-**Query params:** `subject_id` (required)
+**Query params:**
 
-**Response:** `200` — `{ "subject_id", "episodes": [...], "memories": [...] }`
+| Param | Type | Default | Notes |
+|---|---|---|---|
+| `subject_id` | string | — | required |
+| `limit` | int | `100` | page size per collection, `1`–`200` |
+| `offset` | int | `0` | rows to skip per collection, `>= 0` — counted from the oldest end by default, or from the newest end when `newest_first=true` |
+| `newest_first` | bool | `false` | page from the most recent records instead of the oldest ones (see below) |
+
+Both collections are paged independently with the same `limit`/`offset`.
+
+**Response:** `200` —
+`{ "subject_id", "episodes": [...], "memories": [...], "episodes_has_more": bool, "memories_has_more": bool }`
+
+`episodes_has_more` / `memories_has_more` are `true` when more rows exist
+beyond the returned page for that collection (computed by over-fetching one
+row, so no separate count query is needed).
+
+With the default `newest_first=false`, a subject with more rows than `limit`
+returns its **oldest** rows first; pass `newest_first=true` to select the most
+recent `limit` rows instead. Within a page, rows are always returned in
+ascending chronological order, so a consumer keeping a bounded "recent
+activity" window can use `newest_first=true` and read the page top-to-bottom.
+Under `newest_first=true`, `offset` counts back from the newest row: `offset=limit`
+is the next-older page, and `episodes_has_more` / `memories_has_more` report
+whether older rows remain beyond it.
+
+Ordering is a total order in both directions (timestamps, then row id), so
+paging never skips or repeats rows that share a timestamp.
 
 ---
 
@@ -683,7 +710,19 @@ Create or update resolution state for a support session. Upserts by `subject_id`
 
 ### GET /v1/resolutions?subject_id=X
 
-List resolutions for a subject. Optional `status` query param to filter.
+List resolutions for a subject, most recently updated first.
+
+**Query params:**
+
+| Param | Type | Default | Notes |
+|---|---|---|---|
+| `subject_id` | string | — | required |
+| `status` | string | — | optional filter |
+| `limit` | int | `50` | page size, `1`–`200` |
+| `offset` | int | `0` | rows to skip, `>= 0` |
+
+Rows are ordered by `updated_at` descending, so `offset` pages deterministically
+through the list; a page shorter than `limit` is the last one.
 
 **Response:** `200` — array of resolution records.
 
