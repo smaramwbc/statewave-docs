@@ -1,6 +1,6 @@
 # Architecture Overview
 
-Version: **1.4.x**
+Version: **1.5.x**
 
 Statewave is an **open-source memory runtime for AI agents**. It compiles raw events into ranked, token-bounded context bundles with full provenance — so your AI stops forgetting across sessions. Self-hosted on Postgres, no vendor lock-in.
 
@@ -111,6 +111,13 @@ In addition to the core signals above, support-agent workloads apply session, ur
 ## Version history
 
 Ordered newest first. See [roadmap.md](../roadmap.md) for the canonical list of shipped items per release.
+
+### v1.5 — Timeline paging & recent-first windows
+- **Timeline pagination** — `GET /v1/timeline` takes `limit` (1–200, default 100) and `offset` per collection and returns `episodes_has_more` / `memories_has_more`, computed by over-fetching one row instead of a separate count ([statewave#362](https://github.com/smaramwbc/statewave/pull/362)).
+- **`newest_first`** — page from the most recent end: the window is selected from the newest rows, `offset` counts back from the newest row, and rows within a page stay in ascending chronological order ([statewave#363](https://github.com/smaramwbc/statewave/pull/363)). Ordering is a total order (timestamps, then row id) in both directions, so paging never skips or repeats rows that share a timestamp.
+- **Resolutions pagination** — `GET /v1/resolutions` takes `limit` (default 50) and `offset` over `updated_at` desc ([statewave#361](https://github.com/smaramwbc/statewave/pull/361)).
+- **Runtime dependencies declared** — `numpy` (conflict/cluster admin endpoints) and `httpx` (webhook delivery) were previously only transitive; pgvector 0.5.0 dropped numpy, leaving two admin endpoints failing in the published image. Both are declared now and an AST test guards the class ([statewave#327](https://github.com/smaramwbc/statewave/pull/327)).
+- **Non-breaking** — no schema migrations; the new query parameters default to the previous behaviour. SDKs: Python 1.5.0 and TypeScript 1.5.0 expose the paging surface.
 
 ### v1.4 — Tenant scoping & operator resilience
 - **Tenant-scoped lookups** — memory provenance, `/v1/context` source-episode fetch, and admin bulk delete now key by `(subject_id, tenant_id)`; global rows use `tenant_id IS NULL` explicitly. Closes cross-tenant leakage windows that the single-tenant repository helpers left open on shared infra.
