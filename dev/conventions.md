@@ -1,6 +1,6 @@
 # Development Conventions
 
-Version: **1.4.x**
+Version: **1.5.x**
 
 ## Code style
 
