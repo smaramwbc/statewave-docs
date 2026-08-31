@@ -560,6 +560,7 @@ ascending chronological order.
 | `limit` | int | `100` | page size per collection, `1`–`200` |
 | `offset` | int | `0` | rows to skip per collection, `>= 0` — counted from the oldest end by default, or from the newest end when `newest_first=true` |
 | `newest_first` | bool | `false` | page from the most recent records instead of the oldest ones (see below) |
+| `status` | string | `all` | memory rows to include: `all` (superseded and expired rows returned, previous behaviour) or `active` (only currently authoritative rows: status `active` and not past `valid_to`). Episodes are never filtered. Added in v1.5.0 |
 
 Both collections are paged independently with the same `limit`/`offset`.
 
@@ -578,6 +579,10 @@ activity" window can use `newest_first=true` and read the page top-to-bottom.
 Under `newest_first=true`, `offset` counts back from the newest row: `offset=limit`
 is the next-older page, and `episodes_has_more` / `memories_has_more` report
 whether older rows remain beyond it.
+
+With `status=active`, pagination and `memories_has_more` count only the
+included rows — a subject whose history has collapsed to one surviving fact
+returns it on the first page regardless of how many superseded rows exist.
 
 Ordering is a total order in both directions (timestamps, then row id), so
 paging never skips or repeats rows that share a timestamp.
