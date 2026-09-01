@@ -941,6 +941,7 @@ Unknown field names are rejected with `422` (strict schema). Optimistic concurre
 | `receipt_signing_key_id` | string | Operator key id for HMAC signing new receipts (key bytes live in env, never stored). |
 | `expected_version` | integer | Optimistic-concurrency guard — request is rejected with `409` if current version differs. |
 | `force_region_pin` | boolean | Bypass the same-region safety check when pinning (use from within the target region). |
+| `claim_keys` | object (≤64 entries) | The tenant's own claim vocabulary: namespaced key → declared cardinality (`"single"` or `"multi"`), e.g. `{"guide.walkthrough": "single"}`. A registered `single` key behaves like a built-in on the structured ingestion path: repeated observations supersede down to one active row instead of growing per observation. Keys are lowercase dotted segments with at least one dot; built-in keys are rejected rather than shadowed. Cardinality is declared here — an operator action — never by the episode payload. |
 
 **Response:** `200` — same shape as GET.
 
