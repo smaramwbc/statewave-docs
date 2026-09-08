@@ -118,15 +118,15 @@ FIGURES: dict[str, dict[str, str]] = {
         "source": "grep -cE 'assert ' statewave-examples/eval-support-agent/test_support_advanced.py",
         "note": "Advanced eval assertions.",
     },
-    "benchmark_statewave": {
-        "value": "8/8",
-        "source": "cat statewave-examples/benchmark-support-agent/results/*.json  # Statewave score",
-        "note": "Statewave score on the support-workflow benchmark.",
-    },
-    "benchmark_naive": {
-        "value": "2/8",
-        "source": "cat statewave-examples/benchmark-support-agent/results/*.json  # naive score",
-        "note": "Naive concatenation baseline on the same benchmark.",
+    # The self-scored 8/8-vs-2/8 benchmark COMPARISON was retired from every
+    # living surface (statewave-web #293 + the docs PR that changed this
+    # file): scoring your own harness against a strawman is not a
+    # trustworthy proof figure. The criteria COUNT remains a fact worth
+    # mirroring — the harness is open, readers score it themselves.
+    "support_criteria": {
+        "value": "8",
+        "source": "ls statewave-examples/benchmark-support-agent/criteria  # or the harness README criteria list",
+        "note": "Number of support-workflow benchmark criteria (open harness).",
     },
 }
 
@@ -187,17 +187,10 @@ PROOF_TARGETS: list[tuple[str, str, str, str, str]] = [
         "mechanical",
     ),
     (
-        "overview_bench_sw",
+        "overview_bench_criteria",
         "statewave-docs/architecture/overview.md",
-        r"2 benchmarks \((\d+/\d+) vs \d+/\d+",
-        "benchmark_statewave",
-        "mechanical",
-    ),
-    (
-        "overview_bench_naive",
-        "statewave-docs/architecture/overview.md",
-        r"2 benchmarks \(\d+/\d+ vs (\d+/\d+)",
-        "benchmark_naive",
+        r"support-workflow benchmark \((\d+) criteria",
+        "support_criteria",
         "mechanical",
     ),
     # --- roadmap.md ---
@@ -209,17 +202,10 @@ PROOF_TARGETS: list[tuple[str, str, str, str, str]] = [
         "mechanical",
     ),
     (
-        "roadmap_bench_sw",
+        "roadmap_bench_criteria",
         "statewave-docs/roadmap.md",
-        r"2 benchmarks \((\d+/\d+) vs \d+/\d+\)",
-        "benchmark_statewave",
-        "mechanical",
-    ),
-    (
-        "roadmap_bench_naive",
-        "statewave-docs/roadmap.md",
-        r"2 benchmarks \(\d+/\d+ vs (\d+/\d+)\)",
-        "benchmark_naive",
+        r"support-workflow benchmark \((\d+) criteria",
+        "support_criteria",
         "mechanical",
     ),
     # --- why-statewave.md: per-suite breakdown + benchmark table row ---
@@ -266,17 +252,10 @@ PROOF_TARGETS: list[tuple[str, str, str, str, str]] = [
         "mechanical",
     ),
     (
-        "why_bench_sw",
+        "why_bench_criteria",
         "statewave-docs/why-statewave.md",
-        r"Statewave (\d+/\d+) vs Naive \d+/\d+",
-        "benchmark_statewave",
-        "mechanical",
-    ),
-    (
-        "why_bench_naive",
-        "statewave-docs/why-statewave.md",
-        r"Statewave \d+/\d+ vs Naive (\d+/\d+)",
-        "benchmark_naive",
+        r"Support-workflow benchmark: (\d+) criteria \(active-issue",
+        "support_criteria",
         "mechanical",
     ),
     # --- statewave/README.md (core) ---
@@ -295,62 +274,32 @@ PROOF_TARGETS: list[tuple[str, str, str, str, str]] = [
         "mechanical",
     ),
     # --- statewave-web: proof-stats.ts SSoT for the marketing site ---
+    # statewave-web #271/#293 centralized the site's literals into
+    # PROOF_FIGURES and retired the self-scored benchmark tiles, so the
+    # mirrors grep the named constants instead of tile literals.
     (
         "proofstats_unit",
         "statewave-web/src/lib/proof-stats.ts",
-        r"value: '(\d+)', label: 'Unit tests'",
+        r"unitTests: '(\d+)'",
         "server_tests_unit",
         "mechanical",
     ),
     (
         "proofstats_assertions",
         "statewave-web/src/lib/proof-stats.ts",
-        r"value: '(\d+)', label: 'Eval assertions'",
+        r"evalAssertions: '(\d+)'",
         "eval_assertions",
         "mechanical",
     ),
     (
-        "proofstats_bench_sw",
+        "proofstats_criteria",
         "statewave-web/src/lib/proof-stats.ts",
-        r"value: '(\d+/\d+)', label: 'Support workflow score'",
-        "benchmark_statewave",
+        r"supportCriteria: '(\d+)'",
+        "support_criteria",
         "mechanical",
     ),
-    (
-        "proofstats_bench_naive",
-        "statewave-web/src/lib/proof-stats.ts",
-        r"value: '(\d+/\d+)', label: 'Naive approach score'",
-        "benchmark_naive",
-        "mechanical",
-    ),
-    # --- statewave-web: HomePage prose ---
-    (
-        "homepage_bench_sw",
-        "statewave-web/src/pages/HomePage.tsx",
-        r"Statewave scores (\d+/\d+) on support workflow",
-        "benchmark_statewave",
-        "mechanical",
-    ),
-    (
-        "homepage_bench_naive",
-        "statewave-web/src/pages/HomePage.tsx",
-        r"naive approaches score (\d+/\d+)",
-        "benchmark_naive",
-        "mechanical",
-    ),
-    # --- editorial: narrative prose a human owns; reported, never failed ---
-    (
-        "blog_bench_sw",
-        "statewave-web/src/content/blog/persistent-memory-for-ai-support-agents.mdx",
-        r"agent scores (\d+/\d+) on the same dataset",
-        "benchmark_statewave",
-        "editorial",
-    ),
-    (
-        "blog_bench_naive",
-        "statewave-web/src/content/blog/persistent-memory-for-ai-support-agents.mdx",
-        r"baseline \(concatenate the last N turns\) scores (\d+/\d+)",
-        "benchmark_naive",
-        "editorial",
-    ),
+    # HomePage score prose and the blog's self-scored comparison were removed
+    # with the retirement (web #271/#293); the homepage now quotes
+    # PROOF_FIGURES constants directly in JSX, so proof-stats.ts is the one
+    # greppable web surface and no separate HomePage/blog mirrors remain.
 ]

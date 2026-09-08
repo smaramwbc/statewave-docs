@@ -101,7 +101,7 @@ These claims are backed by the [support-agent context quality eval](https://gith
 | Handoff carries provenance | Advanced eval: handoff provenance includes episode_ids and resolution_ids |
 | Proactive health alerts on degradation | Unit tests: webhook fired on healthy→watch, watch→at_risk, healthy→at_risk; no spam on unchanged |
 | Health recovery confirmation | Unit tests: `subject.health_improved` fired on at_risk→watch, watch→healthy, at_risk→healthy |
-| Support workflow superiority vs naive | Workflow benchmark: Statewave 8/8 vs Naive 2/8 on active-issue, repeat-detection, health, provenance, resolution-ranking |
+| Support workflow coverage | Support-workflow benchmark: 8 criteria (active-issue, repeat-detection, health, provenance, resolution-ranking) — the harness is open in statewave-examples, so read the criteria and run it rather than trusting a self-scored comparison |
 | SLA tracking with breach detection | Unit tests: first-response time, resolution time, breach flags, custom thresholds; integrated into health scoring and handoff |
 | SLA breaches degrade health score | Unit tests: sla_resolution_breaches and slow_first_response signals penalize health deterministically |
 | SLA context in handoff packs | Unit tests: breach flags and open-issue age appear in handoff when relevant, absent when clean |
