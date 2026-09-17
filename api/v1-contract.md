@@ -253,7 +253,7 @@ Validation failures for any item return `422` before any row is written.
 
 ### POST /v1/memories/compile
 
-Compile memories from unprocessed episodes. **Idempotent.**
+Compile memories from unprocessed episodes. **Idempotent when run sequentially** — only uncompiled episodes are processed, so a rerun creates no duplicates. Two compiles of the same subject running concurrently can still duplicate memories ([statewave#417](https://github.com/smaramwbc/statewave/issues/417)).
 
 Pipeline:
 1. Fetch uncompiled episodes for the subject

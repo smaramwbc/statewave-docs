@@ -57,7 +57,7 @@ RECORD → COMPILE → CONTEXT → GOVERN
 - **Raw truth first** — episodes are append-only, never mutated
 - **Compiled memory second** — memories are derived, with provenance to source episodes
 - **Provenance everywhere** — every memory links back to source episodes via `source_episode_ids`
-- **Idempotent compilation** — recompiling is safe; only uncompiled episodes are processed
+- **Idempotent compilation** — recompiling sequentially is safe; only uncompiled episodes are processed. Concurrent compiles of one subject can currently duplicate memories ([statewave#417](https://github.com/smaramwbc/statewave/issues/417))
 - **Token-bounded context** — context bundles respect configurable token budgets
 - **Ranked retrieval** — composite scoring: kind priority × recency × relevance × temporal validity
 - **Semantic search** — pgvector cosine similarity with graceful fallback to text search
