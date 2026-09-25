@@ -53,6 +53,7 @@ Prefer to run it yourself? The [Getting Started guide](getting-started.md) walks
 - [API v1 Contract](api/v1-contract.md)
 - [State-assembly receipts](receipts.md) — the immutable audit artifact emitted on each context assembly
 - [Sensitivity labels & policy](sensitivity-labels.md) — per-memory capability tags + bundled rules consulted on every assembly call
+- [Provenance source signing](provenance-signing.md) — opt-in Ed25519 convention inside `provenance`: sources sign their episodes (RFC 8785 canon), operators trust them via a per-connector table, read-time verification with status propagation to derived memories — draft RFC, not implemented yet
 - [Deployment Guide](deployment/guide.md)
 - [Deployment Sizing Guide](deployment/sizing.md) — hardware profiles by tier, topology patterns, bottleneck guidance
 - [Capacity Planning & Tuning Checklist](deployment/capacity-planning.md) — diagnostic flow when load grows, tuning order, when to move up a tier
